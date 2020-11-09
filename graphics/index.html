@@ -54,9 +54,9 @@
         const grey = document.getElementById("grey");
         const black = document.getElementById("black");
 		const shields = nodecg.Replicant('assets:shields');
-	  	const teamPoints = nodecg.Replicant("teamPoints");
+		const teamPoints = nodecg.Replicant("teamPoints");
 
-		NodeCG.waitForReplicants(shields, teamPoints).then(() => {
+		NodeCG.waitForReplicants(shields, teamPoints, t1sub).then(() => {
 		console.log(shields.value);
 		const shieldImage = shields.value;
 		document.getElementById('shieldImage').src = shieldImage[1].url;
