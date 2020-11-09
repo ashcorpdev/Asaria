@@ -49,3 +49,5 @@ switch(newValue.sub_plan) {
                 fs.writeFileSync(path.resolve(__dirname, './userlist.json'), data);
                 console.log('New subscriber points: ' + pointsCalc*5);
             }
+        }
+    

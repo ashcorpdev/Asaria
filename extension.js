@@ -42,6 +42,10 @@ module.exports = function (nodecg) {
 	const latestSubscription = nodecg.Replicant('latestSubscription', {defaultValue: 123});
 	const latestCheer = nodecg.Replicant('latestCheer', {defaultValue: 123});
 	const teamPoints = nodecg.Replicant('teamPoints', {defaultValue: 123});
+	const t1sub = nodecg.Replicant('t1sub', {defaultValue: 5});
+	const t2sub = nodecg.Replicant('t2sub', {defaultValue: 10});
+	const t3sub = nodecg.Replicant('t3sub', {defaultValue: 15});
+	const giftedsub = nodecg.Replicant('giftedsub', {defaultValue: 1});
 
 	teamPoints.value = {red: teams.red, yellow: teams.yellow, pink: teams.pink, green: teams.green, orange: teams.orange, purple: teams.purple, blue: teams.blue, white: teams.white, grey: teams.grey, black: teams.black};
 	
