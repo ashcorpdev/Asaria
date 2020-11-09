@@ -1,0 +1,6 @@
+node_modules
+coverage
+bower_components
+config.json
+teamlist.json
+userlist.json

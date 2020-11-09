@@ -1,0 +1,82 @@
+@charset "utf-8";
+@import "../../node_modules/bulma/bulma.sass";
+@import "../../node_modules/bulma-extensions/bulma-divider/dist/css/bulma-divider.sass";
+@import "../../node_modules/bulma-extensions/bulma-switch/dist/css/bulma-switch.min.css";
+
+$bg-color: #fff;
+$gradient-color1: #ff6e7f;
+$gradient-color2: #bfe9ff;
+
+$red: #ff0000;
+$yellow: #ffff00;
+$pink: #ee82ee;
+$green: #008000;
+$orange: #ffa500;
+$purple: #4b0082;
+$blue: #0000ff;
+$white: #ffffff;
+$grey: #707070;
+$black: #000000;
+@font-face {
+    font-family: 'Earth Orbiter';
+    src: local('Earth Orbiter'),
+            url('../fonts/earthorbiter.ttf')
+    }
+@font-face {
+        font-family: 'Earth Orbiter Bold';
+        src: local('Earth Orbiter Bold'),
+        url('../fonts/earthorbiterbold.ttf')
+        }
+html {
+    background-repeat: no-repeat;
+    background-size: cover;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to right, $gradient-color1, $gradient-color2) fixed;
+}
+
+body {
+    background: linear-gradient(to right, $gradient-color1, $gradient-color2) fixed;
+}
+
+.control-header {
+    font-family: 'Earth Orbiter Bold';
+    color: white;
+    text-shadow: 2px 2px 3px #414141;
+    font-size: 5rem;
+}
+.control-subtitle {
+    font-family: 'Segoe UI';
+    color: white;
+    text-shadow: 2px 2px 3px #414141;
+}
+
+/* #red {
+    background-color: $red;
+}#yellow {
+    background-color: $yellow;
+}#pink {
+    background-color: $pink;
+}#green {
+    background-color: $green;
+}#orange {
+    background-color: $orange;
+}#purple {
+    background-color: $purple;
+}#blue {
+    background-color: $blue;
+}#white {
+    background-color: $white;
+}#grey {
+    background-color: $grey;
+}#black {
+    background-color: $black;
+} */
+
+footer {
+    bottom: 0;
+    left: 0;
+    position: fixed;
+    right: 0;
+    z-index: 30;
+  }
