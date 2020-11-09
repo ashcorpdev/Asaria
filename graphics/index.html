@@ -56,7 +56,7 @@
 		const shields = nodecg.Replicant('assets:shields');
 		const teamPoints = nodecg.Replicant("teamPoints");
 
-		NodeCG.waitForReplicants(shields, teamPoints, t1sub).then(() => {
+		NodeCG.waitForReplicants(shields, teamPoints).then(() => {
 		console.log(shields.value);
 		const shieldImage = shields.value;
 		document.getElementById('shieldImage').src = shieldImage[1].url;
