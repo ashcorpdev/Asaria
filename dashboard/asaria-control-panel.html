@@ -166,7 +166,8 @@
 								<p class="control">
 									<label class="label" id="t1SubLabel">Set Tier 1 Sub Value</label>
 								<div class="field is-grouped">
-									<input class="input" id="setT1SubText" type="text" name="setT1Sub" placeholder="Enter value">
+									<input class="input" id="setT1SubText" type="text" name="setT1Sub"
+										placeholder="Enter value">
 									<input class="button" id="setT1Sub" type="submit" value="Set">
 									<input class="input" id="t1Sub" type="text" value="5" disabled>
 								</div>
@@ -174,7 +175,8 @@
 								<p class="control">
 									<label class="label" id="t2SubLabel">Set Tier 2 Sub Value</label>
 								<div class="field is-grouped">
-									<input class="input" id="setT2SubText" type="text" name="setT2Sub" placeholder="Enter value">
+									<input class="input" id="setT2SubText" type="text" name="setT2Sub"
+										placeholder="Enter value">
 									<input class="button" id="setT2Sub" type="submit" value="Set">
 									<input class="input" id="t2Sub" type="text" value="10" disabled>
 								</div>
@@ -183,7 +185,8 @@
 								<p class="control">
 									<label class="label" id="t3SubLabel">Set Tier 3 Sub Value</label>
 								<div class="field is-grouped">
-									<input class="input" id="setT3SubText" type="text" name="setT3Sub" placeholder="Enter value">
+									<input class="input" id="setT3SubText" type="text" name="setT3Sub"
+										placeholder="Enter value">
 									<input class="button" id="setT3Sub" type="submit" value="Set">
 									<input class="input" id="t3Sub" type="text" value="15" disabled>
 								</div>
@@ -191,7 +194,8 @@
 								<p class="control">
 									<label class="label" id="giftSubLabel">Set Gifted Sub Value</label>
 								<div class="field is-grouped">
-									<input class="input" id="setGiftedSubText" type="text" name="setGiftedSub" placeholder="Enter value">
+									<input class="input" id="setGiftedSubText" type="text" name="setGiftedSub"
+										placeholder="Enter value">
 									<input class="button" id="setGiftedSub" type="submit" value="Set">
 									<input class="input" id="giftedSub" type="text" value="1" disabled>
 								</div>
@@ -199,7 +203,8 @@
 								<p class="control">
 									<label class="label" id="cheerLabel">Set Cheer Value (per 100 bits)</label>
 								<div class="field is-grouped">
-									<input class="input" id="setCheerText" type="text" name="setCheer" placeholder="Enter value">
+									<input class="input" id="setCheerText" type="text" name="setCheer"
+										placeholder="Enter value">
 									<input class="button" id="setCheer" type="submit" value="Set">
 									<input class="input" id="cheer" type="text" value="1" disabled>
 								</div>
@@ -207,7 +212,8 @@
 								<p class="control">
 									<label class="label" id="tipLabel">Set Tip Value (per £1.00 tip)</label>
 								<div class="field is-grouped">
-									<input class="input" id="setTipText" type="text" name="setTip" placeholder="Enter value">
+									<input class="input" id="setTipText" type="text" name="setTip"
+										placeholder="Enter value">
 									<input class="button" id="setTip" type="submit" value="Set">
 									<input class="input" id="tip" type="text" value="1" disabled>
 								</div>
@@ -264,10 +270,10 @@
 		const latestCheer = nodecg.Replicant("latestCheer");
 		const latestSubscription = nodecg.Replicant("latestSubscription");
 		const teamPoints = nodecg.Replicant("teamPoints");
-		const repT1Sub = nodecg.Replicant("t1Sub");
-		const repT2Sub = nodecg.Replicant("t2Sub");
-		const repT3Sub = nodecg.Replicant("t3Sub");
-		const repGiftedSub = nodecg.Replicant("giftedSub");
+		const repT1Sub = nodecg.Replicant("t1sub");
+		const repT2Sub = nodecg.Replicant("t2sub");
+		const repT3Sub = nodecg.Replicant("t3sub");
+		const repGiftedSub = nodecg.Replicant("giftedsub");
 		const repTip = nodecg.Replicant("tip");
 		const repCheer = nodecg.Replicant("cheer");
 
@@ -319,7 +325,41 @@
 			black.innerHTML = newValue.black;
 		});
 
-		t1
+		repT1Sub.on('change', (newValue, oldValue) => {
+			console.log(`T1 point value changed.`);
+			console.log(newValue);
+			t1Sub.value = newValue;
+		});
+
+		repT2Sub.on('change', (newValue, oldValue) => {
+			console.log(`T2 point value changed.`);
+			console.log(newValue);
+			t2Sub.value = newValue;
+		});
+
+		repT3Sub.on('change', (newValue, oldValue) => {
+			console.log(`T3 point value changed.`);
+			console.log(newValue);
+			t3Sub.value = newValue;
+		});
+
+		repGiftedSub.on('change', (newValue, oldValue) => {
+			console.log(`Gifted point value changed.`);
+			console.log(newValue);
+			giftedSub.value = newValue;
+		});
+
+		repCheer.on('change', (newValue, oldValue) => {
+			console.log(`Cheer point value changed.`);
+			console.log(newValue);
+			cheer.value = newValue;
+		});
+
+		repTip.on('change', (newValue, oldValue) => {
+			console.log(`Tip point value changed.`);
+			console.log(newValue);
+			tip.value = newValue;
+		});
 
 		latestDonation.on("change", (newValue, oldValue) => {
 			console.log(`latestDonation changed from ${oldValue} to ${newValue}`);
@@ -411,23 +451,62 @@
 			updateTeams("remove", valueInput.value)
 		});
 
-		setT1Sub.addEventListener("click", function() {
+		setT1Sub.addEventListener("click", function () {
 			updatePointsValue("t1")
 		});
 
+		setT2Sub.addEventListener("click", function () {
+			updatePointsValue("t2")
+		});
+
+		setT3Sub.addEventListener("click", function () {
+			updatePointsValue("t3")
+		});
+
+		setGiftedSub.addEventListener("click", function () {
+			updatePointsValue("gifted")
+		});
+
+		setCheer.addEventListener("click", function () {
+			updatePointsValue("cheer")
+		});
+
+		setTip.addEventListener("click", function () {
+			updatePointsValue("tip")
+		});
+
 		function updatePointsValue(event) {
-			switch(event) {
+			let val = 0;
+			switch (event) {
 				case 't1':
 					console.log("T1 Sub Set button clicked!");
 					console.log(setT1SubText.value);
-					let val = setT1SubText.value;
-					nodecg.sendMessage('updatePoints', { event, val })
-					.then(result => {
-						console.log('Points updated!');
-					}).catch(error => {
-						console.error(error);
-					});
+					val = setT1SubText.value;
+					break;
+				case 't2':
+					val = setT2SubText.value;
+					break;
+				case 't3':
+					val = setT3SubText.value;
+					break;
+				case 'gifted':
+					val = setGiftedSubText.value;
+					break;
+				case 'cheer':
+					val = setCheerText.value;
+					break;
+				case 'tip':
+					val = setTipText.value;
+					break;
+
 			}
+			
+			nodecg.sendMessage('updatePoints', { event, val })
+						.then(result => {
+							console.log('Points updated!');
+						}).catch(error => {
+							console.error(error);
+						});
 		}
 
 

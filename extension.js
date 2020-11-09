@@ -46,8 +46,8 @@ module.exports = function (nodecg) {
 	const t2sub = nodecg.Replicant('t2sub', { defaultValue: 10 });
 	const t3sub = nodecg.Replicant('t3sub', { defaultValue: 15 });
 	const giftedsub = nodecg.Replicant('giftedsub', { defaultValue: 1 });
-	const tip = nodecg.Replicant('tip', {defaultValue: 1});
-	const cheer = nodecg.Replicant('cheer', {defaultValue: 1});
+	const tip = nodecg.Replicant('tip', { defaultValue: 1 });
+	const cheer = nodecg.Replicant('cheer', { defaultValue: 1 });
 
 	teamPoints.value = { red: teams.red, yellow: teams.yellow, pink: teams.pink, green: teams.green, orange: teams.orange, purple: teams.purple, blue: teams.blue, white: teams.white, grey: teams.grey, black: teams.black };
 
@@ -686,13 +686,34 @@ module.exports = function (nodecg) {
 		let event = value['event'];
 		let amount = value['val'];
 		console.log(`Points update received: ${event} - ${amount}`)
-		switch(event){
+		switch (event) {
 			case 't1':
 				t1sub.value = amount;
 				console.log(t1sub.value);
+				break;
+			case 't2':
+				t2sub.value = amount;
+				console.log(t2sub.value);
+				break;
+			case 't3':
+				t3sub.value = amount;
+				console.log(t3sub.value);
+				break;
+			case 'gifted':
+				giftedsub.value = amount;
+				console.log(giftedsub.value);
+				break;
+			case 'cheer':
+				cheer.value = amount;
+				console.log(cheer.value);
+				break;
+			case 'tip':
+				tip.value = amount;
+				console.log(tip.value);
+				break;
 		}
 
-		if(ack && !ack.handled){
+		if (ack && !ack.handled) {
 			ack(null, value * 2);
 		}
 	})
