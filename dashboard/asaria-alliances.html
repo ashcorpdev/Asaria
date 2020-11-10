@@ -143,6 +143,15 @@
 								</div>
 								</p>
 								<p class="control">
+									<label class="label" id="subGifterLabel">Set Gifter Sub Value</label>
+								<div class="field is-grouped">
+									<input class="input" id="setSubGifterText" type="text" name="setSubGifter"
+										placeholder="Enter value">
+									<input class="button" id="setSubGifter" type="submit" value="Set">
+									<input class="input" id="subGifter" type="text" value="1" disabled>
+								</div>
+								</p>
+								<p class="control">
 									<label class="label" id="cheerLabel">Set Cheer Value (per 100 bits)</label>
 								<div class="field is-grouped">
 									<input class="input" id="setCheerText" type="text" name="setCheer"
@@ -216,6 +225,7 @@
 		const repT2Sub = nodecg.Replicant("t2sub");
 		const repT3Sub = nodecg.Replicant("t3sub");
 		const repGiftedSub = nodecg.Replicant("giftedsub");
+		const repSubGifter = nodecg.Replicant("subgifter");
 		const repTip = nodecg.Replicant("tip");
 		const repCheer = nodecg.Replicant("cheer");
 
@@ -227,18 +237,21 @@
 		const t2Sub = document.getElementById("t2Sub");
 		const t3Sub = document.getElementById("t3Sub");
 		const giftedSub = document.getElementById("giftedSub");
+		const subGifter = document.getElementById("subGifter");
 		const cheer = document.getElementById("cheer");
 		const tip = document.getElementById("tip");
 		const setT1Sub = document.getElementById("setT1Sub");
 		const setT2Sub = document.getElementById("setT2Sub");
 		const setT3Sub = document.getElementById("setT3Sub");
 		const setGiftedSub = document.getElementById("setGiftedSub");
+		const setSubGifter = document.getElementById("setSubGifter");
 		const setCheer = document.getElementById("setCheer");
 		const setTip = document.getElementById("setTip");
 		const setT1SubText = document.getElementById("setT1SubText");
 		const setT2SubText = document.getElementById("setT2SubText");
 		const setT3SubText = document.getElementById("setT3SubText");
 		const setGiftedSubText = document.getElementById("setGiftedSubText");
+		const setSubGifterText = document.getElementById("setSubGifterText");
 		const setCheerText = document.getElementById("setCheerText");
 		const setTipText = document.getElementById("setTipText");
 
@@ -277,6 +290,12 @@
 			console.log(`Gifted point value changed.`);
 			console.log(newValue);
 			giftedSub.value = newValue;
+		});
+
+		repSubGifter.on('change', (newValue, oldValue) => {
+			console.log(`Gifted point value changed.`);
+			console.log(newValue);
+			subGifter.value = newValue;
 		});
 
 		repCheer.on('change', (newValue, oldValue) => {
@@ -397,6 +416,11 @@
 			updatePointsValue("gifted")
 		});
 
+		setSubGifter.addEventListener("click", function () {
+			updatePointsValue("gifter")
+		});
+
+
 		setCheer.addEventListener("click", function () {
 			updatePointsValue("cheer")
 		});
@@ -422,6 +446,9 @@
 				case 'gifted':
 					val = setGiftedSubText.value;
 					break;
+				case 'gifter':
+					val = setSubGifterText.value;
+					break;
 				case 'cheer':
 					val = setCheerText.value;
 					break;
@@ -432,11 +459,11 @@
 			}
 
 			nodecg.sendMessage('updatePoints', { event, val })
-						.then(result => {
-							console.log('Points updated!');
-						}).catch(error => {
-							console.error(error);
-						});
+				.then(result => {
+					console.log('Points updated!');
+				}).catch(error => {
+					console.error(error);
+				});
 		}
 
 

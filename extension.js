@@ -46,6 +46,7 @@ module.exports = function (nodecg) {
 	const t2sub = nodecg.Replicant('t2sub', { defaultValue: 10 });
 	const t3sub = nodecg.Replicant('t3sub', { defaultValue: 15 });
 	const giftedsub = nodecg.Replicant('giftedsub', { defaultValue: 1 });
+	const subgifter = nodecg.Replicant('subgifter', { defaultValue: 1 });
 	const tip = nodecg.Replicant('tip', { defaultValue: 1 });
 	const cheer = nodecg.Replicant('cheer', { defaultValue: 1 });
 
@@ -114,7 +115,7 @@ module.exports = function (nodecg) {
 				firstcheer = false;
 			} else {
 				console.log('Not first load, updating file');
-				const pointsCalc = newValue.amount / 100;
+				const pointsCalc = newValue.amount / 100 * cheer.value;
 				// Rounds the points down to the nearest integer.
 				const actualPoints = Math.floor(pointsCalc);
 				const initialPoints = user[newValue.name.toLowerCase()];
@@ -129,7 +130,7 @@ module.exports = function (nodecg) {
 		} else {
 			console.log('User not found!');
 			// 5 is equal to number of points per £5 donation.
-			const pointsCalc = newValue.amount / 100;
+			const pointsCalc = newValue.amount / 100 * cheer.value;
 			// Rounds the points down to the nearest integer.
 			const actualPoints = Math.floor(pointsCalc);
 			console.log(actualPoints);
@@ -157,7 +158,7 @@ module.exports = function (nodecg) {
 				firstsubscription = false;
 			} else {
 				console.log('Not first load, updating file');
-				let pointsCalc = 1;
+				let pointsCalc = t1sub.value;
 				let actualPoints = Math.floor(pointsCalc);
 				let initialPoints = user[newValue.name.toLowerCase()];
 				let updatedPoints = actualPoints + initialPoints;
@@ -165,38 +166,39 @@ module.exports = function (nodecg) {
 				let gifterName = newValue.gifter;
 				switch (newValue.sub_plan) {
 					case '1000':
-						console.log('Tier 1 sub!');
+						console.log('Extension - Subscription: tier 1 sub');
 						pointsCalc = 1;
 						if (gifterName !== '' || gifterName !== null) {
-							console.log('Gifted sub!');
-							console.log(newValue.gifter);
+							console.log('Extension - Subscription: gifted sub');
+							console.log('Extension - Gifter: ' + newValue.gifter);
 							userlist = fs.readFileSync(path.resolve(__dirname, './userlist-alliances.json'));
 							user = JSON.parse(userlist);
 							if (newValue.gifter !== null) {
 								if (user.hasOwnProperty(newValue.gifter.toLowerCase())) {
 									// Rounds the points down to the nearest integer.
-									actualPoints = Math.floor(pointsCalc);
+									actualPoints = Math.floor(subgifter.value);
 									initialPoints = user[newValue.gifter.toLowerCase()];
-									console.log(initialPoints);
+									console.log('Extension - Gifter found in userlist; adding points.');
 									updatedPoints = actualPoints + initialPoints;
 									user[newValue.gifter.toLowerCase()] = updatedPoints;
 									// Formats to human-readable when updating the json file.
 									data = JSON.stringify(user, null, 2);
 									fs.writeFileSync(path.resolve(__dirname, './userlist-alliances.json'), data);
-									console.log(updatedPoints);
+									console.log('Extension - New gifter points: ' + updatedPoints);
 								} else {
-									user[newValue.gifter.toLowerCase()] = pointsCalc;
+									console.log('Extension - Gifter not found in userlist; adding.')
+									user[newValue.gifter.toLowerCase()] = subgifter.value;
 									// Formats to human-readable when updating the json file.
 									data = JSON.stringify(user, null, 2);
 									fs.writeFileSync(path.resolve(__dirname, './userlist-alliances.json'), data);
-									console.log(pointsCalc);
+									console.log('Extension - New gifter points: '+ subgifter.value);
 								}
 							}
 						} else {
-							console.log('Not gifted');
+							console.log('Extension - Not gifted');
 						}
 						// Rounds the points down to the nearest integer.
-						actualPoints = Math.floor(pointsCalc * 5);
+						actualPoints = Math.floor(pointsCalc * t1sub.value);
 						initialPoints = user[newValue.name.toLowerCase()];
 						console.log(initialPoints);
 						updatedPoints = actualPoints + initialPoints;
