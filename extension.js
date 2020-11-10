@@ -37,7 +37,6 @@ let firstsubscription = true;
 
 module.exports = function (nodecg) {
 
-
 	const latestDonation = nodecg.Replicant('latestDonation', { defaultValue: 123 });
 	const latestSubscription = nodecg.Replicant('latestSubscription', { defaultValue: 123 });
 	const latestCheer = nodecg.Replicant('latestCheer', { defaultValue: 123 });
@@ -370,7 +369,6 @@ module.exports = function (nodecg) {
 			ack(null, value * 2);
 		}
 	})
-
 
 	function updateTeamPoints(teamName, username, channel) {
 		// TODO - Check team submitted is valid *before* calculation!
