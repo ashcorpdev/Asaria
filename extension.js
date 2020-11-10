@@ -632,8 +632,9 @@ module.exports = function (nodecg) {
 
 	function checkGifted(newValue) {
 		let gifterName = newValue.gifter;
-		if (gifterName !== '' || gifterName !== null) {
-			return true;
+		if (gifterName !== '' && gifterName !== null) {
+			console.log('Gifter: ' + gifterName);
+		    return true;
 		} else {
 			return false;
 		}
@@ -657,7 +658,7 @@ module.exports = function (nodecg) {
 			case '3000':
 				points = t3sub.value;
 				break;
-			case 'prime':
+			case 'Prime':
 				points = t1sub.value;
 				break;
 		}
@@ -713,13 +714,7 @@ module.exports = function (nodecg) {
 			// do non-gifted things
 
 			if (user.hasOwnProperty(newValue.name.toLowerCase())) {
-				// User not found in list
-				user[newValue.name.toLowerCase()] = Math.floor(points);
-				// Formats to human-readable when updating the json file.
-				data = JSON.stringify(user, null, 2);
-				fs.writeFileSync(path.resolve(__dirname, './userlist-alliances.json'), data);
-				console.log(updatedPoints);
-			} else {
+
 				initialPoints = user[newValue.name.toLowerCase()];
 				console.log(initialPoints);
 				updatedPoints = Math.floor(points) + initialPoints;
@@ -728,6 +723,16 @@ module.exports = function (nodecg) {
 				data = JSON.stringify(user, null, 2);
 				fs.writeFileSync(path.resolve(__dirname, './userlist-alliances.json'), data);
 				console.log(updatedPoints);
+				
+			} else {
+
+				// User not found in list
+				user[newValue.name.toLowerCase()] = Math.floor(points);
+				// Formats to human-readable when updating the json file.
+				data = JSON.stringify(user, null, 2);
+				fs.writeFileSync(path.resolve(__dirname, './userlist-alliances.json'), data);
+				console.log('Extension - new points: ' + points);
+
 			}
 		}
 	}
