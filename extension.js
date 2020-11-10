@@ -62,18 +62,18 @@ module.exports = function (nodecg) {
 		console.log(`latestDonation changed from ${oldValue} to ${newValue}`);
 		userlist = fs.readFileSync(path.resolve(__dirname, './userlist-alliances.json'));
 		user = JSON.parse(userlist);
-		console.log(user);
-		console.log(JSON.stringify(newValue));
-		console.log(newValue.name);
+		//console.log(user);
+		//console.log(JSON.stringify(newValue));
+		console.log("New donation: " + newValue.name);
 		// Checks if the user already exists in the file.
 		if (user.hasOwnProperty(newValue.name.toLowerCase())) {
 			console.log('User found!');
 			if (firstdonation === true) {
-				console.log('First load detected, do not update file!');
+				console.log('First load detected - not updating file.');
 				firstdonation = false;
 			} else {
-				console.log('Not first load, updating file');
-				const pointsCalc = newValue.amount;
+				//console.log('Not first load, updating file');
+				const pointsCalc = newValue.amount * tip.value;
 				const initialPoints = user[newValue.name.toLowerCase()];
 				console.log(initialPoints);
 				const updatedPoints = pointsCalc + initialPoints;
