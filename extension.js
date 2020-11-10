@@ -87,7 +87,7 @@ module.exports = function (nodecg) {
 			console.log('User not found!');
 
 			// 5 is equal to number of points per £5 donation.
-			const pointsCalc = newValue.amount;
+			const pointsCalc = newValue.amount * tip.value;
 			// Rounds the points down to the nearest integer.
 			const actualPoints = Math.floor(pointsCalc);
 			console.log(actualPoints);
