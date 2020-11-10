@@ -11,8 +11,7 @@
   "files": [
     "dashboard",
     "graphics",
-    "extension.js",
-    "extension"
+    "extension-alliances.js"
   ],
   "keywords": [
     "",
@@ -24,7 +23,7 @@
       {
         "name": "asaria-control-panel",
         "title": "Asaria Control Panel",
-        "file": "asaria-control-panel.html",
+        "file": "asaria-alliances.html",
         "fullbleed": true,
         "headerColor": "#9146ff"
       }
