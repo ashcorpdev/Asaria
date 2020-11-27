@@ -22,7 +22,7 @@
 			color: white;
 			font-family: 'OptimusPrinceps';
 			font-size: 80px;
-			box-shadow: 1px;/* 
+			box-shadow: 1px;/*
 			outline-color: black;
 			outline-width: 1px;
 			outline-style: inset; */
@@ -32,29 +32,18 @@
 </head>
 <body>
 		<img id="shieldImage" alt="" srcset="" class="centered">
-		<div class="outlined" style="width: 95px; top: 45px; left: 148px;"><p id="orange">0</p></div>
-		<div class="outlined" style="width: 95px; top: 330px; left: 155px;"><p id="pink">1</p></div>
-		<div class="outlined" style="width: 95px; top: 610px; left: 152px;"><p id="black">2</p></div>
-		<div class="outlined" style="width: 95px; top: 95px; left: 552px;"><p id="green">3</p></div>
-		<div class="outlined" style="width: 95px; top: 250px; left: 950px;"><p id="red">4</p></div>
-		<div class="outlined" style="width: 95px; top: 100px; left: 1315px;"><p id="yellow">5</p></div>
-		<div class="outlined" style="width: 95px; top: 45px; left: 1680px;"><p id="blue">6</p></div>
-		<div class="outlined" style="width: 95px; top: 330px; left: 1680px;"><p id="purple">7</p></div>
-		<div class="outlined" style="width: 95px; top: 610px; left: 1685px;"><p id="white">8</p></div>
+		<div class="outlined" style="width: 95px; top: 45px; left: 148px;"><p id="eternalflame">0</p></div>
+		<div class="outlined" style="width: 95px; top: 330px; left: 155px;"><p id="wintersembrace">1</p></div>
+		<div class="outlined" style="width: 95px; top: 610px; left: 152px;"><p id="etherealbloom">2</p></div>
+		<div class="outlined" style="width: 95px; top: 95px; left: 552px;"><p id="shadowgrove">3</p></div>
 
 	<script>
-		const red = document.getElementById("red");
-        const yellow = document.getElementById("yellow");
-        const pink = document.getElementById("pink");
-        const green = document.getElementById("green");
-        const orange = document.getElementById("orange");
-        const purple = document.getElementById("purple");
-        const blue = document.getElementById("blue");
-        const white = document.getElementById("white");
-        const grey = document.getElementById("grey");
-        const black = document.getElementById("black");
+		const red = document.getElementById("eternalflame");
+        const yellow = document.getElementById("wintersembrace");
+        const pink = document.getElementById("etherealbloom");
+        const green = document.getElementById("shadowgrove");
 		const shields = nodecg.Replicant('assets:shields');
-		const teamPoints = nodecg.Replicant("teamPoints");
+	  	const teamPoints = nodecg.Replicant("teamPoints");
 
 		NodeCG.waitForReplicants(shields, teamPoints).then(() => {
 		console.log(shields.value);
@@ -64,15 +53,10 @@
 		teamPoints.on("change", (newValue, oldValue) => {
 			console.log(`teamPoints changed from ${oldValue} to ${newValue}`);
 			console.log(JSON.stringify(newValue));
-			red.innerHTML = newValue.red;
-			yellow.innerHTML = newValue.yellow;
-			pink.innerHTML = newValue.pink;
-			green.innerHTML = newValue.green;
-			orange.innerHTML = newValue.orange;
-			purple.innerHTML = newValue.purple;
-			blue.innerHTML = newValue.blue;
-			white.innerHTML = newValue.white;
-			black.innerHTML = newValue.black;
+			red.innerHTML = newValue.eternalflame;
+			yellow.innerHTML = newValue.wintersembrace;
+			pink.innerHTML = newValue.etherealbloom;
+			green.innerHTML = newValue.shadowgrove;
       });
 });
 
