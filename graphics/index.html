@@ -76,7 +76,7 @@
       NodeCG.waitForReplicants(shields, teamPoints).then(() => {
         console.log(shields.value);
         const shieldImage = shields.value;
-        document.getElementById("shieldImage").src = shieldImage[1].url;
+        document.getElementById("shieldImage").src = shieldImage[0].url;
         console.log("rep1 and rep2 are fully declared and ready to use!");
         teamPoints.on("change", (newValue, oldValue) => {
           console.log(`teamPoints changed from ${oldValue} to ${newValue}`);
