@@ -1,66 +1,72 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-	<style>
-		body {
-			font-family: sans-serif;
-			overflow: hidden;
-			background: black;
-		}
+  <head>
+    <meta charset="UTF-8" />
+    <style>
+      body {
+        font-family: sans-serif;
+        overflow: hidden;
+        background: black;
+      }
 
-		.monospace {
-			font-family: monospace;
-		}
+      .monospace {
+        font-family: monospace;
+      }
 
-		.centered {
-			position: absolute;
-			z-index: -1;
-		}
+      .centered {
+        position: absolute;
+        z-index: -1;
+      }
 
-		.outlined {
-			position: absolute;
-			color: white;
-			font-family: 'OptimusPrinceps';
-			font-size: 40px;
-			box-shadow: 1px;/*
+      .outlined {
+        position: absolute;
+        color: white;
+        font-family: "OptimusPrinceps";
+        font-size: 40px;
+        box-shadow: 1px; /*
 			outline-color: black;
 			outline-width: 1px;
 			outline-style: inset; */
-			text-align: center;
-		}
-	</style>
-</head>
-<body>
-		<img id="shieldImage" alt="" srcset="" class="centered">
-		<div class="outlined" style="width: 95px; top: 20px; left: 274px;"><p id="eternalflame">88</p></div>
-		<div class="outlined" style="width: 95px; top: 20px; left: 460px;"><p id="wintersembrace">88</p></div>
-		<div class="outlined" style="width: 95px; top: 16px; left:  634px;"><p id="etherealbloom">88</p></div>
-		<div class="outlined" style="width: 95px; top: 14px; left: 801px;"><p id="shadowgrove">88</p></div>
-	<script>
-		const red = document.getElementById("eternalflame");
-        const yellow = document.getElementById("wintersembrace");
-        const pink = document.getElementById("etherealbloom");
-        const green = document.getElementById("shadowgrove");
-		const shields = nodecg.Replicant('assets:shields');
-	  	const teamPoints = nodecg.Replicant("teamPoints");
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <img id="shieldImage" alt="" srcset="" class="centered" />
+    <div class="outlined" style="width: 95px; top: 20px; left: 274px">
+      <p id="eternalflame">88</p>
+    </div>
+    <div class="outlined" style="width: 95px; top: 20px; left: 460px">
+      <p id="wintersembrace">88</p>
+    </div>
+    <div class="outlined" style="width: 95px; top: 16px; left: 634px">
+      <p id="etherealbloom">88</p>
+    </div>
+    <div class="outlined" style="width: 95px; top: 14px; left: 801px">
+      <p id="shadowgrove">88</p>
+    </div>
+    <script>
+      const red = document.getElementById("eternalflame");
+      const yellow = document.getElementById("wintersembrace");
+      const pink = document.getElementById("etherealbloom");
+      const green = document.getElementById("shadowgrove");
+      const shields = nodecg.Replicant("assets:shields");
+      const teamPoints = nodecg.Replicant("teamPoints");
 
-		NodeCG.waitForReplicants(shields, teamPoints).then(() => {
-		console.log(shields.value);
-		const shieldImage = shields.value;
-		document.getElementById('shieldImage').src = shieldImage[0].url;
-		console.log('rep1 and rep2 are fully declared and ready to use!');
- 		teamPoints.on("change", (newValue, oldValue) => {
-			console.log(`teamPoints changed from ${oldValue} to ${newValue}`);
-			console.log(JSON.stringify(newValue));
-			red.innerHTML = newValue.eternalflame;
-			yellow.innerHTML = newValue.wintersembrace;
-			pink.innerHTML = newValue.etherealbloom;
-			green.innerHTML = newValue.shadowgrove;
+      NodeCG.waitForReplicants(shields, teamPoints).then(() => {
+        console.log(shields.value);
+        const shieldImage = shields.value;
+        document.getElementById("shieldImage").src = shieldImage[0].url;
+        console.log("rep1 and rep2 are fully declared and ready to use!");
+        teamPoints.on("change", (newValue, oldValue) => {
+          console.log(`teamPoints changed from ${oldValue} to ${newValue}`);
+          console.log(JSON.stringify(newValue));
+          red.innerHTML = newValue.eternalflame;
+          yellow.innerHTML = newValue.wintersembrace;
+          pink.innerHTML = newValue.etherealbloom;
+          green.innerHTML = newValue.shadowgrove;
+        });
       });
-});
-
-
-	</script>
-</body>
+    </script>
+  </body>
 </html>
