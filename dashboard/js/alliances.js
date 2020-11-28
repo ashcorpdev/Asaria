@@ -122,7 +122,8 @@ latestSubscription.on("change", (newValue, oldValue) => {
 });
 //Perform Action on event
 streamlabs.on("event", (eventData) => {
-  if (eventData.for === "streamlabs" && eventData.type === "donation") {
+  console.log(eventData.message);
+  if (!eventData.for && eventData.type === "donation") {
     //code to handle donation events
     console.log(eventData.message);
     nodecg.log.info(
@@ -132,12 +133,20 @@ streamlabs.on("event", (eventData) => {
     );
 
     // Reduce characters at end of amount
-    let amounts = eventData.message[0].amount;
-    let newamount = amounts.substring(0, amounts.length - 8);
-    latestDonation.value = {
-      name: eventData.message[0].name,
-      amount: newamount,
-      currency: eventData.message[0].currency,
+    if(typeof eventData.message[0].amount === 'string' || eventData.message[0].amount instanceof String){
+      let amounts = eventData.message[0].amount;
+      let newamount = parseInt(amounts.substring(0, amounts.length - 8));
+      latestDonation.value = {
+        name: eventData.message[0].name,
+        amount: newamount,
+        currency: eventData.message[0].currency,
+      };
+    }else{
+      latestDonation.value = {
+        name: eventData.message[0].name,
+        amount: eventData.message[0].amount,
+        currency: eventData.message[0].currency,
+      };
     };
   }
   if (eventData.for === "twitch_account") {

@@ -31,7 +31,7 @@ const client = new tmi.Client({
     username: username,
     password: accessToken,
   },
-  channels: ["dawnwhisper"],
+  channels: ["ashen"],
 });
 client.connect();
 
