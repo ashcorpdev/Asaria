@@ -76,21 +76,18 @@ module.exports = function (nodecg) {
       path.resolve(__dirname, "./userlist-alliances.json")
     );
     user = JSON.parse(userlist);
-    //debug(user);
-    //debug(JSON.stringify(newValue));
     // Checks if the user already exists in the file.
     if (user.hasOwnProperty(newValue.name.toLowerCase())) {
       if (firstdonation === true) {
-        //debug("First load detected - not updating file.");
         firstdonation = false;
       } else {
         
-    debug(`latestDonation updated!`);
-        debug("New donation: " + newValue.name);
+    debug(`latestDonation updated!`, true);
+        debug("New donation: " + newValue.name, true);
         //debug('Not first load, updating file');
         const pointsCalc = newValue.amount * tip.value;
         const initialPoints = user[newValue.name.toLowerCase()];
-        debug(initialPoints);
+        debug(initialPoints, false);
         const updatedPoints = pointsCalc + initialPoints;
         user[newValue.name.toLowerCase()] = updatedPoints;
         // Formats to human-readable when updating the json file.
@@ -99,16 +96,16 @@ module.exports = function (nodecg) {
           path.resolve(__dirname, "./userlist-alliances.json"),
           data
         );
-        debug(updatedPoints);
+        debug(updatedPoints, false);
       }
     } else {
-      debug("User not found!");
+      debug("User not found!", false);
 
       // 5 is equal to number of points per £5 donation.
       const pointsCalc = newValue.amount * tip.value;
       // Rounds the points down to the nearest integer.
       const actualPoints = Math.floor(pointsCalc);
-      debug(actualPoints);
+      debug(actualPoints, false);
       // Adds the new user and their point value to the object.
       user[newValue.name.toLowerCase()] = actualPoints;
       // Formats to human-readable when updating the json file.
@@ -128,19 +125,14 @@ module.exports = function (nodecg) {
     // Checks if the user already exists in the file.
     if (user.hasOwnProperty(newValue.name.toLowerCase())) {
       if (firstcheer === true) {
-        //debug("First load detected, do not update file!");
         firstcheer = false;
       } else {
-        debug(`latestCheer updated!`);
-        //debug(user);
-        //debug(JSON.stringify(newValue));
-        debug(`${newValue.name} found!`);
-        //debug("Not first load, updating file");
+        debug(`latestCheer updated!`, true);
+        debug(`${newValue.name} found!`, true);
         const pointsCalc = (newValue.amount / 100) * cheer.value;
         // Rounds the points down to the nearest integer.
         const actualPoints = Math.floor(pointsCalc);
         const initialPoints = user[newValue.name.toLowerCase()];
-        //debug(initialPoints);
         const updatedPoints = actualPoints + initialPoints;
         user[newValue.name.toLowerCase()] = updatedPoints;
         // Formats to human-readable when updating the json file.
@@ -149,15 +141,13 @@ module.exports = function (nodecg) {
           path.resolve(__dirname, "./userlist-alliances.json"),
           data
         );
-        //debug(updatedPoints);
       }
     } else {
-      debug("User not found!");
+      debug("User not found!", false);
       // 5 is equal to number of points per £5 donation.
       const pointsCalc = (newValue.amount / 100) * cheer.value;
       // Rounds the points down to the nearest integer.
       const actualPoints = Math.floor(pointsCalc);
-      //debug(actualPoints);
       // Adds the new user and their point value to the object.
       user[newValue.name.toLowerCase()] = actualPoints;
       // Formats to human-readable when updating the json file.
@@ -179,10 +169,8 @@ module.exports = function (nodecg) {
     // Check if this is the first load of the system. If it is, dismiss the check.
     if (!firstsubscription) {
       
-    debug(`latestSubscription updated!`);
-    //debug(user);
-    //debug(JSON.stringify(newValue));
-    debug(newValue.name);
+    debug(`latestSubscription updated!`, true);
+    debug(newValue.name, true);
 
       if (checkGifted(newValue)) {
         // Gifted sub!
@@ -191,7 +179,7 @@ module.exports = function (nodecg) {
         givePoints(newValue.sub_plan, newValue, false);
       }
     } else {
-      debug("Extension - First boot; ignoring checks.");
+      debug("Extension - First boot; ignoring checks.", true);
       firstsubscription = false;
     }
   });
@@ -199,7 +187,7 @@ module.exports = function (nodecg) {
   function checkGifted(newValue) {
     let gifterName = newValue.gifter;
     if (gifterName !== "" && gifterName !== null) {
-      debug("Gifter: " + gifterName);
+      debug("Gifter: " + gifterName, false);
       return true;
     } else {
       return false;
@@ -236,7 +224,7 @@ module.exports = function (nodecg) {
       if (user.hasOwnProperty(newValue.gifter.toLowerCase())) {
         // Gifter found in userlist
         initialPoints = user[newValue.gifter.toLowerCase()];
-        debug("Extension - Gifter found in userlist; adding points.");
+        debug("Extension - Gifter found in userlist; adding points.", true);
         updatedPoints = Math.floor(subgifter.value) + initialPoints;
         user[newValue.gifter.toLowerCase()] = updatedPoints;
         // Formats to human-readable when updating the json file.
@@ -245,10 +233,10 @@ module.exports = function (nodecg) {
           path.resolve(__dirname, "./userlist-alliances.json"),
           data
         );
-        debug("Extension - New gifter points: " + updatedPoints);
+        debug("Extension - New gifter points: " + updatedPoints, true);
       } else {
         // Gifter not found in userlist
-        debug("Extension - Gifter not found in userlist; adding.");
+        debug("Extension - Gifter not found in userlist; adding.", true);
         user[newValue.gifter.toLowerCase()] = Math.floor(subgifter.value);
         // Formats to human-readable when updating the json file.
         data = JSON.stringify(user, null, 2);
@@ -257,14 +245,14 @@ module.exports = function (nodecg) {
           data
         );
         debug(
-          "Extension - New gifter points: " + Math.floor(subgifter.value)
+          "Extension - New gifter points: " + Math.floor(subgifter.value), true
         );
       }
 
       if (user.hasOwnProperty(newValue.name.toLowerCase())) {
-        debug("Giftee found in userlist; adding points.");
+        debug("Giftee found in userlist; adding points.", true);
         initialPoints = user[newValue.name.toLowerCase()];
-        debug(initialPoints);
+        debug(initialPoints, false);
         updatedPoints = Math.floor(giftedsub.value) + initialPoints;
         user[newValue.name.toLowerCase()] = updatedPoints;
         // Formats to human-readable when updating the json file.
@@ -273,11 +261,11 @@ module.exports = function (nodecg) {
           path.resolve(__dirname, "./userlist-alliances.json"),
           data
         );
-        debug(updatedPoints);
+        debug(updatedPoints, false);
       } else {
         // User not found in list
-        debug("Giftee not in userlist; adding.");
-        debug(newValue.name.toLowerCase());
+        debug("Giftee not in userlist; adding.", true);
+        debug(newValue.name.toLowerCase(), true);
         user[newValue.name.toLowerCase()] = Math.floor(giftedsub.value);
         // Formats to human-readable when updating the json file.
         data = JSON.stringify(user, null, 2);
@@ -285,14 +273,14 @@ module.exports = function (nodecg) {
           path.resolve(__dirname, "./userlist-alliances.json"),
           data
         );
-        debug(updatedPoints);
+        debug(updatedPoints, false);
       }
     } else {
       // do non-gifted things
 
       if (user.hasOwnProperty(newValue.name.toLowerCase())) {
         initialPoints = user[newValue.name.toLowerCase()];
-        debug(initialPoints);
+        debug(initialPoints, false);
         updatedPoints = Math.floor(points) + initialPoints;
         user[newValue.name.toLowerCase()] = updatedPoints;
         // Formats to human-readable when updating the json file.
@@ -301,7 +289,7 @@ module.exports = function (nodecg) {
           path.resolve(__dirname, "./userlist-alliances.json"),
           data
         );
-        debug(updatedPoints);
+        debug(updatedPoints, false);
       } else {
         // User not found in list
         user[newValue.name.toLowerCase()] = Math.floor(points);
@@ -311,7 +299,7 @@ module.exports = function (nodecg) {
           path.resolve(__dirname, "./userlist-alliances.json"),
           data
         );
-        debug("Extension - new points: " + points);
+        debug("Extension - new points: " + points, true);
       }
     }
   }
@@ -328,13 +316,14 @@ module.exports = function (nodecg) {
       );
       user = JSON.parse(userlist);
       if (user.hasOwnProperty(tags.username.toLowerCase())) {
-        debug(`Found ${tags.username.toLowerCase()} in the list, displaying points!`)
-        client.say(
+        debug(`Found ${tags.username.toLowerCase()} in the list, displaying points!`, false)
+        /*client.say(
           channel,
           `@${tags.username}, you have ${user[tags.username]} points!`
-        );
+        );*/
+        client.whisper(tags.username, `You have ${user[tags.username]} points!`)
       } else {
-        debug(`${tags.username.toLowerCase()} not found - no points available`);
+        debug(`${tags.username.toLowerCase()} not found - no points available`, false);
         client.say(channel, `@${tags.username}, you don't have any points!`);
       }
     }
@@ -390,7 +379,7 @@ module.exports = function (nodecg) {
   });
 
   nodecg.listenFor("updateCount", (value, ack) => {
-    debug(value);
+    debug(value, false);
     let newTeamPoints = value["updatedPoints"];
     let selectedTeam = value["selected"];
 
@@ -422,38 +411,38 @@ module.exports = function (nodecg) {
   });
 
   nodecg.listenFor("updatePoints", (value, ack) => {
-    debug(value);
+    debug(value, false);
     let event = value["event"];
     let amount = value["val"];
-    debug(`Points update received: ${event} - ${amount}`);
+    debug(`Points update received: ${event} - ${amount}`, true);
     switch (event) {
       case "t1":
         t1sub.value = amount;
-        debug(t1sub.value);
+        debug(t1sub.value, false);
         break;
       case "t2":
         t2sub.value = amount;
-        debug(t2sub.value);
+        debug(t2sub.value, false);
         break;
       case "t3":
         t3sub.value = amount;
-        debug(t3sub.value);
+        debug(t3sub.value, false);
         break;
       case "gifted":
         giftedsub.value = amount;
-        debug(giftedsub.value);
+        debug(giftedsub.value, false);
         break;
       case "gifter":
         subgifter.value = amount;
-        debug(subgifter.value);
+        debug(subgifter.value, false);
         break;
       case "cheer":
         cheer.value = amount;
-        debug(cheer.value);
+        debug(cheer.value, false);
         break;
       case "tip":
         tip.value = amount;
-        debug(tip.value);
+        debug(tip.value, false);
         break;
     }
 
@@ -481,11 +470,11 @@ module.exports = function (nodecg) {
         );
       } else {
         let userPoints = user[username];
-        debug(`Found ${username.toLowerCase()} in the list, spending ${userPoints} points!`);
+        debug(`Found ${username.toLowerCase()} in the list, spending ${userPoints} points!`, true);
         let oldTeamPoints = teams[teamName];
         let newPoints = oldTeamPoints + user[username];
         debug(
-          `Old ${teamName} points: ` + oldTeamPoints + ` New ${teamName} Points: ` + newPoints
+          `Old ${teamName} points: ` + oldTeamPoints + ` New ${teamName} Points: ` + newPoints, true
         );
         user[username] = 0;
         teams[teamName] = newPoints;
@@ -512,7 +501,7 @@ module.exports = function (nodecg) {
         );
       }
     } else {
-      debug(`${username.toLowerCase()} not found, no points available`);
+      debug(`${username.toLowerCase()} not found, no points available`, false);
       client.say(channel, `@${username}, you don't have any points to spend!`);
     }
   }
