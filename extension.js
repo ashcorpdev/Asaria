@@ -19,10 +19,10 @@ const { debug } = require("./debug")
 let config = fs.readFileSync(path.resolve(__dirname, "./config.json"));
 let opts = JSON.parse(config);
 
-let userlist = fs.readFileSync(
+let file = fs.readFileSync(
   path.resolve(__dirname, "./userlist-alliances.json")
 );
-let user = JSON.parse(userlist);
+let userlist = JSON.parse(file);
 
 let teamlist = fs.readFileSync(
   path.resolve(__dirname, "./teamlist-alliances.json")
@@ -113,12 +113,12 @@ module.exports = function (nodecg) {
     let points = 0;
     let initialPoints = 0;
     let updatedPoints = 0;
-    let data = JSON.stringify(user, null, 2);
+    let data = JSON.stringify(userlist, null, 2);
     let gifterName = newValue.gifter;
-    userlist = fs.readFileSync(
+    file = fs.readFileSync(
       path.resolve(__dirname, "./userlist-alliances.json")
     );
-    user = JSON.parse(userlist);
+    userlist = JSON.parse(file);
     switch (tier) {
       case "1000":
         points = t1sub.value;
@@ -136,25 +136,25 @@ module.exports = function (nodecg) {
     if (gifted) {
       // do gifted things
 
-      if (user.hasOwnProperty(newValue.gifter.toLowerCase())) {
-        // Gifter found in userlist
-        initialPoints = user[newValue.gifter.toLowerCase()];
-        debug("Extension - Gifter found in userlist; adding points.", true);
+      if (userlist.hasOwnProperty(newValue.gifter.toLowerCase())) {
+        // Gifter found in file
+        initialPoints = userlist[newValue.gifter.toLowerCase()];
+        debug("Extension - Gifter found in file; adding points.", true);
         updatedPoints = Math.floor(subgifter.value) + initialPoints;
-        user[newValue.gifter.toLowerCase()] = updatedPoints;
+        userlist[newValue.gifter.toLowerCase()] = updatedPoints;
         // Formats to human-readable when updating the json file.
-        data = JSON.stringify(user, null, 2);
+        data = JSON.stringify(userlist, null, 2);
         fs.writeFileSync(
           path.resolve(__dirname, "./userlist-alliances.json"),
           data
         );
         debug("Extension - New gifter points: " + updatedPoints, true);
       } else {
-        // Gifter not found in userlist
-        debug("Extension - Gifter not found in userlist; adding.", true);
-        user[newValue.gifter.toLowerCase()] = Math.floor(subgifter.value);
+        // Gifter not found in file
+        debug("Extension - Gifter not found in file; adding.", true);
+        userlist[newValue.gifter.toLowerCase()] = Math.floor(subgifter.value);
         // Formats to human-readable when updating the json file.
-        data = JSON.stringify(user, null, 2);
+        data = JSON.stringify(userlist, null, 2);
         fs.writeFileSync(
           path.resolve(__dirname, "./userlist-alliances.json"),
           data
@@ -164,26 +164,26 @@ module.exports = function (nodecg) {
         );
       }
 
-      if (user.hasOwnProperty(newValue.name.toLowerCase())) {
-        debug("Giftee found in userlist; adding points.", true);
-        initialPoints = user[newValue.name.toLowerCase()];
+      if (userlist.hasOwnProperty(newValue.name.toLowerCase())) {
+        debug("Giftee found in file; adding points.", true);
+        initialPoints = userlist[newValue.name.toLowerCase()];
         debug(initialPoints, false);
         updatedPoints = Math.floor(giftedsub.value) + initialPoints;
-        user[newValue.name.toLowerCase()] = updatedPoints;
+        userlist[newValue.name.toLowerCase()] = updatedPoints;
         // Formats to human-readable when updating the json file.
-        data = JSON.stringify(user, null, 2);
+        data = JSON.stringify(userlist, null, 2);
         fs.writeFileSync(
           path.resolve(__dirname, "./userlist-alliances.json"),
           data
         );
         debug(updatedPoints, false);
       } else {
-        // User not found in list
-        debug("Giftee not in userlist; adding.", true);
+        // userlist not found in list
+        debug("Giftee not in file; adding.", true);
         debug(newValue.name.toLowerCase(), true);
-        user[newValue.name.toLowerCase()] = Math.floor(giftedsub.value);
+        userlist[newValue.name.toLowerCase()] = Math.floor(giftedsub.value);
         // Formats to human-readable when updating the json file.
-        data = JSON.stringify(user, null, 2);
+        data = JSON.stringify(userlist, null, 2);
         fs.writeFileSync(
           path.resolve(__dirname, "./userlist-alliances.json"),
           data
@@ -193,23 +193,23 @@ module.exports = function (nodecg) {
     } else {
       // do non-gifted things
 
-      if (user.hasOwnProperty(newValue.name.toLowerCase())) {
-        initialPoints = user[newValue.name.toLowerCase()];
+      if (userlist.hasOwnProperty(newValue.name.toLowerCase())) {
+        initialPoints = userlist[newValue.name.toLowerCase()];
         debug(initialPoints, false);
         updatedPoints = Math.floor(points) + initialPoints;
-        user[newValue.name.toLowerCase()] = updatedPoints;
+        userlist[newValue.name.toLowerCase()] = updatedPoints;
         // Formats to human-readable when updating the json file.
-        data = JSON.stringify(user, null, 2);
+        data = JSON.stringify(userlist, null, 2);
         fs.writeFileSync(
           path.resolve(__dirname, "./userlist-alliances.json"),
           data
         );
         debug(updatedPoints, false);
       } else {
-        // User not found in list
-        user[newValue.name.toLowerCase()] = Math.floor(points);
+        // userlist not found in list
+        userlist[newValue.name.toLowerCase()] = Math.floor(points);
         // Formats to human-readable when updating the json file.
-        data = JSON.stringify(user, null, 2);
+        data = JSON.stringify(userlist, null, 2);
         fs.writeFileSync(
           path.resolve(__dirname, "./userlist-alliances.json"),
           data
@@ -226,27 +226,27 @@ module.exports = function (nodecg) {
     );
     let teams = JSON.parse(teamlist);
 
-    userlist = fs.readFileSync(
+    file = fs.readFileSync(
       path.resolve(__dirname, "./userlist-alliances.json")
     );
-    user = JSON.parse(userlist);
-    if (user.hasOwnProperty(username.toLowerCase())) {
-      if (user[username] <= 0) {
+    userlist = JSON.parse(file);
+    if (userlist.hasOwnProperty(username.toLowerCase())) {
+      if (userlist[username] <= 0) {
         client.say(
           channel,
           `@${username}, you don't have any points to spend!`
         );
       } else {
-        let userPoints = user[username];
+        let userPoints = userlist[username];
         debug(`Found ${username.toLowerCase()} in the list, spending ${userPoints} points!`, true);
         let oldTeamPoints = teams[teamName];
-        let newPoints = oldTeamPoints + user[username];
+        let newPoints = oldTeamPoints + userlist[username];
         debug(
           `Old ${teamName} points: ` + oldTeamPoints + ` New ${teamName} Points: ` + newPoints, true
         );
-        user[username] = 0;
+        userlist[username] = 0;
         teams[teamName] = newPoints;
-        const data1 = JSON.stringify(user, null, 2);
+        const data1 = JSON.stringify(userlist, null, 2);
         fs.writeFileSync(
           path.resolve(__dirname, "./userlist-alliances.json"),
           data1
@@ -287,12 +287,12 @@ teamPoints.on("change", (newValue, oldValue) => {
 });
 
 latestDonation.on("change", (newValue, oldValue) => {
-  userlist = fs.readFileSync(
+  file = fs.readFileSync(
     path.resolve(__dirname, "./userlist-alliances.json")
   );
-  user = JSON.parse(userlist);
-  // Checks if the user already exists in the file.
-  if (user.hasOwnProperty(newValue.name.toLowerCase())) {
+  userlist = JSON.parse(file);
+  // Checks if the userlist already exists in the file.
+  if (userlist.hasOwnProperty(newValue.name.toLowerCase())) {
     if (firstdonation === true) {
       firstdonation = false;
     } else {
@@ -301,12 +301,12 @@ latestDonation.on("change", (newValue, oldValue) => {
       debug("New donation: " + newValue.name, true);
       //debug('Not first load, updating file');
       const pointsCalc = newValue.amount * tip.value;
-      const initialPoints = user[newValue.name.toLowerCase()];
+      const initialPoints = userlist[newValue.name.toLowerCase()];
       debug(initialPoints, false);
       const updatedPoints = pointsCalc + initialPoints;
-      user[newValue.name.toLowerCase()] = updatedPoints;
+      userlist[newValue.name.toLowerCase()] = updatedPoints;
       // Formats to human-readable when updating the json file.
-      const data = JSON.stringify(user, null, 2);
+      const data = JSON.stringify(userlist, null, 2);
       fs.writeFileSync(
         path.resolve(__dirname, "./userlist-alliances.json"),
         data
@@ -321,10 +321,10 @@ latestDonation.on("change", (newValue, oldValue) => {
     // Rounds the points down to the nearest integer.
     const actualPoints = Math.floor(pointsCalc);
     debug(actualPoints, false);
-    // Adds the new user and their point value to the object.
-    user[newValue.name.toLowerCase()] = actualPoints;
+    // Adds the new userlist and their point value to the object.
+    userlist[newValue.name.toLowerCase()] = actualPoints;
     // Formats to human-readable when updating the json file.
-    const data = JSON.stringify(user, null, 2);
+    const data = JSON.stringify(userlist, null, 2);
     fs.writeFileSync(
       path.resolve(__dirname, "./userlist-alliances.json"),
       data
@@ -333,12 +333,12 @@ latestDonation.on("change", (newValue, oldValue) => {
 });
 
 latestCheer.on("change", (newValue, oldValue) => {
-  userlist = fs.readFileSync(
+  file = fs.readFileSync(
     path.resolve(__dirname, "./userlist-alliances.json")
   );
-  user = JSON.parse(userlist);
-  // Checks if the user already exists in the file.
-  if (user.hasOwnProperty(newValue.name.toLowerCase())) {
+  userlist = JSON.parse(file);
+  // Checks if the userlist already exists in the file.
+  if (userlist.hasOwnProperty(newValue.name.toLowerCase())) {
     if (firstcheer === true) {
       firstcheer = false;
     } else {
@@ -347,11 +347,11 @@ latestCheer.on("change", (newValue, oldValue) => {
       const pointsCalc = (newValue.amount / 100) * cheer.value;
       // Rounds the points down to the nearest integer.
       const actualPoints = Math.floor(pointsCalc);
-      const initialPoints = user[newValue.name.toLowerCase()];
+      const initialPoints = userlist[newValue.name.toLowerCase()];
       const updatedPoints = actualPoints + initialPoints;
-      user[newValue.name.toLowerCase()] = updatedPoints;
+      userlist[newValue.name.toLowerCase()] = updatedPoints;
       // Formats to human-readable when updating the json file.
-      const data = JSON.stringify(user, null, 2);
+      const data = JSON.stringify(userlist, null, 2);
       fs.writeFileSync(
         path.resolve(__dirname, "./userlist-alliances.json"),
         data
@@ -363,10 +363,10 @@ latestCheer.on("change", (newValue, oldValue) => {
     const pointsCalc = (newValue.amount / 100) * cheer.value;
     // Rounds the points down to the nearest integer.
     const actualPoints = Math.floor(pointsCalc);
-    // Adds the new user and their point value to the object.
-    user[newValue.name.toLowerCase()] = actualPoints;
+    // Adds the new userlist and their point value to the object.
+    userlist[newValue.name.toLowerCase()] = actualPoints;
     // Formats to human-readable when updating the json file.
-    const data = JSON.stringify(user, null, 2);
+    const data = JSON.stringify(userlist, null, 2);
     fs.writeFileSync(
       path.resolve(__dirname, "./userlist-alliances.json"),
       data
@@ -376,10 +376,10 @@ latestCheer.on("change", (newValue, oldValue) => {
 
 // TODO - Support PRIME Subs
 latestSubscription.on("change", (newValue, oldValue) => {
-  userlist = fs.readFileSync(
+  file = fs.readFileSync(
     path.resolve(__dirname, "./userlist-alliances.json")
   );
-  user = JSON.parse(userlist);
+  userlist = JSON.parse(file);
 
   // Check if this is the first load of the system. If it is, dismiss the check.
   if (!firstsubscription) {
@@ -406,15 +406,15 @@ client.on("message", (channel, tags, message, self) => {
   }
 
   if (message.toLowerCase() === "!points") {
-    userlist = fs.readFileSync(
+    file = fs.readFileSync(
       path.resolve(__dirname, "./userlist-alliances.json")
     );
-    user = JSON.parse(userlist);
-    if (user.hasOwnProperty(tags.username.toLowerCase())) {
+    userlist = JSON.parse(file);
+    if (userlist.hasOwnProperty(tags.username.toLowerCase())) {
       debug(`Found ${tags.username.toLowerCase()} in the list, displaying points!`, false)
       client.say(
         channel,
-        `@${tags.username}, you have ${user[tags.username]} points!`
+        `@${tags.username}, you have ${userlist[tags.username]} points!`
       );
     } else {
       debug(`${tags.username.toLowerCase()} not found - no points available`, false);
