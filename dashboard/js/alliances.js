@@ -5,6 +5,11 @@ const streamlabs = io(`https://sockets.streamlabs.com?token=${socketToken}`, {
   transports: ["websocket"],
 });
 
+/* --------------------------------------------
+
+  NODECG - REGISTER REPLICANTS HERE
+
+-------------------------------------------- */
 const latestDonation = nodecg.Replicant("latestDonation");
 const latestCheer = nodecg.Replicant("latestCheer");
 const latestSubscription = nodecg.Replicant("latestSubscription");
@@ -17,6 +22,11 @@ const repSubGifter = nodecg.Replicant("subgifter");
 const repTip = nodecg.Replicant("tip");
 const repCheer = nodecg.Replicant("cheer");
 
+/* --------------------------------------------
+
+  HTML - REGISTER ELEMENTS HERE
+
+-------------------------------------------- */
 const addButton = document.getElementById("add-button");
 const removeButton = document.getElementById("remove-button");
 const enableButton = document.getElementById("enable-button");
@@ -48,6 +58,11 @@ const setTipText = document.getElementById("setTipText");
 enableButton.disabled = true;
 disableButton.disabled = false;
 
+/* --------------------------------------------
+
+  NODECG - REGISTER FUNCTIONS HERE
+
+-------------------------------------------- */
 teamPoints.on("change", (newValue, oldValue) => {
   console.log(`teamPoints changed from ${oldValue} to ${newValue}`, true);
   console.log(JSON.stringify(newValue), true);
@@ -125,6 +140,12 @@ latestSubscription.on("change", (newValue, oldValue) => {
   subscriptionText.innerHTML =
     newValue.name + " subscribed for " + newValue.months + " months.";
 });
+
+/* --------------------------------------------
+
+  STREAMLABS - REGISTER LISTENERS HERE
+
+-------------------------------------------- */
 //Perform Action on event
 streamlabs.on("event", (eventData) => {
     if (!eventData.for && eventData.type === "donation") {
@@ -194,6 +215,12 @@ streamlabs.on("event", (eventData) => {
   }
 });
 
+/* --------------------------------------------
+
+  HTML - REGISTER LISTENERS HERE
+
+-------------------------------------------- */
+
 addButton.addEventListener("click", function () {
   updateTeams("add", valueInput.value);
 });
@@ -240,6 +267,12 @@ setCheer.addEventListener("click", function () {
 setTip.addEventListener("click", function () {
   updatePointsValue("tip");
 });
+
+/* --------------------------------------------
+
+  HTML - REGISTER FUNCTIONS HERE
+
+-------------------------------------------- */
 
 function updatePointsValue(event) {
   let val = 0;

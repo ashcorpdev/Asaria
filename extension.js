@@ -1,9 +1,20 @@
 "use strict";
 
+/* --------------------------------------------
+
+  NODECG - REGISTER REQUIRED LIBRARIES HERE
+
+-------------------------------------------- */
 const fs = require("fs");
 const path = require("path");
 const tmi = require("tmi.js");
 const { debug } = require("./debug")
+
+/* --------------------------------------------
+
+  NODECG - REGISTER FILES HERE
+
+-------------------------------------------- */
 
 let config = fs.readFileSync(path.resolve(__dirname, "./config.json"));
 let opts = JSON.parse(config);
@@ -17,6 +28,12 @@ let teamlist = fs.readFileSync(
   path.resolve(__dirname, "./teamlist-alliances.json")
 );
 let teams = JSON.parse(teamlist);
+
+/* --------------------------------------------
+
+  TWITCH - REGISTER CLIENT HERE
+
+-------------------------------------------- */
 
 const username = opts["tw_username"];
 const clientID = opts["tw_client"];
@@ -36,11 +53,23 @@ const client = new tmi.Client({
 });
 client.connect();
 
+/* --------------------------------------------
+
+  NODECG - REGISTER INITIAL SETUP HERE
+
+-------------------------------------------- */
+
 let firstdonation = true;
 let firstcheer = true;
 let firstsubscription = true;
 
 module.exports = function (nodecg) {
+
+/* --------------------------------------------
+
+  NODECG - REGISTER REPLICANTS HERE
+
+-------------------------------------------- */
   const latestDonation = nodecg.Replicant("latestDonation", {
     defaultValue: 123,
   });
@@ -65,126 +94,11 @@ module.exports = function (nodecg) {
     shadowgrove: teams.shadowgrove,
   };
 
-  teamPoints.on("change", (newValue, oldValue) => {
-    let teamlist = fs.readFileSync(
-      path.resolve(__dirname, "./teamlist-alliances.json")
-    );
-    let teams = JSON.parse(teamlist);
-  });
+/* --------------------------------------------
 
-  latestDonation.on("change", (newValue, oldValue) => {
-    userlist = fs.readFileSync(
-      path.resolve(__dirname, "./userlist-alliances.json")
-    );
-    user = JSON.parse(userlist);
-    // Checks if the user already exists in the file.
-    if (user.hasOwnProperty(newValue.name.toLowerCase())) {
-      if (firstdonation === true) {
-        firstdonation = false;
-      } else {
-        
-    debug(`latestDonation updated!`, true);
-        debug("New donation: " + newValue.name, true);
-        //debug('Not first load, updating file');
-        const pointsCalc = newValue.amount * tip.value;
-        const initialPoints = user[newValue.name.toLowerCase()];
-        debug(initialPoints, false);
-        const updatedPoints = pointsCalc + initialPoints;
-        user[newValue.name.toLowerCase()] = updatedPoints;
-        // Formats to human-readable when updating the json file.
-        const data = JSON.stringify(user, null, 2);
-        fs.writeFileSync(
-          path.resolve(__dirname, "./userlist-alliances.json"),
-          data
-        );
-        debug(updatedPoints, false);
-      }
-    } else {
-      debug("User not found!", false);
+  NODECG - REGISTER FUNCTIONS HERE
 
-      // 5 is equal to number of points per £5 donation.
-      const pointsCalc = newValue.amount * tip.value;
-      // Rounds the points down to the nearest integer.
-      const actualPoints = Math.floor(pointsCalc);
-      debug(actualPoints, false);
-      // Adds the new user and their point value to the object.
-      user[newValue.name.toLowerCase()] = actualPoints;
-      // Formats to human-readable when updating the json file.
-      const data = JSON.stringify(user, null, 2);
-      fs.writeFileSync(
-        path.resolve(__dirname, "./userlist-alliances.json"),
-        data
-      );
-    }
-  });
-
-  latestCheer.on("change", (newValue, oldValue) => {
-    userlist = fs.readFileSync(
-      path.resolve(__dirname, "./userlist-alliances.json")
-    );
-    user = JSON.parse(userlist);
-    // Checks if the user already exists in the file.
-    if (user.hasOwnProperty(newValue.name.toLowerCase())) {
-      if (firstcheer === true) {
-        firstcheer = false;
-      } else {
-        debug(`latestCheer updated!`, true);
-        debug(`${newValue.name} found!`, true);
-        const pointsCalc = (newValue.amount / 100) * cheer.value;
-        // Rounds the points down to the nearest integer.
-        const actualPoints = Math.floor(pointsCalc);
-        const initialPoints = user[newValue.name.toLowerCase()];
-        const updatedPoints = actualPoints + initialPoints;
-        user[newValue.name.toLowerCase()] = updatedPoints;
-        // Formats to human-readable when updating the json file.
-        const data = JSON.stringify(user, null, 2);
-        fs.writeFileSync(
-          path.resolve(__dirname, "./userlist-alliances.json"),
-          data
-        );
-      }
-    } else {
-      debug("User not found!", false);
-      // 5 is equal to number of points per £5 donation.
-      const pointsCalc = (newValue.amount / 100) * cheer.value;
-      // Rounds the points down to the nearest integer.
-      const actualPoints = Math.floor(pointsCalc);
-      // Adds the new user and their point value to the object.
-      user[newValue.name.toLowerCase()] = actualPoints;
-      // Formats to human-readable when updating the json file.
-      const data = JSON.stringify(user, null, 2);
-      fs.writeFileSync(
-        path.resolve(__dirname, "./userlist-alliances.json"),
-        data
-      );
-    }
-  });
-
-  // TODO - Support PRIME Subs
-  latestSubscription.on("change", (newValue, oldValue) => {
-    userlist = fs.readFileSync(
-      path.resolve(__dirname, "./userlist-alliances.json")
-    );
-    user = JSON.parse(userlist);
-
-    // Check if this is the first load of the system. If it is, dismiss the check.
-    if (!firstsubscription) {
-      
-    debug(`latestSubscription updated!`, true);
-    debug(newValue.name, true);
-
-      if (checkGifted(newValue)) {
-        // Gifted sub!
-        givePoints(newValue.sub_plan, newValue, true);
-      } else {
-        givePoints(newValue.sub_plan, newValue, false);
-      }
-    } else {
-      debug("Extension - First boot; ignoring checks.", true);
-      firstsubscription = false;
-    }
-  });
-
+-------------------------------------------- */
   function checkGifted(newValue) {
     let gifterName = newValue.gifter;
     if (gifterName !== "" && gifterName !== null) {
@@ -305,78 +219,258 @@ module.exports = function (nodecg) {
     }
   }
 
-  client.on("message", (channel, tags, message, self) => {
-    if (self) return;
-    if (message.toLowerCase() === "!hello") {
-      client.say(channel, `@${tags.username}, greetings! wispWave`);
-    }
+  function updateTeamPoints(teamName, username, channel) {
+    // TODO - Check team submitted is valid *before* calculation!
+    let teamlist = fs.readFileSync(
+      path.resolve(__dirname, "./teamlist-alliances.json")
+    );
+    let teams = JSON.parse(teamlist);
 
-    if (message.toLowerCase() === "!points") {
-      userlist = fs.readFileSync(
-        path.resolve(__dirname, "./userlist-alliances.json")
-      );
-      user = JSON.parse(userlist);
-      if (user.hasOwnProperty(tags.username.toLowerCase())) {
-        debug(`Found ${tags.username.toLowerCase()} in the list, displaying points!`, false)
+    userlist = fs.readFileSync(
+      path.resolve(__dirname, "./userlist-alliances.json")
+    );
+    user = JSON.parse(userlist);
+    if (user.hasOwnProperty(username.toLowerCase())) {
+      if (user[username] <= 0) {
         client.say(
           channel,
-          `@${tags.username}, you have ${user[tags.username]} points!`
+          `@${username}, you don't have any points to spend!`
         );
       } else {
-        debug(`${tags.username.toLowerCase()} not found - no points available`, false);
-        client.say(channel, `@${tags.username}, you don't have any points!`);
+        let userPoints = user[username];
+        debug(`Found ${username.toLowerCase()} in the list, spending ${userPoints} points!`, true);
+        let oldTeamPoints = teams[teamName];
+        let newPoints = oldTeamPoints + user[username];
+        debug(
+          `Old ${teamName} points: ` + oldTeamPoints + ` New ${teamName} Points: ` + newPoints, true
+        );
+        user[username] = 0;
+        teams[teamName] = newPoints;
+        const data1 = JSON.stringify(user, null, 2);
+        fs.writeFileSync(
+          path.resolve(__dirname, "./userlist-alliances.json"),
+          data1
+        );
+
+        const data2 = JSON.stringify(teams, null, 2);
+        fs.writeFileSync(
+          path.resolve(__dirname, "./teamlist-alliances.json"),
+          data2
+        );
+        teamPoints.value = {
+          eternalflame: teams.eternalflame,
+          wintersembrace: teams.wintersembrace,
+          etherealbloom: teams.etherealbloom,
+          shadowgrove: teams.shadowgrove,
+        };
+        client.say(
+          channel,
+          `@${username}, you spent ${userPoints} points on team ${teamName}!`
+        );
       }
+    } else {
+      debug(`${username.toLowerCase()} not found, no points available`, false);
+      client.say(channel, `@${username}, you don't have any points to spend!`);
     }
+  }
 
-    switch (message.toLowerCase()) {
-      case "#eternalflame":
-        updateTeamPoints("eternalflame", tags.username, channel);
-        break;
-      case "#wintersembrace":
-        updateTeamPoints("wintersembrace", tags.username, channel);
-        break;
-      case "#etherealbloom":
-        updateTeamPoints("etherealbloom", tags.username, channel);
-        break;
-      case "#shadowgrove":
-        updateTeamPoints("shadowgrove", tags.username, channel);
-        break;
-      case "#teamred":
-        updateTeamPoints("eternalflame", tags.username, channel);
-        break;
-      case "#teamyellow":
-        updateTeamPoints("eternalflame", tags.username, channel);
-        break;
-      case "#teampink":
-        updateTeamPoints("etherealbloom", tags.username, channel);
-        break;
-      case "#teamgreen":
-        updateTeamPoints("shadowgrove", tags.username, channel);
-        break;
-      case "#teamorange":
-        updateTeamPoints("eternalflame", tags.username, channel);
-        break;
-      case "#teampurple":
-        updateTeamPoints("etherealbloom", tags.username, channel);
-        break;
-      case "#teamblue":
-        updateTeamPoints("wintersembrace", tags.username, channel);
-        break;
-      case "#teamwhite":
-        updateTeamPoints("wintersembrace", tags.username, channel);
-        break;
-      case "#teamblack":
-        updateTeamPoints("shadowgrove", tags.username, channel);
-        break;
+/* --------------------------------------------
+
+  NODECG - REGISTER LISTENERS HERE
+
+-------------------------------------------- */
+teamPoints.on("change", (newValue, oldValue) => {
+  let teamlist = fs.readFileSync(
+    path.resolve(__dirname, "./teamlist-alliances.json")
+  );
+  let teams = JSON.parse(teamlist);
+});
+
+latestDonation.on("change", (newValue, oldValue) => {
+  userlist = fs.readFileSync(
+    path.resolve(__dirname, "./userlist-alliances.json")
+  );
+  user = JSON.parse(userlist);
+  // Checks if the user already exists in the file.
+  if (user.hasOwnProperty(newValue.name.toLowerCase())) {
+    if (firstdonation === true) {
+      firstdonation = false;
+    } else {
+      
+  debug(`latestDonation updated!`, true);
+      debug("New donation: " + newValue.name, true);
+      //debug('Not first load, updating file');
+      const pointsCalc = newValue.amount * tip.value;
+      const initialPoints = user[newValue.name.toLowerCase()];
+      debug(initialPoints, false);
+      const updatedPoints = pointsCalc + initialPoints;
+      user[newValue.name.toLowerCase()] = updatedPoints;
+      // Formats to human-readable when updating the json file.
+      const data = JSON.stringify(user, null, 2);
+      fs.writeFileSync(
+        path.resolve(__dirname, "./userlist-alliances.json"),
+        data
+      );
+      debug(updatedPoints, false);
     }
+  } else {
+    debug("User not found!", false);
 
-    if (message.toLowerCase() === "!teamlist") {
-      client.say(
-        channel,
-        `The teams you can spend your points on are: eternalflame, wintersembrace, etherealbloom, shadowgrove. To spend your points, type #<teamname>. (Eg: #eternalflame)`
+    // 5 is equal to number of points per £5 donation.
+    const pointsCalc = newValue.amount * tip.value;
+    // Rounds the points down to the nearest integer.
+    const actualPoints = Math.floor(pointsCalc);
+    debug(actualPoints, false);
+    // Adds the new user and their point value to the object.
+    user[newValue.name.toLowerCase()] = actualPoints;
+    // Formats to human-readable when updating the json file.
+    const data = JSON.stringify(user, null, 2);
+    fs.writeFileSync(
+      path.resolve(__dirname, "./userlist-alliances.json"),
+      data
+    );
+  }
+});
+
+latestCheer.on("change", (newValue, oldValue) => {
+  userlist = fs.readFileSync(
+    path.resolve(__dirname, "./userlist-alliances.json")
+  );
+  user = JSON.parse(userlist);
+  // Checks if the user already exists in the file.
+  if (user.hasOwnProperty(newValue.name.toLowerCase())) {
+    if (firstcheer === true) {
+      firstcheer = false;
+    } else {
+      debug(`latestCheer updated!`, true);
+      debug(`${newValue.name} found!`, true);
+      const pointsCalc = (newValue.amount / 100) * cheer.value;
+      // Rounds the points down to the nearest integer.
+      const actualPoints = Math.floor(pointsCalc);
+      const initialPoints = user[newValue.name.toLowerCase()];
+      const updatedPoints = actualPoints + initialPoints;
+      user[newValue.name.toLowerCase()] = updatedPoints;
+      // Formats to human-readable when updating the json file.
+      const data = JSON.stringify(user, null, 2);
+      fs.writeFileSync(
+        path.resolve(__dirname, "./userlist-alliances.json"),
+        data
       );
     }
-  });
+  } else {
+    debug("User not found!", false);
+    // 5 is equal to number of points per £5 donation.
+    const pointsCalc = (newValue.amount / 100) * cheer.value;
+    // Rounds the points down to the nearest integer.
+    const actualPoints = Math.floor(pointsCalc);
+    // Adds the new user and their point value to the object.
+    user[newValue.name.toLowerCase()] = actualPoints;
+    // Formats to human-readable when updating the json file.
+    const data = JSON.stringify(user, null, 2);
+    fs.writeFileSync(
+      path.resolve(__dirname, "./userlist-alliances.json"),
+      data
+    );
+  }
+});
+
+// TODO - Support PRIME Subs
+latestSubscription.on("change", (newValue, oldValue) => {
+  userlist = fs.readFileSync(
+    path.resolve(__dirname, "./userlist-alliances.json")
+  );
+  user = JSON.parse(userlist);
+
+  // Check if this is the first load of the system. If it is, dismiss the check.
+  if (!firstsubscription) {
+    
+  debug(`latestSubscription updated!`, true);
+  debug(newValue.name, true);
+
+    if (checkGifted(newValue)) {
+      // Gifted sub!
+      givePoints(newValue.sub_plan, newValue, true);
+    } else {
+      givePoints(newValue.sub_plan, newValue, false);
+    }
+  } else {
+    debug("Extension - First boot; ignoring checks.", true);
+    firstsubscription = false;
+  }
+});
+
+client.on("message", (channel, tags, message, self) => {
+  if (self) return;
+  if (message.toLowerCase() === "!hello") {
+    client.say(channel, `@${tags.username}, greetings! wispWave`);
+  }
+
+  if (message.toLowerCase() === "!points") {
+    userlist = fs.readFileSync(
+      path.resolve(__dirname, "./userlist-alliances.json")
+    );
+    user = JSON.parse(userlist);
+    if (user.hasOwnProperty(tags.username.toLowerCase())) {
+      debug(`Found ${tags.username.toLowerCase()} in the list, displaying points!`, false)
+      client.say(
+        channel,
+        `@${tags.username}, you have ${user[tags.username]} points!`
+      );
+    } else {
+      debug(`${tags.username.toLowerCase()} not found - no points available`, false);
+      client.say(channel, `@${tags.username}, you don't have any points!`);
+    }
+  }
+
+  switch (message.toLowerCase()) {
+    case "#eternalflame":
+      updateTeamPoints("eternalflame", tags.username, channel);
+      break;
+    case "#wintersembrace":
+      updateTeamPoints("wintersembrace", tags.username, channel);
+      break;
+    case "#etherealbloom":
+      updateTeamPoints("etherealbloom", tags.username, channel);
+      break;
+    case "#shadowgrove":
+      updateTeamPoints("shadowgrove", tags.username, channel);
+      break;
+    case "#teamred":
+      updateTeamPoints("eternalflame", tags.username, channel);
+      break;
+    case "#teamyellow":
+      updateTeamPoints("eternalflame", tags.username, channel);
+      break;
+    case "#teampink":
+      updateTeamPoints("etherealbloom", tags.username, channel);
+      break;
+    case "#teamgreen":
+      updateTeamPoints("shadowgrove", tags.username, channel);
+      break;
+    case "#teamorange":
+      updateTeamPoints("eternalflame", tags.username, channel);
+      break;
+    case "#teampurple":
+      updateTeamPoints("etherealbloom", tags.username, channel);
+      break;
+    case "#teamblue":
+      updateTeamPoints("wintersembrace", tags.username, channel);
+      break;
+    case "#teamwhite":
+      updateTeamPoints("wintersembrace", tags.username, channel);
+      break;
+    case "#teamblack":
+      updateTeamPoints("shadowgrove", tags.username, channel);
+      break;
+  }
+
+  if (message.toLowerCase() === "!teamlist") {
+    client.say(
+      channel,
+      `The teams you can spend your points on are: eternalflame, wintersembrace, etherealbloom, shadowgrove. To spend your points, type #<teamname>. (Eg: #eternalflame)`
+    );
+  }
+});
 
   nodecg.listenFor("enableCounting", (boolean) => {
     if(boolean == true){
@@ -460,59 +554,4 @@ module.exports = function (nodecg) {
       ack(null, value * 2);
     }
   });
-
-  function updateTeamPoints(teamName, username, channel) {
-    // TODO - Check team submitted is valid *before* calculation!
-    let teamlist = fs.readFileSync(
-      path.resolve(__dirname, "./teamlist-alliances.json")
-    );
-    let teams = JSON.parse(teamlist);
-
-    userlist = fs.readFileSync(
-      path.resolve(__dirname, "./userlist-alliances.json")
-    );
-    user = JSON.parse(userlist);
-    if (user.hasOwnProperty(username.toLowerCase())) {
-      if (user[username] <= 0) {
-        client.say(
-          channel,
-          `@${username}, you don't have any points to spend!`
-        );
-      } else {
-        let userPoints = user[username];
-        debug(`Found ${username.toLowerCase()} in the list, spending ${userPoints} points!`, true);
-        let oldTeamPoints = teams[teamName];
-        let newPoints = oldTeamPoints + user[username];
-        debug(
-          `Old ${teamName} points: ` + oldTeamPoints + ` New ${teamName} Points: ` + newPoints, true
-        );
-        user[username] = 0;
-        teams[teamName] = newPoints;
-        const data1 = JSON.stringify(user, null, 2);
-        fs.writeFileSync(
-          path.resolve(__dirname, "./userlist-alliances.json"),
-          data1
-        );
-
-        const data2 = JSON.stringify(teams, null, 2);
-        fs.writeFileSync(
-          path.resolve(__dirname, "./teamlist-alliances.json"),
-          data2
-        );
-        teamPoints.value = {
-          eternalflame: teams.eternalflame,
-          wintersembrace: teams.wintersembrace,
-          etherealbloom: teams.etherealbloom,
-          shadowgrove: teams.shadowgrove,
-        };
-        client.say(
-          channel,
-          `@${username}, you spent ${userPoints} points on team ${teamName}!`
-        );
-      }
-    } else {
-      debug(`${username.toLowerCase()} not found, no points available`, false);
-      client.say(channel, `@${username}, you don't have any points to spend!`);
-    }
-  }
 };
