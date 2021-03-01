@@ -22,7 +22,7 @@ const clientID = opts["tw_client"];
 const accessToken = opts["tw_token"];
 
 const client = new tmi.Client({
-  options: { debug: true },
+  options: { debug: false },
   connection: {
     reconnect: true,
     secure: true,
@@ -64,16 +64,18 @@ module.exports = function (nodecg) {
   };
 
   teamPoints.on("change", (newValue, oldValue) => {
-    console.log(`teamPoints changed from ${oldValue} to ${newValue}`);
+    console.log(`teamPoints updated!`);
     let teamlist = fs.readFileSync(
       path.resolve(__dirname, "./teamlist-alliances.json")
     );
     let teams = JSON.parse(teamlist);
+
+    // Outputs list of team points after adjustment (needs to be cleaned up).
     console.log(teams);
   });
 
   latestDonation.on("change", (newValue, oldValue) => {
-    console.log(`latestDonation changed from ${oldValue} to ${newValue}`);
+    console.log(`latestDonation updated!`);
     userlist = fs.readFileSync(
       path.resolve(__dirname, "./userlist-alliances.json")
     );
@@ -122,7 +124,7 @@ module.exports = function (nodecg) {
   });
 
   latestCheer.on("change", (newValue, oldValue) => {
-    console.log(`latestCheer changed from ${oldValue} to ${newValue}`);
+    console.log(`latestCheer updated!`);
     userlist = fs.readFileSync(
       path.resolve(__dirname, "./userlist-alliances.json")
     );
@@ -173,7 +175,7 @@ module.exports = function (nodecg) {
 
   // TODO - Support PRIME Subs
   latestSubscription.on("change", (newValue, oldValue) => {
-    console.log(`latestSubscription changed from ${oldValue} to ${newValue}`);
+    console.log(`latestSubscription updated!`);
     userlist = fs.readFileSync(
       path.resolve(__dirname, "./userlist-alliances.json")
     );
@@ -328,13 +330,13 @@ module.exports = function (nodecg) {
       );
       user = JSON.parse(userlist);
       if (user.hasOwnProperty(tags.username.toLowerCase())) {
-        console.log("Found user in the list, displaying points!");
+        console.log(`Found ${tags.username.toLowerCase()} in the list, displaying points!`);
         client.say(
           channel,
           `@${tags.username}, you have ${user[tags.username]} points!`
         );
       } else {
-        console.log("No user found, no points available");
+        console.log(`${tags.username.toLowerCase()} not found - no points available`);
         client.say(channel, `@${tags.username}, you don't have any points!`);
       }
     }
@@ -486,6 +488,7 @@ module.exports = function (nodecg) {
         console.log(
           "Old points: " + oldTeamPoints + " New Points: " + newPoints
         );
+        let userPoints = user[username];
         user[username] = 0;
         teams[teamName] = newPoints;
         const data1 = JSON.stringify(user, null, 2);
@@ -507,7 +510,7 @@ module.exports = function (nodecg) {
         };
         client.say(
           channel,
-          `@${username}, you spent your points on team ${teamName}!`
+          `@${username}, you spent ${userPoints} points on team ${teamName}!`
         );
       }
     } else {
