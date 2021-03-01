@@ -38,6 +38,7 @@ let teams = JSON.parse(teamlist);
 const username = opts["tw_username"];
 const clientID = opts["tw_client"];
 const accessToken = opts["tw_token"];
+const channel = opts["tw_channel"];
 
 const client = new tmi.Client({
   options: { debug: false },
@@ -49,9 +50,10 @@ const client = new tmi.Client({
     username: username,
     password: accessToken,
   },
-  channels: ["ashen"],
+  channels: [channel],
 });
 client.connect();
+debug(`Twitch client connected to ${channel}.`, true)
 
 /* --------------------------------------------
 
