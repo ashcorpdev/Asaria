@@ -6,4 +6,6 @@ teamlist.json
 userlist.json
 teamlist-alliances.json
 userlist-alliances.json
-debug.log
+old_data/
+*.log
+*.old
