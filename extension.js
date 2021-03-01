@@ -317,11 +317,10 @@ module.exports = function (nodecg) {
       user = JSON.parse(userlist);
       if (user.hasOwnProperty(tags.username.toLowerCase())) {
         debug(`Found ${tags.username.toLowerCase()} in the list, displaying points!`, false)
-        /*client.say(
+        client.say(
           channel,
           `@${tags.username}, you have ${user[tags.username]} points!`
-        );*/
-        client.whisper(tags.username, `You have ${user[tags.username]} points!`)
+        );
       } else {
         debug(`${tags.username.toLowerCase()} not found - no points available`, false);
         client.say(channel, `@${tags.username}, you don't have any points!`);
