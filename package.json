@@ -2,7 +2,7 @@
   "name": "asaria",
   "version": "1.0.0",
   "description": "NodeCG-based on-screen overlay system for War of the Wisps",
-  "homepage": "",
+  "homepage": "https://ashcorp.dev",
   "author": {
     "name": "Ashen",
     "email": "ashen@ashen.live",
@@ -11,14 +11,14 @@
   "files": [
     "dashboard",
     "graphics",
-    "extension-alliances.js"
+    "extension.js"
   ],
   "keywords": [
     "",
     "nodecg-bundle"
   ],
   "nodecg": {
-    "compatibleRange": "^1.1.1",
+    "compatibleRange": "^1.7.0",
     "dashboardPanels": [
       {
         "name": "asaria-control-panel",
