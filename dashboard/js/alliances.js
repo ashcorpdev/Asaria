@@ -19,6 +19,8 @@ const repCheer = nodecg.Replicant("cheer");
 
 const addButton = document.getElementById("add-button");
 const removeButton = document.getElementById("remove-button");
+const enableButton = document.getElementById("enable-button");
+const disableButton = document.getElementById("disable-button");
 const valueInput = document.getElementById("valueInput");
 const teamSelection = document.getElementById("teamSelection");
 const t1Sub = document.getElementById("t1Sub");
@@ -43,9 +45,12 @@ const setSubGifterText = document.getElementById("setSubGifterText");
 const setCheerText = document.getElementById("setCheerText");
 const setTipText = document.getElementById("setTipText");
 
+enableButton.disabled = true;
+disableButton.disabled = false;
+
 teamPoints.on("change", (newValue, oldValue) => {
-  debug(`teamPoints changed from ${oldValue} to ${newValue}`, true);
-  debug(JSON.stringify(newValue), true);
+  console.log(`teamPoints changed from ${oldValue} to ${newValue}`, true);
+  console.log(JSON.stringify(newValue), true);
   var eternalflame = document.getElementById("eternalflame");
   var wintersembrace = document.getElementById("wintersembrace");
   var etherealbloom = document.getElementById("etherealbloom");
@@ -57,65 +62,65 @@ teamPoints.on("change", (newValue, oldValue) => {
 });
 
 repT1Sub.on("change", (newValue, oldValue) => {
-  debug(`T1 point value changed.`, false);
-  debug(newValue, false);
+  console.log(`T1 point value changed.`, false);
+  console.log(newValue, false);
   t1Sub.value = newValue;
 });
 
 repT2Sub.on("change", (newValue, oldValue) => {
-  debug(`T2 point value changed.`, false);
-  debug(newValue, false);
+  console.log(`T2 point value changed.`, false);
+  console.log(newValue, false);
   t2Sub.value = newValue;
 });
 
 repT3Sub.on("change", (newValue, oldValue) => {
-  debug(`T3 point value changed.`, false);
-  debug(newValue, false);
+  console.log(`T3 point value changed.`, false);
+  console.log(newValue, false);
   t3Sub.value = newValue;
 });
 
 repGiftedSub.on("change", (newValue, oldValue) => {
-  debug(`Gifted point value changed.`, false);
-  debug(newValue, false);
+  console.log(`Gifted point value changed.`, false);
+  console.log(newValue, false);
   giftedSub.value = newValue;
 });
 
 repSubGifter.on("change", (newValue, oldValue) => {
-  debug(`Gifted point value changed.`, false);
-  debug(newValue, false);
+  console.log(`Gifted point value changed.`, false);
+  console.log(newValue, false);
   subGifter.value = newValue;
 });
 
 repCheer.on("change", (newValue, oldValue) => {
-  debug(`Cheer point value changed.`, false);
-  debug(newValue, false);
+  console.log(`Cheer point value changed.`, false);
+  console.log(newValue, false);
   cheer.value = newValue;
 });
 
 repTip.on("change", (newValue, oldValue) => {
-  debug(`Tip point value changed.`, false);
-  debug(newValue, false);
+  console.log(`Tip point value changed.`, false);
+  console.log(newValue, false);
   tip.value = newValue;
 });
 
 latestDonation.on("change", (newValue, oldValue) => {
-  debug(`latestDonation changed from ${oldValue} to ${newValue}`, false);
-  debug(JSON.stringify(newValue), false);
+  console.log(`latestDonation changed from ${oldValue} to ${newValue}`, false);
+  console.log(JSON.stringify(newValue), false);
   var donationText = document.getElementById("latestDonation");
   donationText.innerHTML = newValue.name + " donated £" + newValue.amount + ".";
 });
 
 latestCheer.on("change", (newValue, oldValue) => {
-  debug(`latestCheer changed from ${oldValue} to ${newValue}`, false);
-  debug(JSON.stringify(newValue), false);
+  console.log(`latestCheer changed from ${oldValue} to ${newValue}`, false);
+  console.log(JSON.stringify(newValue), false);
   var cheerText = document.getElementById("latestCheer");
   cheerText.innerHTML =
     newValue.name + " cheered " + newValue.amount + " bits.";
 });
 
 latestSubscription.on("change", (newValue, oldValue) => {
-  debug(`latestSubscription changed from ${oldValue} to ${newValue}`, false);
-  debug(JSON.stringify(newValue), false);
+  console.log(`latestSubscription changed from ${oldValue} to ${newValue}`, false);
+  console.log(JSON.stringify(newValue), false);
   var subscriptionText = document.getElementById("latestSubscription");
   subscriptionText.innerHTML =
     newValue.name + " subscribed for " + newValue.months + " months.";
@@ -124,7 +129,7 @@ latestSubscription.on("change", (newValue, oldValue) => {
 streamlabs.on("event", (eventData) => {
     if (!eventData.for && eventData.type === "donation") {
     //code to handle donation events
-    debug(eventData.message, false);
+    console.log(eventData.message, false);
     nodecg.log.info(
       "Donation alert: " + eventData.message[0].name,
       eventData.message[0].amount,
@@ -152,11 +157,11 @@ streamlabs.on("event", (eventData) => {
     switch (eventData.type) {
       case "follow":
         //code to handle follow events
-        debug(eventData.message, false);
+        console.log(eventData.message, false);
         break;
       case "subscription":
         //code to handle subscription events
-        debug(eventData.message, false);
+        console.log(eventData.message, false);
         nodecg.log.info(
           "Subscription alert: " + eventData.message[0].name,
           eventData.message[0].months,
@@ -171,7 +176,7 @@ streamlabs.on("event", (eventData) => {
         break;
       case "bits":
         //code to handle donation events
-        debug(eventData.message, false);
+        console.log(eventData.message, false);
         nodecg.log.info(
           "Cheer alert: " + eventData.message[0].name,
           eventData.message[0].amount
@@ -184,7 +189,7 @@ streamlabs.on("event", (eventData) => {
         break;
       default:
         //default case
-        debug(eventData.message, false);
+        console.log(eventData.message, false);
     }
   }
 });
@@ -194,6 +199,18 @@ addButton.addEventListener("click", function () {
 });
 removeButton.addEventListener("click", function () {
   updateTeams("remove", valueInput.value);
+});
+
+enableButton.addEventListener("click", function () {
+  enableCounting(true);
+  disableButton.disabled = false;
+  enableButton.disabled = true;
+});
+
+disableButton.addEventListener("click", function () {
+  enableCounting(false);
+  enableButton.disabled = false;
+  disableButton.disabled = true;
 });
 
 setT1Sub.addEventListener("click", function () {
@@ -228,8 +245,8 @@ function updatePointsValue(event) {
   let val = 0;
   switch (event) {
     case "t1":
-      debug("T1 Sub Set button clicked!", false);
-      debug(setT1SubText.value, false);
+      console.log("T1 Sub Set button clicked!", false);
+      console.log(setT1SubText.value, false);
       val = setT1SubText.value;
       break;
     case "t2":
@@ -255,28 +272,32 @@ function updatePointsValue(event) {
   nodecg
     .sendMessage("updatePoints", { event, val })
     .then((result) => {
-      debug("Points updated!", false);
+      console.log("Points updated!", false);
     })
     .catch((error) => {
       console.error(error);
     });
 }
 
+function enableCounting(boolean) {
+  nodecg.sendMessage("enableCounting", boolean);
+}
+
 function updateTeams(option, amount) {
   if (teamSelection.value == "choose") {
-    debug("Choose a team!", false);
+    console.log("Choose a team!", false);
   } else {
     let selected = teamSelection.value;
     if (option == "add") {
       let currentPoints = Number(document.getElementById(selected).innerText);
       let newPoints =
         parseInt(currentPoints, 10) + parseInt(valueInput.value, 10);
-      debug(parseInt(newPoints, 10), false);
+      console.log(parseInt(newPoints, 10), false);
       let updatedPoints = parseInt(newPoints, 10);
       nodecg
         .sendMessage("updateCount", { updatedPoints, selected })
         .then((result) => {
-          debug("Values updated!", false);
+          console.log("Values updated!", false);
         })
         .catch((error) => {
           console.error(error);
@@ -285,7 +306,7 @@ function updateTeams(option, amount) {
       let currentPoints = Number(document.getElementById(selected).innerText);
       let newPoints =
         parseInt(currentPoints, 10) - parseInt(valueInput.value, 10);
-      debug(parseInt(newPoints, 10), false);
+      console.log(parseInt(newPoints, 10), false);
       let updatedPoints = parseInt(newPoints, 10);
       if (updatedPoints <= 0) {
         updatedPoints = 0;
@@ -293,7 +314,7 @@ function updateTeams(option, amount) {
       nodecg
         .sendMessage("updateCount", { updatedPoints, selected })
         .then((result) => {
-          debug("Values updated!", false);
+          console.log("Values updated!", false);
         })
         .catch((error) => {
           console.error(error);

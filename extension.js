@@ -56,6 +56,7 @@ module.exports = function (nodecg) {
   const subgifter = nodecg.Replicant("subgifter", { defaultValue: 1 });
   const tip = nodecg.Replicant("tip", { defaultValue: 1 });
   const cheer = nodecg.Replicant("cheer", { defaultValue: 1 });
+  const enableCounting = nodecg.Replicant("enableCounting", { defaultValue: true });
 
   teamPoints.value = {
     eternalflame: teams.eternalflame,
@@ -374,6 +375,16 @@ module.exports = function (nodecg) {
         channel,
         `The teams you can spend your points on are: eternalflame, wintersembrace, etherealbloom, shadowgrove. To spend your points, type #<teamname>. (Eg: #eternalflame)`
       );
+    }
+  });
+
+  nodecg.listenFor("enableCounting", (boolean) => {
+    if(boolean == true){
+      client.connect();
+      debug("Counting enabled, connecting client.", true)
+    }else{
+      client.disconnect();
+      debug("Counting disabled, disconnecting client.", true)
     }
   });
 
