@@ -7,8 +7,8 @@
 -------------------------------------------- */
 const fs = require("fs");
 const path = require("path");
-const tmi = require("tmi.js");
-const { debug } = require("./debug")
+const { debug } = require("../debug")
+const { client } = require("./twitch/client")
 
 /* --------------------------------------------
 
@@ -16,44 +16,17 @@ const { debug } = require("./debug")
 
 -------------------------------------------- */
 
-let config = fs.readFileSync(path.resolve(__dirname, "./config.json"));
-let opts = JSON.parse(config);
+let config = fs.readFileSync(path.resolve(__dirname, "../config.json"));
 
 let file = fs.readFileSync(
-  path.resolve(__dirname, "./userlist-alliances.json")
+  path.resolve(__dirname, "../userlist-alliances.json")
 );
 let userlist = JSON.parse(file);
 
 let teamlist = fs.readFileSync(
-  path.resolve(__dirname, "./teamlist-alliances.json")
+  path.resolve(__dirname, "../teamlist-alliances.json")
 );
 let teams = JSON.parse(teamlist);
-
-/* --------------------------------------------
-
-  TWITCH - REGISTER CLIENT HERE
-
--------------------------------------------- */
-
-const username = opts["tw_username"];
-const clientID = opts["tw_client"];
-const accessToken = opts["tw_token"];
-const channel = opts["tw_channel"];
-
-const client = new tmi.Client({
-  options: { debug: false },
-  connection: {
-    reconnect: true,
-    secure: true,
-  },
-  identity: {
-    username: username,
-    password: accessToken,
-  },
-  channels: [channel],
-});
-client.connect();
-debug(`Twitch client connected to ${channel}.`, true)
 
 /* --------------------------------------------
 
@@ -65,7 +38,7 @@ let firstdonation = true;
 let firstcheer = true;
 let firstsubscription = true;
 
-module.exports = function (nodecg) {
+module.exports = nodecg => {
 
 /* --------------------------------------------
 
@@ -118,7 +91,7 @@ module.exports = function (nodecg) {
     let data = JSON.stringify(userlist, null, 2);
     let gifterName = newValue.gifter;
     file = fs.readFileSync(
-      path.resolve(__dirname, "./userlist-alliances.json")
+      path.resolve(__dirname, "../userlist-alliances.json")
     );
     userlist = JSON.parse(file);
     switch (tier) {
@@ -147,7 +120,7 @@ module.exports = function (nodecg) {
         // Formats to human-readable when updating the json file.
         data = JSON.stringify(userlist, null, 2);
         fs.writeFileSync(
-          path.resolve(__dirname, "./userlist-alliances.json"),
+          path.resolve(__dirname, "../userlist-alliances.json"),
           data
         );
         debug("Extension - New gifter points: " + updatedPoints, true);
@@ -158,7 +131,7 @@ module.exports = function (nodecg) {
         // Formats to human-readable when updating the json file.
         data = JSON.stringify(userlist, null, 2);
         fs.writeFileSync(
-          path.resolve(__dirname, "./userlist-alliances.json"),
+          path.resolve(__dirname, "../userlist-alliances.json"),
           data
         );
         debug(
@@ -175,7 +148,7 @@ module.exports = function (nodecg) {
         // Formats to human-readable when updating the json file.
         data = JSON.stringify(userlist, null, 2);
         fs.writeFileSync(
-          path.resolve(__dirname, "./userlist-alliances.json"),
+          path.resolve(__dirname, "../userlist-alliances.json"),
           data
         );
         debug(updatedPoints, false);
@@ -187,7 +160,7 @@ module.exports = function (nodecg) {
         // Formats to human-readable when updating the json file.
         data = JSON.stringify(userlist, null, 2);
         fs.writeFileSync(
-          path.resolve(__dirname, "./userlist-alliances.json"),
+          path.resolve(__dirname, "../userlist-alliances.json"),
           data
         );
         debug(updatedPoints, false);
@@ -203,7 +176,7 @@ module.exports = function (nodecg) {
         // Formats to human-readable when updating the json file.
         data = JSON.stringify(userlist, null, 2);
         fs.writeFileSync(
-          path.resolve(__dirname, "./userlist-alliances.json"),
+          path.resolve(__dirname, "../userlist-alliances.json"),
           data
         );
         debug(updatedPoints, false);
@@ -213,7 +186,7 @@ module.exports = function (nodecg) {
         // Formats to human-readable when updating the json file.
         data = JSON.stringify(userlist, null, 2);
         fs.writeFileSync(
-          path.resolve(__dirname, "./userlist-alliances.json"),
+          path.resolve(__dirname, "../userlist-alliances.json"),
           data
         );
         debug("Extension - new points: " + points, true);
@@ -224,12 +197,12 @@ module.exports = function (nodecg) {
   function updateTeamPoints(teamName, username, channel) {
     // TODO - Check team submitted is valid *before* calculation!
     let teamlist = fs.readFileSync(
-      path.resolve(__dirname, "./teamlist-alliances.json")
+      path.resolve(__dirname, "../teamlist-alliances.json")
     );
     let teams = JSON.parse(teamlist);
 
     file = fs.readFileSync(
-      path.resolve(__dirname, "./userlist-alliances.json")
+      path.resolve(__dirname, "../userlist-alliances.json")
     );
     userlist = JSON.parse(file);
     if (userlist.hasOwnProperty(username.toLowerCase())) {
@@ -250,13 +223,13 @@ module.exports = function (nodecg) {
         teams[teamName] = newPoints;
         const data1 = JSON.stringify(userlist, null, 2);
         fs.writeFileSync(
-          path.resolve(__dirname, "./userlist-alliances.json"),
+          path.resolve(__dirname, "../userlist-alliances.json"),
           data1
         );
 
         const data2 = JSON.stringify(teams, null, 2);
         fs.writeFileSync(
-          path.resolve(__dirname, "./teamlist-alliances.json"),
+          path.resolve(__dirname, "../teamlist-alliances.json"),
           data2
         );
         teamPoints.value = {
@@ -283,14 +256,14 @@ module.exports = function (nodecg) {
 -------------------------------------------- */
 teamPoints.on("change", (newValue, oldValue) => {
   let teamlist = fs.readFileSync(
-    path.resolve(__dirname, "./teamlist-alliances.json")
+    path.resolve(__dirname, "../teamlist-alliances.json")
   );
   let teams = JSON.parse(teamlist);
 });
 
 latestDonation.on("change", (newValue, oldValue) => {
   file = fs.readFileSync(
-    path.resolve(__dirname, "./userlist-alliances.json")
+    path.resolve(__dirname, "../userlist-alliances.json")
   );
   userlist = JSON.parse(file);
   // Checks if the userlist already exists in the file.
@@ -310,7 +283,7 @@ latestDonation.on("change", (newValue, oldValue) => {
       // Formats to human-readable when updating the json file.
       const data = JSON.stringify(userlist, null, 2);
       fs.writeFileSync(
-        path.resolve(__dirname, "./userlist-alliances.json"),
+        path.resolve(__dirname, "../userlist-alliances.json"),
         data
       );
       debug(updatedPoints, false);
@@ -328,7 +301,7 @@ latestDonation.on("change", (newValue, oldValue) => {
     // Formats to human-readable when updating the json file.
     const data = JSON.stringify(userlist, null, 2);
     fs.writeFileSync(
-      path.resolve(__dirname, "./userlist-alliances.json"),
+      path.resolve(__dirname, "../userlist-alliances.json"),
       data
     );
   }
@@ -336,7 +309,7 @@ latestDonation.on("change", (newValue, oldValue) => {
 
 latestCheer.on("change", (newValue, oldValue) => {
   file = fs.readFileSync(
-    path.resolve(__dirname, "./userlist-alliances.json")
+    path.resolve(__dirname, "../userlist-alliances.json")
   );
   userlist = JSON.parse(file);
   // Checks if the userlist already exists in the file.
@@ -355,7 +328,7 @@ latestCheer.on("change", (newValue, oldValue) => {
       // Formats to human-readable when updating the json file.
       const data = JSON.stringify(userlist, null, 2);
       fs.writeFileSync(
-        path.resolve(__dirname, "./userlist-alliances.json"),
+        path.resolve(__dirname, "../userlist-alliances.json"),
         data
       );
     }
@@ -370,7 +343,7 @@ latestCheer.on("change", (newValue, oldValue) => {
     // Formats to human-readable when updating the json file.
     const data = JSON.stringify(userlist, null, 2);
     fs.writeFileSync(
-      path.resolve(__dirname, "./userlist-alliances.json"),
+      path.resolve(__dirname, "../userlist-alliances.json"),
       data
     );
   }
@@ -379,7 +352,7 @@ latestCheer.on("change", (newValue, oldValue) => {
 // TODO - Support PRIME Subs
 latestSubscription.on("change", (newValue, oldValue) => {
   file = fs.readFileSync(
-    path.resolve(__dirname, "./userlist-alliances.json")
+    path.resolve(__dirname, "../userlist-alliances.json")
   );
   userlist = JSON.parse(file);
 
@@ -409,7 +382,7 @@ client.on("message", (channel, tags, message, self) => {
 
   if (message.toLowerCase() === "!points") {
     file = fs.readFileSync(
-      path.resolve(__dirname, "./userlist-alliances.json")
+      path.resolve(__dirname, "../userlist-alliances.json")
     );
     userlist = JSON.parse(file);
     if (userlist.hasOwnProperty(tags.username.toLowerCase())) {
@@ -491,14 +464,14 @@ client.on("message", (channel, tags, message, self) => {
 
     // TODO - Check team submitted is valid *before* calculation!
     let teamlist = fs.readFileSync(
-      path.resolve(__dirname, "./teamlist-alliances.json")
+      path.resolve(__dirname, "../teamlist-alliances.json")
     );
     let teams = JSON.parse(teamlist);
     teams[selectedTeam] = newTeamPoints;
 
     const data2 = JSON.stringify(teams, null, 2);
     fs.writeFileSync(
-      path.resolve(__dirname, "./teamlist-alliances.json"),
+      path.resolve(__dirname, "../teamlist-alliances.json"),
       data2
     );
     teamPoints.value = {
