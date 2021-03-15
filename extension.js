@@ -73,13 +73,13 @@ module.exports = function (nodecg) {
 
 -------------------------------------------- */
   const latestDonation = nodecg.Replicant("latestDonation", {
-    defaultValue: 123,
+    defaultValue: 0,
   });
   const latestSubscription = nodecg.Replicant("latestSubscription", {
-    defaultValue: 123,
+    defaultValue: 0,
   });
-  const latestCheer = nodecg.Replicant("latestCheer", { defaultValue: 123 });
-  const teamPoints = nodecg.Replicant("teamPoints", { defaultValue: 123 });
+  const latestCheer = nodecg.Replicant("latestCheer", { defaultValue: 0 });
+  const teamPoints = nodecg.Replicant("teamPoints", { defaultValue: 0 });
   const t1sub = nodecg.Replicant("t1sub", { defaultValue: 5 });
   const t2sub = nodecg.Replicant("t2sub", { defaultValue: 10 });
   const t3sub = nodecg.Replicant("t3sub", { defaultValue: 15 });
@@ -298,7 +298,7 @@ latestDonation.on("change", (newValue, oldValue) => {
     if (firstdonation === true) {
       firstdonation = false;
     } else {
-      
+
   debug(`latestDonation updated!`, true);
       debug("New donation: " + newValue.name, true);
       //debug('Not first load, updating file');
@@ -385,7 +385,7 @@ latestSubscription.on("change", (newValue, oldValue) => {
 
   // Check if this is the first load of the system. If it is, dismiss the check.
   if (!firstsubscription) {
-    
+
   debug(`latestSubscription updated!`, true);
   debug(newValue.name, true);
 
