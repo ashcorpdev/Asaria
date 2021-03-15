@@ -8,6 +8,7 @@
 const fs = require("fs");
 const path = require("path");
 const { debug } = require("../debug")
+const { setNodeCG } = require("./nodecg")
 const { client } = require("./twitch/client")
 
 /* --------------------------------------------
@@ -39,7 +40,7 @@ let firstcheer = true;
 let firstsubscription = true;
 
 module.exports = nodecg => {
-
+const streamlabs = require('./streamlabs/api')(nodecg)
 /* --------------------------------------------
 
   NODECG - REGISTER REPLICANTS HERE
