@@ -63,10 +63,26 @@ teamPoints.on("change", (newValue, oldValue) => {
   var wintersembrace = document.getElementById("wintersembrace");
   var etherealbloom = document.getElementById("etherealbloom");
   var shadowgrove = document.getElementById("shadowgrove");
-  eternalflame.innerHTML = newValue.eternalflame;
-  wintersembrace.innerHTML = newValue.wintersembrace;
-  etherealbloom.innerHTML = newValue.etherealbloom;
-  shadowgrove.innerHTML = newValue.shadowgrove;
+  //eternalflame.innerHTML = newValue.eternalflame;
+  //wintersembrace.innerHTML = newValue.wintersembrace;
+  //etherealbloom.innerHTML = newValue.etherealbloom;
+  //shadowgrove.innerHTML = newValue.shadowgrove;
+  $(eternalflame).fadeOut("fast", function() {
+	eternalflame.innerHTML = newValue.eternalflame;
+	$(eternalflame).fadeIn("fast");
+});
+$(wintersembrace).fadeOut("fast", function() {
+	wintersembrace.innerHTML = newValue.wintersembrace;
+  $(wintersembrace).fadeIn("fast");
+});
+$(etherealbloom).fadeOut("fast", function() {
+	etherealbloom.innerHTML = newValue.etherealbloom;
+  $(etherealbloom).fadeIn("fast");
+});
+$(shadowgrove).fadeOut("fast", function() {
+	shadowgrove.innerHTML = newValue.shadowgrove;
+  $(shadowgrove).fadeIn("fast");
+});
 });
 
 repT1Sub.on("change", (newValue, oldValue) => {
