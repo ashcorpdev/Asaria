@@ -8,7 +8,6 @@
 const fs = require("fs");
 const path = require("path");
 const { debug } = require("../debug")
-const { setNodeCG } = require("./nodecg")
 const { client } = require("./twitch/client")
 
 /* --------------------------------------------
