@@ -261,6 +261,7 @@ teamPoints.on("change", (newValue, oldValue) => {
   let teams = JSON.parse(teamlist);
 });
 
+// TODO - Move to streamlabs/api.js
 latestDonation.on("change", (newValue, oldValue) => {
   file = fs.readFileSync(
     path.resolve(__dirname, "../userlist-alliances.json")
@@ -374,6 +375,7 @@ latestSubscription.on("change", (newValue, oldValue) => {
   }
 });
 
+// TODO - Move to twitch/client.js
 client.on("message", (channel, tags, message, self) => {
   if (self) return;
   if (message.toLowerCase() === "!hello") {

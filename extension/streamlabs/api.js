@@ -21,12 +21,7 @@ module.exports = function(nodecg) {
 	streamlabs.on("event", (eventData) => {
 		if (!eventData.for && eventData.type === "donation") {
 		//code to handle donation events
-		console.log(eventData.message, false);
-	/*     nodecg.log.info(
-		  "Donation alert: " + eventData.message[0].name,
-		  eventData.message[0].amount,
-		  eventData.message[0].currency
-		); */
+		debug(eventData.message, false);
 
 		// Reduce characters at end of amount
 		if(typeof eventData.message[0].amount === 'string' || eventData.message[0].amount instanceof String){
@@ -49,16 +44,11 @@ module.exports = function(nodecg) {
 		switch (eventData.type) {
 		  case "follow":
 			//code to handle follow events
-			console.log(eventData.message, false);
+			debug(eventData.message, false);
 			break;
 		  case "subscription":
 			//code to handle subscription events
-			console.log(eventData.message, false);
-	/*         nodecg.log.info(
-			  "Subscription alert: " + eventData.message[0].name,
-			  eventData.message[0].months,
-			  eventData.message[0].sub_plan
-			); */
+			debug(eventData.message, false);
 			latestSubscription.value = {
 			  name: eventData.message[0].name,
 			  sub_plan: eventData.message[0].sub_plan,
@@ -68,11 +58,7 @@ module.exports = function(nodecg) {
 			break;
 		  case "bits":
 			//code to handle donation events
-			console.log(eventData.message, false);
-	/*         nodecg.log.info(
-			  "Cheer alert: " + eventData.message[0].name,
-			  eventData.message[0].amount
-			); */
+			debug(eventData.message, false);
 			latestCheer.value = {
 			  name: eventData.message[0].name,
 			  amount: eventData.message[0].amount,
@@ -81,7 +67,7 @@ module.exports = function(nodecg) {
 			break;
 		  default:
 			//default case
-			console.log(eventData.message, false);
+			debug(eventData.message, false);
 		}
 	  }
 	});
