@@ -19,7 +19,8 @@ module.exports = function(nodecg) {
 	const latestCheer = nodecg.Replicant("latestCheer");
 	const latestSubscription = nodecg.Replicant("latestSubscription");
 	streamlabs.on("event", (eventData) => {
-		if (!eventData.for && eventData.type === "donation") {
+		console.log(eventData);
+		if (eventData.for === "streamlabs" && eventData.type === "donation") {
 		//code to handle donation events
 		debug(eventData.message, false);
 
