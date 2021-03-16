@@ -261,6 +261,120 @@ teamPoints.on("change", (newValue, oldValue) => {
   let teams = JSON.parse(teamlist);
 });
 
+// TODO - Move to streamlabs/api.js
+latestDonation.on("change", (newValue, oldValue) => {
+  file = fs.readFileSync(
+    path.resolve(__dirname, "../userlist-alliances.json")
+  );
+  userlist = JSON.parse(file);
+  // Checks if the userlist already exists in the file.
+  if (userlist.hasOwnProperty(newValue.name.toLowerCase())) {
+    if (firstdonation === true) {
+      firstdonation = false;
+    } else {
+
+  debug(`latestDonation updated!`, true);
+      debug("New donation: " + newValue.name, true);
+      //debug('Not first load, updating file');
+      const pointsCalc = newValue.amount * tip.value;
+      const initialPoints = userlist[newValue.name.toLowerCase()];
+      debug(initialPoints, false);
+      const updatedPoints = pointsCalc + initialPoints;
+      userlist[newValue.name.toLowerCase()] = updatedPoints;
+      // Formats to human-readable when updating the json file.
+      const data = JSON.stringify(userlist, null, 2);
+      fs.writeFileSync(
+        path.resolve(__dirname, "../userlist-alliances.json"),
+        data
+      );
+      debug(updatedPoints, false);
+    }
+  } else {
+    debug("User not found!", false);
+
+    // 5 is equal to number of points per £5 donation.
+    const pointsCalc = newValue.amount * tip.value;
+    // Rounds the points down to the nearest integer.
+    const actualPoints = Math.floor(pointsCalc);
+    debug(actualPoints, false);
+    // Adds the new userlist and their point value to the object.
+    userlist[newValue.name.toLowerCase()] = actualPoints;
+    // Formats to human-readable when updating the json file.
+    const data = JSON.stringify(userlist, null, 2);
+    fs.writeFileSync(
+      path.resolve(__dirname, "../userlist-alliances.json"),
+      data
+    );
+  }
+});
+
+latestCheer.on("change", (newValue, oldValue) => {
+  file = fs.readFileSync(
+    path.resolve(__dirname, "../userlist-alliances.json")
+  );
+  userlist = JSON.parse(file);
+  // Checks if the userlist already exists in the file.
+  if (userlist.hasOwnProperty(newValue.name.toLowerCase())) {
+    if (firstcheer === true) {
+      firstcheer = false;
+    } else {
+      debug(`latestCheer updated!`, true);
+      debug(`${newValue.name} found!`, true);
+      const pointsCalc = (newValue.amount / 100) * cheer.value;
+      // Rounds the points down to the nearest integer.
+      const actualPoints = Math.floor(pointsCalc);
+      const initialPoints = userlist[newValue.name.toLowerCase()];
+      const updatedPoints = actualPoints + initialPoints;
+      userlist[newValue.name.toLowerCase()] = updatedPoints;
+      // Formats to human-readable when updating the json file.
+      const data = JSON.stringify(userlist, null, 2);
+      fs.writeFileSync(
+        path.resolve(__dirname, "../userlist-alliances.json"),
+        data
+      );
+    }
+  } else {
+    debug("User not found!", false);
+    // 5 is equal to number of points per £5 donation.
+    const pointsCalc = (newValue.amount / 100) * cheer.value;
+    // Rounds the points down to the nearest integer.
+    const actualPoints = Math.floor(pointsCalc);
+    // Adds the new userlist and their point value to the object.
+    userlist[newValue.name.toLowerCase()] = actualPoints;
+    // Formats to human-readable when updating the json file.
+    const data = JSON.stringify(userlist, null, 2);
+    fs.writeFileSync(
+      path.resolve(__dirname, "../userlist-alliances.json"),
+      data
+    );
+  }
+});
+
+// TODO - Support PRIME Subs
+latestSubscription.on("change", (newValue, oldValue) => {
+  file = fs.readFileSync(
+    path.resolve(__dirname, "../userlist-alliances.json")
+  );
+  userlist = JSON.parse(file);
+
+  // Check if this is the first load of the system. If it is, dismiss the check.
+  if (!firstsubscription) {
+
+  debug(`latestSubscription updated!`, true);
+  debug(newValue.name, true);
+
+    if (checkGifted(newValue)) {
+      // Gifted sub!
+      givePoints(newValue.sub_plan, newValue, true);
+    } else {
+      givePoints(newValue.sub_plan, newValue, false);
+    }
+  } else {
+    debug("Extension - First boot; ignoring checks.", true);
+    firstsubscription = false;
+  }
+});
+
   nodecg.listenFor("enableCounting", (boolean) => {
     if(boolean == true){
       client.connect();
