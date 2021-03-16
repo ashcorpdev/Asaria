@@ -8,7 +8,6 @@
 const fs = require("fs");
 const path = require("path");
 const { debug } = require("../debug")
-const { client } = require("./twitch/client")
 
 /* --------------------------------------------
 
@@ -39,6 +38,8 @@ let firstcheer = true;
 let firstsubscription = true;
 
 module.exports = nodecg => {
+const { client, setNode } = require("./twitch/client")
+setNode(nodecg);
 const streamlabs = require('./streamlabs/api')(nodecg)
 /* --------------------------------------------
 
@@ -457,4 +458,9 @@ latestSubscription.on("change", (newValue, oldValue) => {
       ack(null, value * 2);
     }
   });
+
+  nodecg.listenFor("updateTeamPoints", (value) => {
+    console.log(value);
+    updateTeamPoints(value.team, value.user);
+  })
 };

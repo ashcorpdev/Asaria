@@ -9,6 +9,7 @@ const clientID = opts["tw_client"];
 const accessToken = opts["tw_token"];
 const channel = opts["tw_channel"];
 const tmi = require("tmi.js");
+let node;
 
 const client = new tmi.Client({
   options: { debug: false },
@@ -51,7 +52,8 @@ client.on("message", (channel, tags, message, self) => {
 
   switch (message.toLowerCase()) {
     case "#eternalflame":
-      updateTeamPoints("eternalflame", tags.username, channel);
+      //updateTeamPoints("eternalflame", tags.username, channel);
+      node.sendMessage("updateTeamPoints", {team: "eternalflame", user: tags.username})
       break;
     case "#wintersembrace":
       updateTeamPoints("wintersembrace", tags.username, channel);
@@ -100,5 +102,8 @@ client.on("message", (channel, tags, message, self) => {
 });
 
 module.exports = {
-	client
+  client,
+  setNode(nodecg){
+    node = nodecg;
+  }
 }
