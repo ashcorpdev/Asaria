@@ -5,7 +5,7 @@ let config = fs.readFileSync(path.resolve(__dirname, "../../config.json"));
 let opts = JSON.parse(config);
 const io = require('socket.io-client');
 //Connect to socket
-const streamlabs = io(`https://sockets.streamlabs.com?token=${opts["sl_socket"]}`, {
+const streamlabs = io(`https://sockets.streamlabs.com?token=${opts["streamlabs"].socket_token}`, {
   transports: ["websocket"],
 });
 /* --------------------------------------------
@@ -73,5 +73,5 @@ module.exports = function(nodecg) {
 	  }
 	});
 
-	
+
 }

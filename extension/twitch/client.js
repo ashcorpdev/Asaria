@@ -4,10 +4,10 @@ const { debug } = require("../../debug")
 let config = fs.readFileSync(path.resolve(__dirname, "../../config.json"));
 //let config = require('../../config.json');
 let opts = JSON.parse(config);
-const username = opts["tw_username"];
-const clientID = opts["tw_client"];
-const accessToken = opts["tw_token"];
-const channel = opts["tw_channel"];
+const username = opts["twitch"].bot_username;
+const clientID = opts["twitch"].bot_client_token;
+const accessToken = opts["twitch"].bot_oauth_token;
+const channel = opts["twitch"].streamer_channel;
 const tmi = require("tmi.js");
 let node;
 
