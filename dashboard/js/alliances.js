@@ -24,6 +24,8 @@ const addButton = document.getElementById("add-button");
 const removeButton = document.getElementById("remove-button");
 const enableButton = document.getElementById("enable-button");
 const disableButton = document.getElementById("disable-button");
+const resetPointsButton = document.getElementById("reset-points-button");
+const resetTeamPointsButton = document.getElementById("reset-teams-button");
 const valueInput = document.getElementById("valueInput");
 const teamSelection = document.getElementById("teamSelection");
 const t1Sub = document.getElementById("t1Sub");
@@ -67,22 +69,22 @@ teamPoints.on("change", (newValue, oldValue) => {
   //wintersembrace.innerHTML = newValue.wintersembrace;
   //etherealbloom.innerHTML = newValue.etherealbloom;
   //shadowgrove.innerHTML = newValue.shadowgrove;
-  $(eternalflame).fadeOut("fast", function() {
-	eternalflame.innerHTML = newValue.eternalflame;
-	$(eternalflame).fadeIn("fast");
-});
-$(wintersembrace).fadeOut("fast", function() {
-	wintersembrace.innerHTML = newValue.wintersembrace;
-  $(wintersembrace).fadeIn("fast");
-});
-$(etherealbloom).fadeOut("fast", function() {
-	etherealbloom.innerHTML = newValue.etherealbloom;
-  $(etherealbloom).fadeIn("fast");
-});
-$(shadowgrove).fadeOut("fast", function() {
-	shadowgrove.innerHTML = newValue.shadowgrove;
-  $(shadowgrove).fadeIn("fast");
-});
+  $(eternalflame).fadeOut("fast", function () {
+    eternalflame.innerHTML = newValue.eternalflame;
+    $(eternalflame).fadeIn("fast");
+  });
+  $(wintersembrace).fadeOut("fast", function () {
+    wintersembrace.innerHTML = newValue.wintersembrace;
+    $(wintersembrace).fadeIn("fast");
+  });
+  $(etherealbloom).fadeOut("fast", function () {
+    etherealbloom.innerHTML = newValue.etherealbloom;
+    $(etherealbloom).fadeIn("fast");
+  });
+  $(shadowgrove).fadeOut("fast", function () {
+    shadowgrove.innerHTML = newValue.shadowgrove;
+    $(shadowgrove).fadeIn("fast");
+  });
 });
 
 repT1Sub.on("change", (newValue, oldValue) => {
@@ -143,7 +145,10 @@ latestCheer.on("change", (newValue, oldValue) => {
 });
 
 latestSubscription.on("change", (newValue, oldValue) => {
-  console.log(`latestSubscription changed from ${oldValue} to ${newValue}`, false);
+  console.log(
+    `latestSubscription changed from ${oldValue} to ${newValue}`,
+    false
+  );
   console.log(JSON.stringify(newValue), false);
   var subscriptionText = document.getElementById("latestSubscription");
   subscriptionText.innerHTML =
@@ -173,6 +178,13 @@ disableButton.addEventListener("click", function () {
   enableCounting(false);
   enableButton.disabled = false;
   disableButton.disabled = true;
+});
+
+resetPointsButton.addEventListener("click", function () {
+});
+
+resetTeamPointsButton.addEventListener("click", function () {
+	resetTeams();
 });
 
 setT1Sub.addEventListener("click", function () {
@@ -291,3 +303,20 @@ function updateTeams(option, amount) {
     }
   }
 }
+
+function resetTeams() {
+		updatedPoints = 0;
+		for(i = 0; i < teamSelection.options.length; i++) {
+			console.log(teamSelection.options[i].value);
+			let selected = teamSelection.options[i].value;
+			if(selected !== 'choose'){
+				// Not the 'choose team' option, do stuff!
+				nodecg.sendMessage("updateCount", { updatedPoints, selected }).then((result) => {
+					console.log("Values updated!", false);
+				})
+				.catch((error) => {
+					console.error(error);
+				});
+			}
+			}
+  }
