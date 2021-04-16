@@ -9,7 +9,7 @@ const clientID = opts["twitch"].bot_client_token;
 const accessToken = opts["twitch"].bot_oauth_token;
 const channel = opts["twitch"].streamer_channel;
 const tmi = require("tmi.js");
-let node;
+const node = require('../nodecg').get();
 let status;
 
 const client = new tmi.Client({
@@ -25,19 +25,19 @@ const client = new tmi.Client({
   channels: [channel],
 });
 client.connect();
-//const connectionStatusRep = node.Replicant('connectionStatus');
+const connectionStatusRep = node.Replicant('connectionStatus');
 debug(`Twitch client connected to ${channel}.`, true)
 
 client.on("connected", (address, port) => {
 	console.log(`Twitch client connected.`)
-	status = 'connected';
-	//connectionStatusRep.value = status;
+	status = 'Connected';
+	connectionStatusRep.value = status;
 });
 
 client.on("disconnected", (reason) => {
 	console.log(`Twitch client disconnected. Reason: ${reason}`);
-	status = 'disconnected';
-	//connectionStatusRep.value = status;
+	status = 'Disconnected';
+	connectionStatusRep.value = status;
 });
 
 client.on("message", (channel, tags, message, self) => {
@@ -115,9 +115,6 @@ client.on("message", (channel, tags, message, self) => {
 });
 
 module.exports = {
-	setNode(nodecg){
-	  node = nodecg;
-	},
   client,
   status
 }

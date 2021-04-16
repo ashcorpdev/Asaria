@@ -8,6 +8,7 @@
 const fs = require("fs");
 const path = require("path");
 const { debug } = require("../debug")
+const nodecgApi = require('./nodecg')
 
 /* --------------------------------------------
 
@@ -38,8 +39,8 @@ let firstcheer = true;
 let firstsubscription = true;
 
 module.exports = nodecg => {
-const { client, setNode, status } = require("./twitch/client")
-setNode(nodecg);
+nodecgApi.set(nodecg);
+const { client, status } = require("./twitch/client")
 const streamlabs = require('./streamlabs/api')(nodecg)
 /* --------------------------------------------
 

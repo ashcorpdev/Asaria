@@ -160,7 +160,11 @@ latestSubscription.on("change", (newValue, oldValue) => {
 connectionStatus.on("change", (newValue, oldValue) => {
 	console.log(`Twitch connection status changed!`, false);
 	console.log(newValue)
-	statusText.innerHTML = newValue.value;
+	if(newValue === "Connected"){
+		statusText.innerHTML = "<i class='fas fa-heartbeat' style='color: green'></i> <strong>" + newValue + "</strong>";
+	}else{
+		statusText.innerHTML = "<i class='fas fa-heartbeat' style='color: red'></i> <strong>" + newValue + "</strong>";
+	}
 });
 
 /* --------------------------------------------
