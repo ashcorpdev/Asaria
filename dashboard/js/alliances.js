@@ -180,14 +180,6 @@ disableButton.addEventListener("click", function () {
   disableButton.disabled = true;
 });
 
-resetPointsButton.addEventListener("click", function () {
-	resetUserPoints();
-});
-
-resetTeamPointsButton.addEventListener("click", function () {
-	resetTeams();
-});
-
 setT1Sub.addEventListener("click", function () {
   updatePointsValue("t1");
 });
@@ -304,29 +296,3 @@ function updateTeams(option, amount) {
     }
   }
 }
-
-function resetTeams() {
-		updatedPoints = 0;
-		for(i = 0; i < teamSelection.options.length; i++) {
-			console.log(teamSelection.options[i].value);
-			let selected = teamSelection.options[i].value;
-			if(selected !== 'choose'){
-				// Not the 'choose team' option, do stuff!
-				nodecg.sendMessage("updateCount", { updatedPoints, selected }).then((result) => {
-					console.log("Values updated!", false);
-				})
-				.catch((error) => {
-					console.error(error);
-				});
-			}
-			}
-  }
-
-  function resetUserPoints() {
-	nodecg.sendMessage("resetUserPoints", true).then((result) => {
-		console.log("Reset user points!", false);
-	})
-	.catch((error) => {
-		console.error(error);
-	});
-  }

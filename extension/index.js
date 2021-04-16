@@ -475,4 +475,24 @@ latestSubscription.on("change", (newValue, oldValue) => {
 		data
 	  );
   });
+
+    nodecg.listenFor("resetTeamPoints", (value) => {
+	file = fs.readFileSync(
+		path.resolve(__dirname, "../teamlist-alliances.json")
+	  );
+	  teamlist = JSON.parse(file);
+	  Object.keys(teamlist).forEach(v => teamlist[v] = 0);
+	  const data = JSON.stringify(teamlist, null, 2);
+	  fs.writeFileSync(
+		path.resolve(__dirname, "../teamlist-alliances.json"),
+		data
+	  );
+
+	  teamPoints.value = {
+		eternalflame: teams.eternalflame,
+		wintersembrace: teams.wintersembrace,
+		etherealbloom: teams.etherealbloom,
+		shadowgrove: teams.shadowgrove,
+	  };
+  });
 };

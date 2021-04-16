@@ -26,7 +26,6 @@ const client = new tmi.Client({
 client.connect();
 debug(`Twitch client connected to ${channel}.`, true)
 
-// TODO - Move to twitch/client.js
 client.on("message", (channel, tags, message, self) => {
   if (self) return;
   if (message.toLowerCase() === "!hello") {

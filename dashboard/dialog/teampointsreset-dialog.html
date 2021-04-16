@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<body>
+	<p>This will reset all team points - are you sure you wish to do this?</p>
+</body>
+<script>
+	document.addEventListener('dialog-opened', function() {
+		//Dialog was opened!
+	});
+	document.addEventListener('dialog-confirmed', function() {
+    // The user pressed the confirm button.
+	resetTeams();
+  });
+  document.addEventListener('dialog-dismissed', function() {
+    // The user pressed the dismiss button.
+  });
+  function resetTeams() {
+
+	nodecg.sendMessage("resetTeamPoints", true).then((result) => {
+		console.log("Reset team points!", false);
+	})
+	.catch((error) => {
+		console.error(error);
+	});
+
+  }
+</script>
+</html>
