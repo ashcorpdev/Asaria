@@ -75,7 +75,7 @@ const streamlabs = require('./streamlabs/api')(nodecg)
   NODECG - REGISTER FUNCTIONS HERE
 
 -------------------------------------------- */
-  function checkGifted(newValue) {
+  function checkGiftedStatus(newValue) {
     let gifterName = newValue.gifter;
     if (gifterName !== "" && gifterName !== null) {
       debug("Gifter: " + gifterName, false);
@@ -85,7 +85,7 @@ const streamlabs = require('./streamlabs/api')(nodecg)
     }
   }
 
-  function givePoints(tier, newValue, gifted) {
+  function givePointsToUsers(tier, newValue, gifted) {
     let points = 0;
     let initialPoints = 0;
     let updatedPoints = 0;
@@ -262,7 +262,6 @@ teamPoints.on("change", (newValue, oldValue) => {
   let teams = JSON.parse(teamlist);
 });
 
-// TODO - Move to streamlabs/api.js
 latestDonation.on("change", (newValue, oldValue) => {
   file = fs.readFileSync(
     path.resolve(__dirname, "../userlist-alliances.json")
@@ -364,11 +363,11 @@ latestSubscription.on("change", (newValue, oldValue) => {
   debug(`latestSubscription updated!`, true);
   debug(newValue.name, true);
 
-    if (checkGifted(newValue)) {
+    if (checkGiftedStatus(newValue)) {
       // Gifted sub!
-      givePoints(newValue.sub_plan, newValue, true);
+      givePointsToUsers(newValue.sub_plan, newValue, true);
     } else {
-      givePoints(newValue.sub_plan, newValue, false);
+      givePointsToUsers(newValue.sub_plan, newValue, false);
     }
   } else {
     debug("Extension - First boot; ignoring checks.", true);

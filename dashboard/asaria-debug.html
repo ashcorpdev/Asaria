@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<!-- <link rel="stylesheet" href="../dashboard/css/mystyles.css" / -->
+	<script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+	<style>
+		.monospace {
+			font-family: monospace;
+		}
+	</style>
+</head>
+
+<body>
+	<section class="hero" id="main-header">
+		<div class="hero-body">
+			<div class="container">
+				<h1 class="title has-text-centered control-header">
+					Asaria
+				</h1>
+				<h2 class="subtitle is-3 has-text-centered control-subtitle">
+					ALLIANCES
+				</h2>
+			</div>
+		</div>
+	</section>
+	<section class="section" style="padding: 1.5rem 1.5rem">
+		<div class="container">
+			<nav class="level box" id="team-status">
+				<div class="level-item has-text-centered">
+					<div>
+						<p class="heading">Eternal Flame</p>
+						<p class="title">
+							<span id="eternalflame"></span>
+						</p>
+					</div>
+				</div>
+				<div class="is-divider-vertical"></div>
+				<div class="level-item has-text-centered">
+					<div>
+						<p class="heading">Winters Embrace</p>
+						<p class="title">
+							<span id="wintersembrace"></span>
+						</p>
+					</div>
+				</div>
+				<div class="is-divider-vertical"></div>
+				<div class="level-item has-text-centered">
+					<div>
+						<p class="heading">Ethereal Bloom</p>
+						<p class="title">
+							<span id="etherealbloom"></span>
+						</p>
+					</div>
+				</div>
+				<div class="is-divider-vertical"></div>
+				<div class="level-item has-text-centered">
+					<div>
+						<p class="heading">Shadow Grove</p>
+						<p class="title">
+							<span id="shadowgrove"></span>
+						</p>
+					</div>
+				</div>
+			</nav>
+			</p>
+		</div>
+	</section>
+	<section class="section">
+		<div id="container">
+			<div class="tile is-ancestor">
+				<div class="tile is-4 is-parent">
+					<div class="tile is-child box">
+						<p class="title has-text-centered">Manage Team Points</p>
+						<div class="columns">
+							<div class="column">
+								<div class="field">
+									<p class="control is-expanded">
+									<div class="select is-fullwidth">
+										<select id="teamSelection">
+											<option value="choose">Choose team</option>
+											<option value="eternalflame">Eternal Flame</option>
+											<option value="wintersembrace">Winters Embrace</option>
+											<option value="etherealbloom">Ethereal Bloom</option>
+											<option value="shadowgrove">Shadow Grove</option>
+										</select>
+									</div>
+									</p>
+								</div>
+								<p class="control">
+								<div class="field is-grouped is-horizontal">
+									<button class="button is-danger" id="remove-button">-</button>
+									<input class="input" type="text" placeholder="Change team points" id="valueInput">
+									<button class="button is-primary" id="add-button">+</button>
+								</div>
+								</p>
+								<p class="control is-expanded">
+								<div class="buttons is-grouped">
+									<button class="button is-danger is-fullwidth" id="disable-button">Disable Counting</button>
+									<button class="button is-primary is-fullwidth" id="enable-button">Enable Counting</button>
+								</div>
+								</p>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="tile is-4 is-parent">
+					<div class="tile is-child box">
+						<p class="title has-text-centered">Manage Point Values</p>
+						<div class="columns">
+							<div class="column">
+								<p class="control">
+									<label class="label" id="t1SubLabel">Set Tier 1 Sub Value</label>
+								<div class="field is-grouped">
+									<input class="input" id="setT1SubText" type="text" name="setT1Sub"
+										placeholder="Enter value">
+									<input class="button" id="setT1Sub" type="submit" value="Set">
+									<input class="input" id="t1Sub" type="text" value="5" disabled>
+								</div>
+								</p>
+								<p class="control">
+									<label class="label" id="t2SubLabel">Set Tier 2 Sub Value</label>
+								<div class="field is-grouped">
+									<input class="input" id="setT2SubText" type="text" name="setT2Sub"
+										placeholder="Enter value">
+									<input class="button" id="setT2Sub" type="submit" value="Set">
+									<input class="input" id="t2Sub" type="text" value="10" disabled>
+								</div>
+								</p>
+
+								<p class="control">
+									<label class="label" id="t3SubLabel">Set Tier 3 Sub Value</label>
+								<div class="field is-grouped">
+									<input class="input" id="setT3SubText" type="text" name="setT3Sub"
+										placeholder="Enter value">
+									<input class="button" id="setT3Sub" type="submit" value="Set">
+									<input class="input" id="t3Sub" type="text" value="15" disabled>
+								</div>
+								</p>
+								<p class="control">
+									<label class="label" id="giftSubLabel">Set Gifted Sub Value</label>
+								<div class="field is-grouped">
+									<input class="input" id="setGiftedSubText" type="text" name="setGiftedSub"
+										placeholder="Enter value">
+									<input class="button" id="setGiftedSub" type="submit" value="Set">
+									<input class="input" id="giftedSub" type="text" value="1" disabled>
+								</div>
+								</p>
+								<p class="control">
+									<label class="label" id="subGifterLabel">Set Gifter Sub Value</label>
+								<div class="field is-grouped">
+									<input class="input" id="setSubGifterText" type="text" name="setSubGifter"
+										placeholder="Enter value">
+									<input class="button" id="setSubGifter" type="submit" value="Set">
+									<input class="input" id="subGifter" type="text" value="1" disabled>
+								</div>
+								</p>
+								<p class="control">
+									<label class="label" id="cheerLabel">Set Cheer Value (per 100 bits)</label>
+								<div class="field is-grouped">
+									<input class="input" id="setCheerText" type="text" name="setCheer"
+										placeholder="Enter value">
+									<input class="button" id="setCheer" type="submit" value="Set">
+									<input class="input" id="cheer" type="text" value="1" disabled>
+								</div>
+								</p>
+								<p class="control">
+									<label class="label" id="tipLabel">Set Tip Value (per £1.00 tip)</label>
+								<div class="field is-grouped">
+									<input class="input" id="setTipText" type="text" name="setTip"
+										placeholder="Enter value">
+									<input class="button" id="setTip" type="submit" value="Set">
+									<input class="input" id="tip" type="text" value="1" disabled>
+								</div>
+								</p>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="tile is-4 is-parent">
+					<div class="tile is-child box">
+						<h1 class="title has-text-centered">
+							Event List
+						</h1>
+						<h2 class="subtitle has-text-centered">
+							<div class="notification">
+								<i class="fas fa-star"></i>
+								<strong>Recent Subscription:</strong> <span id="latestSubscription">kaypowxd subscribed
+									for 11 months.</span>
+							</div>
+							<div class="notification">
+								<i class="fas fa-gem"></i>
+								<strong>Recent Cheer:</strong> <span id="latestCheer">bochicchio cheered 1000
+									bits.</span>
+							</div>
+							<div class="notification">
+								<i class="fas fa-coins"></i>
+								<strong>Recent Tip:</strong> <span id="latestDonation">lordrevanheart tipped 10
+									USD.</span>
+							</div>
+						</h2>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	<footer class="footer" style="padding: 1rem 0.5rem 1rem;">
+		<div class="content has-text-centered">
+			<p>
+				<strong>Asaria</strong> developed by <a href="https://ashen.live">Ashen</a>.
+			</p>
+		</div>
+	</footer>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<script src="js/alliances.js" type="text/javascript"></script>
+</body>
+</html>
