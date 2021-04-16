@@ -181,6 +181,7 @@ disableButton.addEventListener("click", function () {
 });
 
 resetPointsButton.addEventListener("click", function () {
+	resetUserPoints();
 });
 
 resetTeamPointsButton.addEventListener("click", function () {
@@ -319,4 +320,13 @@ function resetTeams() {
 				});
 			}
 			}
+  }
+
+  function resetUserPoints() {
+	nodecg.sendMessage("resetUserPoints", true).then((result) => {
+		console.log("Reset user points!", false);
+	})
+	.catch((error) => {
+		console.error(error);
+	});
   }

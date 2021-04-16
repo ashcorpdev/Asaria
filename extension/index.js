@@ -461,5 +461,18 @@ latestSubscription.on("change", (newValue, oldValue) => {
   nodecg.listenFor("updateTeamPoints", (value) => {
     console.log(value);
     updateTeamPoints(value.team, value.user);
-  })
+  });
+
+  nodecg.listenFor("resetUserPoints", (value) => {
+	file = fs.readFileSync(
+		path.resolve(__dirname, "../userlist-alliances.json")
+	  );
+	  userlist = JSON.parse(file);
+	  Object.keys(userlist).forEach(v => userlist[v] = 0);
+	  const data = JSON.stringify(userlist, null, 2);
+	  fs.writeFileSync(
+		path.resolve(__dirname, "../userlist-alliances.json"),
+		data
+	  );
+  });
 };
