@@ -38,7 +38,7 @@ let firstcheer = true;
 let firstsubscription = true;
 
 module.exports = nodecg => {
-const { client, setNode } = require("./twitch/client")
+const { client, setNode, status } = require("./twitch/client")
 setNode(nodecg);
 const streamlabs = require('./streamlabs/api')(nodecg)
 /* --------------------------------------------
@@ -62,6 +62,7 @@ const streamlabs = require('./streamlabs/api')(nodecg)
   const tip = nodecg.Replicant("tip", { defaultValue: 1 });
   const cheer = nodecg.Replicant("cheer", { defaultValue: 1 });
   const enableCounting = nodecg.Replicant("enableCounting", { defaultValue: true });
+  const connectionStatus = nodecg.Replicant("connectionStatus", { defaultValue: 'disconnected'});
 
   teamPoints.value = {
     eternalflame: teams.eternalflame,

@@ -14,6 +14,7 @@ const repGiftedSub = nodecg.Replicant("giftedsub");
 const repSubGifter = nodecg.Replicant("subgifter");
 const repTip = nodecg.Replicant("tip");
 const repCheer = nodecg.Replicant("cheer");
+const connectionStatus = nodecg.Replicant("connectionStatus");
 
 /* --------------------------------------------
 
@@ -49,6 +50,7 @@ const setGiftedSubText = document.getElementById("setGiftedSubText");
 const setSubGifterText = document.getElementById("setSubGifterText");
 const setCheerText = document.getElementById("setCheerText");
 const setTipText = document.getElementById("setTipText");
+const statusText = document.getElementById("statusText");
 
 enableButton.disabled = true;
 disableButton.disabled = false;
@@ -153,6 +155,12 @@ latestSubscription.on("change", (newValue, oldValue) => {
   var subscriptionText = document.getElementById("latestSubscription");
   subscriptionText.innerHTML =
     newValue.name + " subscribed for " + newValue.months + " months.";
+});
+
+connectionStatus.on("change", (newValue, oldValue) => {
+	console.log(`Twitch connection status changed!`, false);
+	console.log(newValue)
+	statusText.innerHTML = newValue.value;
 });
 
 /* --------------------------------------------
