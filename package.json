@@ -93,17 +93,8 @@
   "dependencies": {
     "bulma": "^0.8.2",
     "bulma-extensions": "^6.2.7",
-<<<<<<< HEAD
-    "node-sass": "^4.14.1",
-    "tmi.js": "^1.7.2",
-    "twitch": "^3.7.1",
-    "twitch-chat-client": "^3.7.3",
-    "twitch-pubsub-client": "^3.7.2",
-    "twitch-webhooks": "^3.7.3"
-=======
     "node-sass": "^4.13.1",
     "tmi.js": "^1.5.0"
->>>>>>> 12de694fb7341eb82ac986b0132f210cc817fdcc
   },
   "scripts": {
     "css-build": "node-sass --omit-source-map-url dashboard/sass/mystyles.scss dashboard/css/mystyles.css",
