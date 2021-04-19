@@ -1,10 +1,3 @@
-const socketToken =
-  "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbiI6IjNGM0ZCRUQyMEQ2N0EwNDEyNzI5IiwicmVhZF9vbmx5Ijp0cnVlLCJwcmV2ZW50X21hc3RlciI6dHJ1ZSwidHdpdGNoX2lkIjoiODg0ODY3NjcifQ.dXCDrfNSi-SF1ZgHIZSc-Z4gq2LTcUqlmiq0hSNW_2w";
-//Connect to socket
-const streamlabs = io(`https://sockets.streamlabs.com?token=${socketToken}`, {
-  transports: ["websocket"],
-});
-
 /* --------------------------------------------
 
   NODECG - REGISTER REPLICANTS HERE
@@ -21,6 +14,7 @@ const repGiftedSub = nodecg.Replicant("giftedsub");
 const repSubGifter = nodecg.Replicant("subgifter");
 const repTip = nodecg.Replicant("tip");
 const repCheer = nodecg.Replicant("cheer");
+const connectionStatus = nodecg.Replicant("connectionStatus");
 
 /* --------------------------------------------
 
@@ -31,6 +25,8 @@ const addButton = document.getElementById("add-button");
 const removeButton = document.getElementById("remove-button");
 const enableButton = document.getElementById("enable-button");
 const disableButton = document.getElementById("disable-button");
+const resetPointsButton = document.getElementById("reset-points-button");
+const resetTeamPointsButton = document.getElementById("reset-teams-button");
 const valueInput = document.getElementById("valueInput");
 const teamSelection = document.getElementById("teamSelection");
 const t1Sub = document.getElementById("t1Sub");
@@ -54,6 +50,7 @@ const setGiftedSubText = document.getElementById("setGiftedSubText");
 const setSubGifterText = document.getElementById("setSubGifterText");
 const setCheerText = document.getElementById("setCheerText");
 const setTipText = document.getElementById("setTipText");
+const statusText = document.getElementById("statusText");
 
 enableButton.disabled = true;
 disableButton.disabled = false;
@@ -70,10 +67,26 @@ teamPoints.on("change", (newValue, oldValue) => {
   var wintersembrace = document.getElementById("wintersembrace");
   var etherealbloom = document.getElementById("etherealbloom");
   var shadowgrove = document.getElementById("shadowgrove");
-  eternalflame.innerHTML = newValue.eternalflame;
-  wintersembrace.innerHTML = newValue.wintersembrace;
-  etherealbloom.innerHTML = newValue.etherealbloom;
-  shadowgrove.innerHTML = newValue.shadowgrove;
+  //eternalflame.innerHTML = newValue.eternalflame;
+  //wintersembrace.innerHTML = newValue.wintersembrace;
+  //etherealbloom.innerHTML = newValue.etherealbloom;
+  //shadowgrove.innerHTML = newValue.shadowgrove;
+  $(eternalflame).fadeOut("fast", function () {
+    eternalflame.innerHTML = newValue.eternalflame;
+    $(eternalflame).fadeIn("fast");
+  });
+  $(wintersembrace).fadeOut("fast", function () {
+    wintersembrace.innerHTML = newValue.wintersembrace;
+    $(wintersembrace).fadeIn("fast");
+  });
+  $(etherealbloom).fadeOut("fast", function () {
+    etherealbloom.innerHTML = newValue.etherealbloom;
+    $(etherealbloom).fadeIn("fast");
+  });
+  $(shadowgrove).fadeOut("fast", function () {
+    shadowgrove.innerHTML = newValue.shadowgrove;
+    $(shadowgrove).fadeIn("fast");
+  });
 });
 
 repT1Sub.on("change", (newValue, oldValue) => {
@@ -134,85 +147,24 @@ latestCheer.on("change", (newValue, oldValue) => {
 });
 
 latestSubscription.on("change", (newValue, oldValue) => {
-  console.log(`latestSubscription changed from ${oldValue} to ${newValue}`, false);
+  console.log(
+    `latestSubscription changed from ${oldValue} to ${newValue}`,
+    false
+  );
   console.log(JSON.stringify(newValue), false);
   var subscriptionText = document.getElementById("latestSubscription");
   subscriptionText.innerHTML =
     newValue.name + " subscribed for " + newValue.months + " months.";
 });
 
-/* --------------------------------------------
-
-  STREAMLABS - REGISTER LISTENERS HERE
-
--------------------------------------------- */
-//Perform Action on event
-streamlabs.on("event", (eventData) => {
-    if (!eventData.for && eventData.type === "donation") {
-    //code to handle donation events
-    console.log(eventData.message, false);
-    nodecg.log.info(
-      "Donation alert: " + eventData.message[0].name,
-      eventData.message[0].amount,
-      eventData.message[0].currency
-    );
-
-    // Reduce characters at end of amount
-    if(typeof eventData.message[0].amount === 'string' || eventData.message[0].amount instanceof String){
-      let amounts = eventData.message[0].amount;
-      let newamount = parseInt(amounts.substring(0, amounts.length - 8));
-      latestDonation.value = {
-        name: eventData.message[0].name,
-        amount: newamount,
-        currency: eventData.message[0].currency,
-      };
-    }else{
-      latestDonation.value = {
-        name: eventData.message[0].name,
-        amount: eventData.message[0].amount,
-        currency: eventData.message[0].currency,
-      };
-    };
-  }
-  if (eventData.for === "twitch_account") {
-    switch (eventData.type) {
-      case "follow":
-        //code to handle follow events
-        console.log(eventData.message, false);
-        break;
-      case "subscription":
-        //code to handle subscription events
-        console.log(eventData.message, false);
-        nodecg.log.info(
-          "Subscription alert: " + eventData.message[0].name,
-          eventData.message[0].months,
-          eventData.message[0].sub_plan
-        );
-        latestSubscription.value = {
-          name: eventData.message[0].name,
-          sub_plan: eventData.message[0].sub_plan,
-          months: eventData.message[0].months,
-          gifter: eventData.message[0].gifter,
-        };
-        break;
-      case "bits":
-        //code to handle donation events
-        console.log(eventData.message, false);
-        nodecg.log.info(
-          "Cheer alert: " + eventData.message[0].name,
-          eventData.message[0].amount
-        );
-        latestCheer.value = {
-          name: eventData.message[0].name,
-          amount: eventData.message[0].amount,
-        };
-
-        break;
-      default:
-        //default case
-        console.log(eventData.message, false);
-    }
-  }
+connectionStatus.on("change", (newValue, oldValue) => {
+	console.log(`Twitch connection status changed!`, false);
+	console.log(newValue)
+	if(newValue === "Connected"){
+		statusText.innerHTML = "<i class='fas fa-heartbeat' style='color: green'></i> <strong>" + newValue + "</strong>";
+	}else{
+		statusText.innerHTML = "<i class='fas fa-heartbeat' style='color: red'></i> <strong>" + newValue + "</strong>";
+	}
 });
 
 /* --------------------------------------------

@@ -7397,7 +7397,10 @@ html {
   background: linear-gradient(to right, #ff6e7f, #bfe9ff) fixed; }
 
 body {
-  background: linear-gradient(to right, #ff6e7f, #bfe9ff) fixed; }
+  background: linear-gradient(to right, #ff6e7f, #bfe9ff) fixed;  -- Nice pinkish gradient.
+  /* background: linear-gradient(to right, #2a0845, #6441A5); -- Dark purple gradient. */
+
+}
 
 .control-header {
   font-family: 'Earth Orbiter Bold';
@@ -7437,3 +7440,7 @@ footer {
   position: fixed;
   right: 0;
   z-index: 30; }
+
+  .ui-component {
+	  background-color: #1d072e;
+  }

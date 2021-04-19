@@ -13,7 +13,7 @@ module.exports = {
         //Sends output to console
         console.log(output)
 
-        if(boolean == true){
+        if(boolean){
         //Writes output to log file.
         fs.appendFileSync(path, output+"\n")
         }
