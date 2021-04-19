@@ -1,11 +1,7 @@
 {
   "name": "asaria",
-<<<<<<< HEAD
-  "version": "1.4.0",
-=======
   "title": "Asaria",
   "version": "2.0.0",
->>>>>>> 12de694fb7341eb82ac986b0132f210cc817fdcc
   "description": "NodeCG-based on-screen overlay system for War of the Wisps",
   "homepage": "https://ashcorp.dev",
   "author": {
