@@ -66,43 +66,43 @@ client.on("message", (channel, tags, message, self) => {
   switch (message.toLowerCase()) {
     case "#eternalflame":
       //updateTeamPoints("eternalflame", tags.username, channel);
-      node.sendMessage("updateTeamPoints", {team: "eternalflame", user: tags.username})
+      node.sendMessage("updateTeamPoints", {team: "eternalflame", user: tags.username, channel})
       break;
     case "#wintersembrace":
-      updateTeamPoints("wintersembrace", tags.username, channel);
+		node.sendMessage("updateTeamPoints", {team: "wintersembrace", user: tags.username, channel})
       break;
     case "#etherealbloom":
-      updateTeamPoints("etherealbloom", tags.username, channel);
+		node.sendMessage("updateTeamPoints", {team: "etherealbloom", user: tags.username, channel})
       break;
     case "#shadowgrove":
-      updateTeamPoints("shadowgrove", tags.username, channel);
+		node.sendMessage("updateTeamPoints", {team: "shadowgrove", user: tags.username, channel})
       break;
     case "#teamred":
-      updateTeamPoints("eternalflame", tags.username, channel);
+		node.sendMessage("updateTeamPoints", {team: "eternalflame", user: tags.username, channel})
       break;
     case "#teamyellow":
-      updateTeamPoints("eternalflame", tags.username, channel);
+		node.sendMessage("updateTeamPoints", {team: "eternalflame", user: tags.username, channel})
       break;
     case "#teampink":
-      updateTeamPoints("etherealbloom", tags.username, channel);
+		node.sendMessage("updateTeamPoints", {team: "etherealbloom", user: tags.username, channel})
       break;
     case "#teamgreen":
-      updateTeamPoints("shadowgrove", tags.username, channel);
+		node.sendMessage("updateTeamPoints", {team: "shadowgrove", user: tags.username, channel})
       break;
     case "#teamorange":
-      updateTeamPoints("eternalflame", tags.username, channel);
+		node.sendMessage("updateTeamPoints", {team: "eternalflame", user: tags.username, channel})
       break;
     case "#teampurple":
-      updateTeamPoints("etherealbloom", tags.username, channel);
+		node.sendMessage("updateTeamPoints", {team: "etherealbloom", user: tags.username, channel})
       break;
     case "#teamblue":
-      updateTeamPoints("wintersembrace", tags.username, channel);
+		node.sendMessage("updateTeamPoints", {team: "wintersembrace", user: tags.username, channel})
       break;
     case "#teamwhite":
-      updateTeamPoints("wintersembrace", tags.username, channel);
+		node.sendMessage("updateTeamPoints", {team: "wintersembrace", user: tags.username, channel})
       break;
     case "#teamblack":
-      updateTeamPoints("shadowgrove", tags.username, channel);
+		node.sendMessage("updateTeamPoints", {team: "shadowgrove", user: tags.username, channel})
       break;
   }
 
@@ -116,5 +116,6 @@ client.on("message", (channel, tags, message, self) => {
 
 module.exports = {
   client,
-  status
+  status,
+  channel
 }

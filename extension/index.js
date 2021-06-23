@@ -40,7 +40,7 @@ let firstsubscription = true;
 
 module.exports = nodecg => {
 nodecgApi.set(nodecg);
-const { client, status } = require("./twitch/client")
+const { client, status, channel } = require("./twitch/client")
 const streamlabs = require('./streamlabs/api')(nodecg)
 /* --------------------------------------------
 
@@ -211,7 +211,7 @@ const streamlabs = require('./streamlabs/api')(nodecg)
     if (userlist.hasOwnProperty(username.toLowerCase())) {
       if (userlist[username] <= 0) {
         client.say(
-          channel,
+			channel,
           `@${username}, you don't have any points to spend!`
         );
       } else {
@@ -242,7 +242,7 @@ const streamlabs = require('./streamlabs/api')(nodecg)
           shadowgrove: teams.shadowgrove,
         };
         client.say(
-          channel,
+			channel,
           `@${username}, you spent ${userPoints} points on team ${teamName}!`
         );
       }
@@ -462,7 +462,7 @@ latestSubscription.on("change", (newValue, oldValue) => {
 
   nodecg.listenFor("updateTeamPoints", (value) => {
     console.log(value);
-    updateTeamPoints(value.team, value.user);
+    updateTeamPoints(value.team, value.user, value.channel);
   });
 
   nodecg.listenFor("resetUserPoints", (value) => {
