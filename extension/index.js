@@ -281,7 +281,7 @@ latestDonation.on("change", (newValue, oldValue) => {
       const pointsCalc = newValue.amount * tip.value;
       const initialPoints = userlist[newValue.name.toLowerCase()];
       debug(initialPoints, false);
-      const updatedPoints = pointsCalc + initialPoints;
+      const updatedPoints = Math.floor(pointsCalc + initialPoints);
       userlist[newValue.name.toLowerCase()] = updatedPoints;
       // Formats to human-readable when updating the json file.
       const data = JSON.stringify(userlist, null, 2);
@@ -336,7 +336,7 @@ latestCheer.on("change", (newValue, oldValue) => {
       );
     }
   } else {
-    debug("User not found!", false);
+    debug(`${newValue.name} not found!`, false);
     // 5 is equal to number of points per £5 donation.
     const pointsCalc = (newValue.amount / 100) * cheer.value;
     // Rounds the points down to the nearest integer.
