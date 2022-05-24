@@ -41,7 +41,7 @@ let firstsubscription = true;
 module.exports = nodecg => {
 nodecgApi.set(nodecg);
 const { client, status, channel } = require("./twitch/client")
-const streamlabs = require('./streamlabs/api')(nodecg)
+const streamlabs = require('./streamlabs/api_se')(nodecg)
 /* --------------------------------------------
 
   NODECG - REGISTER REPLICANTS HERE
@@ -107,7 +107,7 @@ const streamlabs = require('./streamlabs/api')(nodecg)
       case "3000":
         points = t3sub.value;
         break;
-      case "Prime":
+      case "prime":
         points = t1sub.value;
         break;
     }

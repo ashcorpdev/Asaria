@@ -1,12 +1,12 @@
 {
   "name": "asaria",
   "title": "Asaria",
-  "version": "2.0.0",
+  "version": "1.2.0",
   "description": "NodeCG-based on-screen overlay system for War of the Wisps",
   "homepage": "https://ashcorp.dev",
   "author": {
     "name": "Ashen",
-    "email": "ashen@ashen.live",
+    "email": "ashen@ashcorp.dev",
     "url": "https://ashcorp.dev"
   },
   "files": [
@@ -88,12 +88,13 @@
       }
     ]
   },
-  "repository": "git@gitlab.com:ashen_gaming/asaria.git",
+  "repository": "git@github.com/ashcorpdev/asaria.git",
   "license": "Apache-2.0",
   "dependencies": {
     "bulma": "^0.8.2",
     "bulma-extensions": "^6.2.7",
     "node-sass": "^4.13.1",
+    "socket.io-client": "^2.4.0",
     "tmi.js": "^1.5.0"
   },
   "scripts": {
