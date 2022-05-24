@@ -1,6 +1,6 @@
 const fs = require("fs");
 const path = require("path");
-const { debug } = require("../../debug")
+const { debug } = require("../../debug");
 let config = fs.readFileSync(path.resolve(__dirname, "../../config.json"));
 //let config = require('../../config.json');
 let opts = JSON.parse(config);
@@ -9,7 +9,7 @@ const clientID = opts["twitch"].bot_client_token;
 const accessToken = opts["twitch"].bot_oauth_token;
 const channel = opts["twitch"].streamer_channel;
 const tmi = require("tmi.js");
-const node = require('../nodecg').get();
+const node = require("../nodecg").get();
 let status;
 
 const client = new tmi.Client({
@@ -25,19 +25,19 @@ const client = new tmi.Client({
   channels: [channel],
 });
 client.connect();
-const connectionStatusRep = node.Replicant('connectionStatus');
-debug(`Twitch client connected to ${channel}.`, true)
+const connectionStatusRep = node.Replicant("connectionStatus");
+debug(`Twitch client connected to ${channel}.`, true);
 
 client.on("connected", (address, port) => {
-	console.log(`Twitch client connected.`)
-	status = 'Connected';
-	connectionStatusRep.value = status;
+  console.log(`Twitch client connected.`);
+  status = "Connected";
+  connectionStatusRep.value = status;
 });
 
 client.on("disconnected", (reason) => {
-	console.log(`Twitch client disconnected. Reason: ${reason}`);
-	status = 'Disconnected';
-	connectionStatusRep.value = status;
+  console.log(`Twitch client disconnected. Reason: ${reason}`);
+  status = "Disconnected";
+  connectionStatusRep.value = status;
 });
 
 client.on("message", (channel, tags, message, self) => {
@@ -52,13 +52,19 @@ client.on("message", (channel, tags, message, self) => {
     );
     userlist = JSON.parse(file);
     if (userlist.hasOwnProperty(tags.username.toLowerCase())) {
-      debug(`Found ${tags.username.toLowerCase()} in the list, displaying points!`, false)
+      debug(
+        `Found ${tags.username.toLowerCase()} in the list, displaying points!`,
+        false
+      );
       client.say(
         channel,
         `@${tags.username}, you have ${userlist[tags.username]} points!`
       );
     } else {
-      debug(`${tags.username.toLowerCase()} not found - no points available`, false);
+      debug(
+        `${tags.username.toLowerCase()} not found - no points available`,
+        false
+      );
       client.say(channel, `@${tags.username}, you don't have any points!`);
     }
   }
@@ -66,43 +72,95 @@ client.on("message", (channel, tags, message, self) => {
   switch (message.toLowerCase()) {
     case "#eternalflame":
       //updateTeamPoints("eternalflame", tags.username, channel);
-      node.sendMessage("updateTeamPoints", {team: "eternalflame", user: tags.username, channel})
+      node.sendMessage("updateTeamPoints", {
+        team: "eternalflame",
+        user: tags.username,
+        channel,
+      });
       break;
     case "#wintersembrace":
-		node.sendMessage("updateTeamPoints", {team: "wintersembrace", user: tags.username, channel})
+      node.sendMessage("updateTeamPoints", {
+        team: "wintersembrace",
+        user: tags.username,
+        channel,
+      });
       break;
     case "#etherealbloom":
-		node.sendMessage("updateTeamPoints", {team: "etherealbloom", user: tags.username, channel})
+      node.sendMessage("updateTeamPoints", {
+        team: "etherealbloom",
+        user: tags.username,
+        channel,
+      });
       break;
     case "#shadowgrove":
-		node.sendMessage("updateTeamPoints", {team: "shadowgrove", user: tags.username, channel})
+      node.sendMessage("updateTeamPoints", {
+        team: "shadowgrove",
+        user: tags.username,
+        channel,
+      });
       break;
     case "#teamred":
-		node.sendMessage("updateTeamPoints", {team: "eternalflame", user: tags.username, channel})
+      node.sendMessage("updateTeamPoints", {
+        team: "eternalflame",
+        user: tags.username,
+        channel,
+      });
       break;
     case "#teamyellow":
-		node.sendMessage("updateTeamPoints", {team: "eternalflame", user: tags.username, channel})
+      node.sendMessage("updateTeamPoints", {
+        team: "eternalflame",
+        user: tags.username,
+        channel,
+      });
       break;
     case "#teampink":
-		node.sendMessage("updateTeamPoints", {team: "etherealbloom", user: tags.username, channel})
+      node.sendMessage("updateTeamPoints", {
+        team: "etherealbloom",
+        user: tags.username,
+        channel,
+      });
       break;
     case "#teamgreen":
-		node.sendMessage("updateTeamPoints", {team: "shadowgrove", user: tags.username, channel})
+      node.sendMessage("updateTeamPoints", {
+        team: "shadowgrove",
+        user: tags.username,
+        channel,
+      });
       break;
     case "#teamorange":
-		node.sendMessage("updateTeamPoints", {team: "eternalflame", user: tags.username, channel})
+      node.sendMessage("updateTeamPoints", {
+        team: "eternalflame",
+        user: tags.username,
+        channel,
+      });
       break;
     case "#teampurple":
-		node.sendMessage("updateTeamPoints", {team: "etherealbloom", user: tags.username, channel})
+      node.sendMessage("updateTeamPoints", {
+        team: "etherealbloom",
+        user: tags.username,
+        channel,
+      });
       break;
     case "#teamblue":
-		node.sendMessage("updateTeamPoints", {team: "wintersembrace", user: tags.username, channel})
+      node.sendMessage("updateTeamPoints", {
+        team: "wintersembrace",
+        user: tags.username,
+        channel,
+      });
       break;
     case "#teamwhite":
-		node.sendMessage("updateTeamPoints", {team: "wintersembrace", user: tags.username, channel})
+      node.sendMessage("updateTeamPoints", {
+        team: "wintersembrace",
+        user: tags.username,
+        channel,
+      });
       break;
     case "#teamblack":
-		node.sendMessage("updateTeamPoints", {team: "shadowgrove", user: tags.username, channel})
+      node.sendMessage("updateTeamPoints", {
+        team: "shadowgrove",
+        user: tags.username,
+        channel,
+      });
       break;
   }
 
@@ -117,5 +175,5 @@ client.on("message", (channel, tags, message, self) => {
 module.exports = {
   client,
   status,
-  channel
-}
+  channel,
+};

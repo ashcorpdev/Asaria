@@ -60,7 +60,7 @@
     >
       <p id="shadowgrove">3</p>
     </div>
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script>
       const red = document.getElementById("eternalflame");
       const yellow = document.getElementById("wintersembrace");
@@ -82,22 +82,22 @@
           //pink.innerHTML = newValue.etherealbloom;
           //green.innerHTML = newValue.shadowgrove;
 
-$(red).fadeOut("fast", function() {
-  red.innerHTML = newValue.eternalflame;
-  $(red).fadeIn("fast");
-});
-$(yellow).fadeOut("fast", function() {
-  yellow.innerHTML = newValue.wintersembrace;
-  $(yellow).fadeIn("fast");
-});
-$(pink).fadeOut("fast", function() {
-  pink.innerHTML = newValue.etherealbloom;
-  $(pink).fadeIn("fast");
-});
-$(green).fadeOut("fast", function() {
-  green.innerHTML = newValue.shadowgrove;
-  $(green).fadeIn("fast");
-});
+          $(red).fadeOut("fast", function () {
+            red.innerHTML = newValue.eternalflame;
+            $(red).fadeIn("fast");
+          });
+          $(yellow).fadeOut("fast", function () {
+            yellow.innerHTML = newValue.wintersembrace;
+            $(yellow).fadeIn("fast");
+          });
+          $(pink).fadeOut("fast", function () {
+            pink.innerHTML = newValue.etherealbloom;
+            $(pink).fadeIn("fast");
+          });
+          $(green).fadeOut("fast", function () {
+            green.innerHTML = newValue.shadowgrove;
+            $(green).fadeIn("fast");
+          });
 
           var eternalflame_text = $("#eternalflame");
           var wintersembrace_text = $("#wintersembrace");

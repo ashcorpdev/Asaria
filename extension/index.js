@@ -7,8 +7,8 @@
 -------------------------------------------- */
 const fs = require("fs");
 const path = require("path");
-const { debug } = require("../debug")
-const nodecgApi = require('./nodecg')
+const { debug } = require("../debug");
+const nodecgApi = require("./nodecg");
 
 /* --------------------------------------------
 
@@ -38,11 +38,11 @@ let firstdonation = true;
 let firstcheer = true;
 let firstsubscription = true;
 
-module.exports = nodecg => {
-nodecgApi.set(nodecg);
-const { client, status, channel } = require("./twitch/client")
-const streamlabs = require('./streamlabs/api_se')(nodecg)
-/* --------------------------------------------
+module.exports = (nodecg) => {
+  nodecgApi.set(nodecg);
+  const { client, status, channel } = require("./twitch/client");
+  const streamlabs = require("./streamlabs/api_se")(nodecg);
+  /* --------------------------------------------
 
   NODECG - REGISTER REPLICANTS HERE
 
@@ -62,8 +62,12 @@ const streamlabs = require('./streamlabs/api_se')(nodecg)
   const subgifter = nodecg.Replicant("subgifter", { defaultValue: 1 });
   const tip = nodecg.Replicant("tip", { defaultValue: 1 });
   const cheer = nodecg.Replicant("cheer", { defaultValue: 1 });
-  const enableCounting = nodecg.Replicant("enableCounting", { defaultValue: true });
-  const connectionStatus = nodecg.Replicant("connectionStatus", { defaultValue: 'disconnected'});
+  const enableCounting = nodecg.Replicant("enableCounting", {
+    defaultValue: true,
+  });
+  const connectionStatus = nodecg.Replicant("connectionStatus", {
+    defaultValue: "disconnected",
+  });
 
   teamPoints.value = {
     eternalflame: teams.eternalflame,
@@ -72,7 +76,7 @@ const streamlabs = require('./streamlabs/api_se')(nodecg)
     shadowgrove: teams.shadowgrove,
   };
 
-/* --------------------------------------------
+  /* --------------------------------------------
 
   NODECG - REGISTER FUNCTIONS HERE
 
@@ -138,7 +142,8 @@ const streamlabs = require('./streamlabs/api_se')(nodecg)
           data
         );
         debug(
-          "Extension - New gifter points: " + Math.floor(subgifter.value), true
+          "Extension - New gifter points: " + Math.floor(subgifter.value),
+          true
         );
       }
 
@@ -211,16 +216,23 @@ const streamlabs = require('./streamlabs/api_se')(nodecg)
     if (userlist.hasOwnProperty(username.toLowerCase())) {
       if (userlist[username] <= 0) {
         client.say(
-			channel,
+          channel,
           `@${username}, you don't have any points to spend!`
         );
       } else {
         let userPoints = userlist[username];
-        debug(`Found ${username.toLowerCase()} in the list, spending ${userPoints} points!`, true);
+        debug(
+          `Found ${username.toLowerCase()} in the list, spending ${userPoints} points!`,
+          true
+        );
         let oldTeamPoints = teams[teamName];
         let newPoints = oldTeamPoints + userlist[username];
         debug(
-          `Old ${teamName} points: ` + oldTeamPoints + ` New ${teamName} Points: ` + newPoints, true
+          `Old ${teamName} points: ` +
+            oldTeamPoints +
+            ` New ${teamName} Points: ` +
+            newPoints,
+          true
         );
         userlist[username] = 0;
         teams[teamName] = newPoints;
@@ -242,7 +254,7 @@ const streamlabs = require('./streamlabs/api_se')(nodecg)
           shadowgrove: teams.shadowgrove,
         };
         client.say(
-			channel,
+          channel,
           `@${username}, you spent ${userPoints} points on team ${teamName}!`
         );
       }
@@ -252,82 +264,96 @@ const streamlabs = require('./streamlabs/api_se')(nodecg)
     }
   }
 
-/* --------------------------------------------
+  /* --------------------------------------------
 
   NODECG - REGISTER LISTENERS HERE
 
 -------------------------------------------- */
-teamPoints.on("change", (newValue, oldValue) => {
-  let teamlist = fs.readFileSync(
-    path.resolve(__dirname, "../teamlist-alliances.json")
-  );
-  let teams = JSON.parse(teamlist);
-});
+  teamPoints.on("change", (newValue, oldValue) => {
+    let teamlist = fs.readFileSync(
+      path.resolve(__dirname, "../teamlist-alliances.json")
+    );
+    let teams = JSON.parse(teamlist);
+  });
 
-latestDonation.on("change", (newValue, oldValue) => {
-  file = fs.readFileSync(
-    path.resolve(__dirname, "../userlist-alliances.json")
-  );
-  userlist = JSON.parse(file);
-  // Checks if the userlist already exists in the file.
-  if (userlist.hasOwnProperty(newValue.name.toLowerCase())) {
-    if (firstdonation === true) {
-      firstdonation = false;
+  latestDonation.on("change", (newValue, oldValue) => {
+    file = fs.readFileSync(
+      path.resolve(__dirname, "../userlist-alliances.json")
+    );
+    userlist = JSON.parse(file);
+    // Checks if the userlist already exists in the file.
+    if (userlist.hasOwnProperty(newValue.name.toLowerCase())) {
+      if (firstdonation === true) {
+        firstdonation = false;
+      } else {
+        debug(`latestDonation updated!`, true);
+        debug("New donation: " + newValue.name, true);
+        //debug('Not first load, updating file');
+        const pointsCalc = newValue.amount * tip.value;
+        const initialPoints = userlist[newValue.name.toLowerCase()];
+        debug(initialPoints, false);
+        const updatedPoints = Math.floor(pointsCalc + initialPoints);
+        userlist[newValue.name.toLowerCase()] = updatedPoints;
+        // Formats to human-readable when updating the json file.
+        const data = JSON.stringify(userlist, null, 2);
+        fs.writeFileSync(
+          path.resolve(__dirname, "../userlist-alliances.json"),
+          data
+        );
+        debug(updatedPoints, false);
+      }
     } else {
+      debug("User not found!", false);
 
-  debug(`latestDonation updated!`, true);
-      debug("New donation: " + newValue.name, true);
-      //debug('Not first load, updating file');
+      // 5 is equal to number of points per £5 donation.
       const pointsCalc = newValue.amount * tip.value;
-      const initialPoints = userlist[newValue.name.toLowerCase()];
-      debug(initialPoints, false);
-      const updatedPoints = Math.floor(pointsCalc + initialPoints);
-      userlist[newValue.name.toLowerCase()] = updatedPoints;
+      // Rounds the points down to the nearest integer.
+      const actualPoints = Math.floor(pointsCalc);
+      debug(actualPoints, false);
+      // Adds the new userlist and their point value to the object.
+      userlist[newValue.name.toLowerCase()] = actualPoints;
       // Formats to human-readable when updating the json file.
       const data = JSON.stringify(userlist, null, 2);
       fs.writeFileSync(
         path.resolve(__dirname, "../userlist-alliances.json"),
         data
       );
-      debug(updatedPoints, false);
     }
-  } else {
-    debug("User not found!", false);
+  });
 
-    // 5 is equal to number of points per £5 donation.
-    const pointsCalc = newValue.amount * tip.value;
-    // Rounds the points down to the nearest integer.
-    const actualPoints = Math.floor(pointsCalc);
-    debug(actualPoints, false);
-    // Adds the new userlist and their point value to the object.
-    userlist[newValue.name.toLowerCase()] = actualPoints;
-    // Formats to human-readable when updating the json file.
-    const data = JSON.stringify(userlist, null, 2);
-    fs.writeFileSync(
-      path.resolve(__dirname, "../userlist-alliances.json"),
-      data
+  latestCheer.on("change", (newValue, oldValue) => {
+    file = fs.readFileSync(
+      path.resolve(__dirname, "../userlist-alliances.json")
     );
-  }
-});
-
-latestCheer.on("change", (newValue, oldValue) => {
-  file = fs.readFileSync(
-    path.resolve(__dirname, "../userlist-alliances.json")
-  );
-  userlist = JSON.parse(file);
-  // Checks if the userlist already exists in the file.
-  if (userlist.hasOwnProperty(newValue.name.toLowerCase())) {
-    if (firstcheer === true) {
-      firstcheer = false;
+    userlist = JSON.parse(file);
+    // Checks if the userlist already exists in the file.
+    if (userlist.hasOwnProperty(newValue.name.toLowerCase())) {
+      if (firstcheer === true) {
+        firstcheer = false;
+      } else {
+        debug(`latestCheer updated!`, true);
+        debug(`${newValue.name} found!`, true);
+        const pointsCalc = (newValue.amount / 100) * cheer.value;
+        // Rounds the points down to the nearest integer.
+        const actualPoints = Math.floor(pointsCalc);
+        const initialPoints = userlist[newValue.name.toLowerCase()];
+        const updatedPoints = actualPoints + initialPoints;
+        userlist[newValue.name.toLowerCase()] = updatedPoints;
+        // Formats to human-readable when updating the json file.
+        const data = JSON.stringify(userlist, null, 2);
+        fs.writeFileSync(
+          path.resolve(__dirname, "../userlist-alliances.json"),
+          data
+        );
+      }
     } else {
-      debug(`latestCheer updated!`, true);
-      debug(`${newValue.name} found!`, true);
+      debug(`${newValue.name} not found!`, false);
+      // 5 is equal to number of points per £5 donation.
       const pointsCalc = (newValue.amount / 100) * cheer.value;
       // Rounds the points down to the nearest integer.
       const actualPoints = Math.floor(pointsCalc);
-      const initialPoints = userlist[newValue.name.toLowerCase()];
-      const updatedPoints = actualPoints + initialPoints;
-      userlist[newValue.name.toLowerCase()] = updatedPoints;
+      // Adds the new userlist and their point value to the object.
+      userlist[newValue.name.toLowerCase()] = actualPoints;
       // Formats to human-readable when updating the json file.
       const data = JSON.stringify(userlist, null, 2);
       fs.writeFileSync(
@@ -335,55 +361,39 @@ latestCheer.on("change", (newValue, oldValue) => {
         data
       );
     }
-  } else {
-    debug(`${newValue.name} not found!`, false);
-    // 5 is equal to number of points per £5 donation.
-    const pointsCalc = (newValue.amount / 100) * cheer.value;
-    // Rounds the points down to the nearest integer.
-    const actualPoints = Math.floor(pointsCalc);
-    // Adds the new userlist and their point value to the object.
-    userlist[newValue.name.toLowerCase()] = actualPoints;
-    // Formats to human-readable when updating the json file.
-    const data = JSON.stringify(userlist, null, 2);
-    fs.writeFileSync(
-      path.resolve(__dirname, "../userlist-alliances.json"),
-      data
+  });
+
+  // TODO - Support PRIME Subs
+  latestSubscription.on("change", (newValue, oldValue) => {
+    file = fs.readFileSync(
+      path.resolve(__dirname, "../userlist-alliances.json")
     );
-  }
-});
+    userlist = JSON.parse(file);
 
-// TODO - Support PRIME Subs
-latestSubscription.on("change", (newValue, oldValue) => {
-  file = fs.readFileSync(
-    path.resolve(__dirname, "../userlist-alliances.json")
-  );
-  userlist = JSON.parse(file);
+    // Check if this is the first load of the system. If it is, dismiss the check.
+    if (!firstsubscription) {
+      debug(`latestSubscription updated!`, true);
+      debug(newValue.name, true);
 
-  // Check if this is the first load of the system. If it is, dismiss the check.
-  if (!firstsubscription) {
-
-  debug(`latestSubscription updated!`, true);
-  debug(newValue.name, true);
-
-    if (checkGiftedStatus(newValue)) {
-      // Gifted sub!
-      givePointsToUsers(newValue.sub_plan, newValue, true);
+      if (checkGiftedStatus(newValue)) {
+        // Gifted sub!
+        givePointsToUsers(newValue.sub_plan, newValue, true);
+      } else {
+        givePointsToUsers(newValue.sub_plan, newValue, false);
+      }
     } else {
-      givePointsToUsers(newValue.sub_plan, newValue, false);
+      debug("Extension - First boot; ignoring checks.", true);
+      firstsubscription = false;
     }
-  } else {
-    debug("Extension - First boot; ignoring checks.", true);
-    firstsubscription = false;
-  }
-});
+  });
 
   nodecg.listenFor("enableCounting", (boolean) => {
-    if(boolean == true){
+    if (boolean == true) {
       client.connect();
-      debug("Counting enabled, connecting client.", true)
-    }else{
+      debug("Counting enabled, connecting client.", true);
+    } else {
       client.disconnect();
-      debug("Counting disabled, disconnecting client.", true)
+      debug("Counting disabled, disconnecting client.", true);
     }
   });
 
@@ -466,35 +476,35 @@ latestSubscription.on("change", (newValue, oldValue) => {
   });
 
   nodecg.listenFor("resetUserPoints", (value) => {
-	file = fs.readFileSync(
-		path.resolve(__dirname, "../userlist-alliances.json")
-	  );
-	  userlist = JSON.parse(file);
-	  Object.keys(userlist).forEach(v => userlist[v] = 0);
-	  const data = JSON.stringify(userlist, null, 2);
-	  fs.writeFileSync(
-		path.resolve(__dirname, "../userlist-alliances.json"),
-		data
-	  );
+    file = fs.readFileSync(
+      path.resolve(__dirname, "../userlist-alliances.json")
+    );
+    userlist = JSON.parse(file);
+    Object.keys(userlist).forEach((v) => (userlist[v] = 0));
+    const data = JSON.stringify(userlist, null, 2);
+    fs.writeFileSync(
+      path.resolve(__dirname, "../userlist-alliances.json"),
+      data
+    );
   });
 
-    nodecg.listenFor("resetTeamPoints", (value) => {
-	file = fs.readFileSync(
-		path.resolve(__dirname, "../teamlist-alliances.json")
-	  );
-	  teamlist = JSON.parse(file);
-	  Object.keys(teamlist).forEach(v => teamlist[v] = 0);
-	  const data = JSON.stringify(teamlist, null, 2);
-	  fs.writeFileSync(
-		path.resolve(__dirname, "../teamlist-alliances.json"),
-		data
-	  );
+  nodecg.listenFor("resetTeamPoints", (value) => {
+    file = fs.readFileSync(
+      path.resolve(__dirname, "../teamlist-alliances.json")
+    );
+    teamlist = JSON.parse(file);
+    Object.keys(teamlist).forEach((v) => (teamlist[v] = 0));
+    const data = JSON.stringify(teamlist, null, 2);
+    fs.writeFileSync(
+      path.resolve(__dirname, "../teamlist-alliances.json"),
+      data
+    );
 
-	  teamPoints.value = {
-		eternalflame: teams.eternalflame,
-		wintersembrace: teams.wintersembrace,
-		etherealbloom: teams.etherealbloom,
-		shadowgrove: teams.shadowgrove,
-	  };
+    teamPoints.value = {
+      eternalflame: teams.eternalflame,
+      wintersembrace: teams.wintersembrace,
+      etherealbloom: teams.etherealbloom,
+      shadowgrove: teams.shadowgrove,
+    };
   });
 };

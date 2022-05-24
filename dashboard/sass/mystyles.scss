@@ -18,37 +18,37 @@ $white: #ffffff;
 $grey: #707070;
 $black: #000000;
 @font-face {
-    font-family: 'Earth Orbiter';
-    src: local('Earth Orbiter'),
-            url('../fonts/earthorbiter.ttf')
-    }
+  font-family: "Earth Orbiter";
+  src: local("Earth Orbiter"), url("../fonts/earthorbiter.ttf");
+}
 @font-face {
-        font-family: 'Earth Orbiter Bold';
-        src: local('Earth Orbiter Bold'),
-        url('../fonts/earthorbiterbold.ttf')
-        }
+  font-family: "Earth Orbiter Bold";
+  src: local("Earth Orbiter Bold"), url("../fonts/earthorbiterbold.ttf");
+}
 html {
-    background-repeat: no-repeat;
-    background-size: cover;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(to right, $gradient-color1, $gradient-color2) fixed;
+  background-repeat: no-repeat;
+  background-size: cover;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to right, $gradient-color1, $gradient-color2)
+    fixed;
 }
 
 body {
-    background: linear-gradient(to right, $gradient-color1, $gradient-color2) fixed;
+  background: linear-gradient(to right, $gradient-color1, $gradient-color2)
+    fixed;
 }
 
 .control-header {
-    font-family: 'Earth Orbiter Bold';
-    color: white;
-    text-shadow: 2px 2px 3px #414141;
-    font-size: 5rem;
+  font-family: "Earth Orbiter Bold";
+  color: white;
+  text-shadow: 2px 2px 3px #414141;
+  font-size: 5rem;
 }
 .control-subtitle {
-    font-family: 'Segoe UI';
-    color: white;
-    text-shadow: 2px 2px 3px #414141;
+  font-family: "Segoe UI";
+  color: white;
+  text-shadow: 2px 2px 3px #414141;
 }
 
 /* #red {
@@ -74,9 +74,9 @@ body {
 } */
 
 footer {
-    bottom: 0;
-    left: 0;
-    position: fixed;
-    right: 0;
-    z-index: 30;
-  }
+  bottom: 0;
+  left: 0;
+  position: fixed;
+  right: 0;
+  z-index: 30;
+}

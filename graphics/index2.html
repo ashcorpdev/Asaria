@@ -35,32 +35,32 @@
     <div
       id="eternalflamediv"
       class="outlined"
-      style="width: 95px; margin-top:-5px; left: 75px"
+      style="width: 95px; margin-top: -5px; left: 75px"
     >
       <p id="eternalflame">0</p>
     </div>
     <div
       id="wintersembracediv"
       class="outlined"
-      style="width: 95px; margin-top:-5px; left: 1487px"
+      style="width: 95px; margin-top: -5px; left: 1487px"
     >
       <p id="wintersembrace">1</p>
     </div>
     <div
       id="etherealbloomdiv"
       class="outlined"
-      style="width: 95px; margin-top:-5px; left: 1752px"
+      style="width: 95px; margin-top: -5px; left: 1752px"
     >
       <p id="etherealbloom">2</p>
     </div>
     <div
       id="shadowgrovediv"
       class="outlined"
-      style="width: 95px; margin-top:-5px; left: 340px"
+      style="width: 95px; margin-top: -5px; left: 340px"
     >
       <p id="shadowgrove">3</p>
     </div>
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script>
       const red = document.getElementById("eternalflame");
       const yellow = document.getElementById("wintersembrace");
@@ -82,22 +82,22 @@
           //pink.innerHTML = newValue.etherealbloom;
           //green.innerHTML = newValue.shadowgrove;
 
-  $(red).fadeOut("fast", function() {
-	red.innerHTML = newValue.eternalflame;
-	$(red).fadeIn("fast");
-});
-  $(yellow).fadeOut("fast", function() {
-	yellow.innerHTML = newValue.wintersembrace;
-	$(yellow).fadeIn("fast");
-});
-  $(pink).fadeOut("fast", function() {
-	pink.innerHTML = newValue.etherealbloom;
-	$(pink).fadeIn("fast");
-});
-  $(green).fadeOut("fast", function() {
-	green.innerHTML = newValue.shadowgrove;
-	$(green).fadeIn("fast");
-});
+          $(red).fadeOut("fast", function () {
+            red.innerHTML = newValue.eternalflame;
+            $(red).fadeIn("fast");
+          });
+          $(yellow).fadeOut("fast", function () {
+            yellow.innerHTML = newValue.wintersembrace;
+            $(yellow).fadeIn("fast");
+          });
+          $(pink).fadeOut("fast", function () {
+            pink.innerHTML = newValue.etherealbloom;
+            $(pink).fadeIn("fast");
+          });
+          $(green).fadeOut("fast", function () {
+            green.innerHTML = newValue.shadowgrove;
+            $(green).fadeIn("fast");
+          });
 
           var eternalflame_text = $("#eternalflame");
           var wintersembrace_text = $("#wintersembrace");
