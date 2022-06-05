@@ -9,3 +9,4 @@ userlist-alliances.json
 .development.env
 .production.env
 tokens.json
+dist/

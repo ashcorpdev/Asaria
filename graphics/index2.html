@@ -70,17 +70,13 @@
       const teamPoints = nodecg.Replicant("teamPoints");
 
       NodeCG.waitForReplicants(shields, teamPoints).then(() => {
-        console.logshields.value);
+        console.log(shields.value);
         const shieldImage = shields.value;
         document.getElementById("shieldImage").src = shieldImage[1].url;
-        console.log"rep1 and rep2 are fully declared and ready to use!");
+        console.log("rep1 and rep2 are fully declared and ready to use!");
         teamPoints.on("change", (newValue, oldValue) => {
-          console.log`teamPoints changed from ${oldValue} to ${newValue}`);
-          console.logJSON.stringify(newValue));
-          //red.innerHTML = newValue.eternalflame;
-          //yellow.innerHTML = newValue.wintersembrace;
-          //pink.innerHTML = newValue.etherealbloom;
-          //green.innerHTML = newValue.shadowgrove;
+          console.log(`teamPoints changed from ${oldValue} to ${newValue}`);
+          console.log(JSON.stringify(newValue));
 
           $(red).fadeOut("fast", function () {
             red.innerHTML = newValue.eternalflame;
@@ -109,41 +105,41 @@
           var shadowgrove_div = $("#shadowgrovediv");
 
           if (eternalflame_text.text().length > 3) {
-            console.log"Eternal Flame longer than 3");
+            console.log("Eternal Flame longer than 3");
             eternalflame_text.css("font-size", "20px");
             eternalflame_div.css("top", "15px");
           } else {
-            console.log"Eternal Flame shorter than 3");
+            console.log("Eternal Flame shorter than 3");
             eternalflame_text.css("font-size", "30px");
             eternalflame_div.css("top", "");
           }
 
           if (shadowgrove_text.text().length > 3) {
-            console.log"Shadow Grove longer than 3");
+            console.log("Shadow Grove longer than 3");
             shadowgrove_text.css("font-size", "20px");
             shadowgrove_div.css("top", "15px");
           } else {
-            console.log"Shadow Grove shorter than 3");
+            console.log("Shadow Grove shorter than 3");
             shadowgrove_text.css("font-size", "30px");
             shadowgrove_div.css("top", "");
           }
 
           if (wintersembrace_text.text().length > 3) {
-            console.log"Winter's Embrace longer than 3");
+            console.log("Winter's Embrace longer than 3");
             wintersembrace_text.css("font-size", "20px");
             wintersembrace_div.css("top", "15px");
           } else {
-            console.log"Winter's Embrace shorter than 3");
+            console.log("Winter's Embrace shorter than 3");
             wintersembrace_text.css("font-size", "30px");
             wintersembrace_div.css("top", "");
           }
 
           if (etherealbloom_text.text().length > 3) {
-            console.log"Ethereal Bloom longer than 3");
+            console.log("Ethereal Bloom longer than 3");
             etherealbloom_text.css("font-size", "20px");
             etherealbloom_div.css("top", "15px");
           } else {
-            console.log"Ethereal Bloom shorter than 3");
+            console.log("Ethereal Bloom shorter than 3");
             etherealbloom_text.css("font-size", "30px");
             etherealbloom_div.css("top", "");
           }
