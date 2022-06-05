@@ -67,10 +67,6 @@ teamPoints.on("change", (newValue, oldValue) => {
   var wintersembrace = document.getElementById("wintersembrace");
   var etherealbloom = document.getElementById("etherealbloom");
   var shadowgrove = document.getElementById("shadowgrove");
-  //eternalflame.innerHTML = newValue.eternalflame;
-  //wintersembrace.innerHTML = newValue.wintersembrace;
-  //etherealbloom.innerHTML = newValue.etherealbloom;
-  //shadowgrove.innerHTML = newValue.shadowgrove;
   $(eternalflame).fadeOut("fast", function () {
     eternalflame.innerHTML = newValue.eternalflame;
     $(eternalflame).fadeIn("fast");

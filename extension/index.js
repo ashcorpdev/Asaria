@@ -1,38 +1,20 @@
 "use strict";
 
-/* --------------------------------------------
-
-  NODECG - REGISTER REQUIRED LIBRARIES HERE
-
--------------------------------------------- */
 const fs = require("fs");
 const path = require("path");
 const { debug } = require("../debug");
-const nodecgApi = require("./nodecg");
+const nodecgApi = require("./util/nodecg");
 
-/* --------------------------------------------
-
-  NODECG - REGISTER FILES HERE
-
--------------------------------------------- */
-
+// TODO: Move away from a file-based data storage system to a proper database.
 let config = fs.readFileSync(path.resolve(__dirname, "../config.json"));
-
 let file = fs.readFileSync(
   path.resolve(__dirname, "../userlist-alliances.json")
 );
 let userlist = JSON.parse(file);
-
 let teamlist = fs.readFileSync(
   path.resolve(__dirname, "../teamlist-alliances.json")
 );
 let teams = JSON.parse(teamlist);
-
-/* --------------------------------------------
-
-  NODECG - REGISTER INITIAL SETUP HERE
-
--------------------------------------------- */
 
 let firstdonation = true;
 let firstcheer = true;
@@ -40,13 +22,9 @@ let firstsubscription = true;
 
 module.exports = (nodecg) => {
   nodecgApi.set(nodecg);
-  const { client, status, channel } = require("./twitch/client");
-  const streamlabs = require("./streamlabs/api_se")(nodecg);
-  /* --------------------------------------------
+  const { client } = require("./integrations/twitch");
+  require("./integrations/streamelements")(nodecg);
 
-  NODECG - REGISTER REPLICANTS HERE
-
--------------------------------------------- */
   const latestDonation = nodecg.Replicant("latestDonation", {
     defaultValue: 0,
   });

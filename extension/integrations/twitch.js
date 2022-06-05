@@ -2,15 +2,16 @@ const fs = require("fs");
 const path = require("path");
 const { debug } = require("../../debug");
 let config = fs.readFileSync(path.resolve(__dirname, "../../config.json"));
-//let config = require('../../config.json');
 let opts = JSON.parse(config);
 const username = opts["twitch"].bot_username;
 const clientID = opts["twitch"].bot_client_token;
 const accessToken = opts["twitch"].bot_oauth_token;
 const channel = opts["twitch"].streamer_channel;
 const tmi = require("tmi.js");
-const node = require("../nodecg").get();
+const node = require("../util/nodecg").get();
 let status;
+
+// TODO: Replace tmi.js with Twurple and re-do Twitch authentication.
 
 const client = new tmi.Client({
   options: { debug: false },
@@ -24,8 +25,11 @@ const client = new tmi.Client({
   },
   channels: [channel],
 });
+
 client.connect();
+
 const connectionStatusRep = node.Replicant("connectionStatus");
+
 debug(`Twitch client connected to ${channel}.`, true);
 
 client.on("connected", (address, port) => {

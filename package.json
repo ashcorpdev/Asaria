@@ -15,16 +15,17 @@
     "extension.js"
   ],
   "keywords": [
-    "",
-    "nodecg-bundle"
+    "war-of-the-wisps",
+    "javascript",
+    "nodecg"
   ],
   "nodecg": {
     "compatibleRange": "^1.7.0",
     "dashboardPanels": [
       {
-        "name": "asaria-control-panel",
+        "name": "dashboard",
         "title": "Asaria Control Panel",
-        "file": "asaria-alliances.html",
+        "file": "dashboard.html",
         "fullbleed": true,
         "headerColor": "#9146ff"
       },
@@ -91,8 +92,7 @@
   "repository": "git@github.com/ashcorpdev/asaria.git",
   "license": "Apache-2.0",
   "dependencies": {
-    "bulma": "^0.8.2",
-    "bulma-extensions": "^6.2.7",
+    "dotenv": "^16.0.1",
     "node-sass": "^4.13.1",
     "socket.io-client": "^2.4.0",
     "tmi.js": "^1.5.0"
@@ -101,5 +101,9 @@
     "css-build": "node-sass --omit-source-map-url dashboard/sass/mystyles.scss dashboard/css/mystyles.css",
     "css-watch": "npm run css-build -- --watch",
     "start": "npm run css-watch"
+  },
+  "devDependencies": {
+    "jest": "^28.1.0",
+    "typescript": "^4.7.3"
   }
 }
