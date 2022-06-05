@@ -2,106 +2,17 @@
   "name": "asaria",
   "title": "Asaria",
   "version": "1.2.0",
-  "description": "NodeCG-based on-screen overlay system for War of the Wisps",
+  "description": "On-screen overlay system for War of the Wisps",
   "homepage": "https://ashcorp.dev",
-  "main": "dist/index.js",
   "author": {
     "name": "Ashen",
     "email": "ashen@ashcorp.dev",
     "url": "https://ashcorp.dev"
   },
-  "files": [
-    "dashboard",
-    "graphics",
-    "extension.js"
-  ],
-  "keywords": [
-    "war-of-the-wisps",
-    "javascript",
-    "nodecg"
-  ],
-  "nodecg": {
-    "compatibleRange": "^1.7.0",
-    "dashboardPanels": [
-      {
-        "name": "dashboard",
-        "title": "Asaria Control Panel",
-        "file": "dashboard.html",
-        "fullbleed": true,
-        "headerColor": "#9146ff"
-      },
-      {
-        "name": "userpointsreset-dialog",
-        "title": "Reset User Points",
-        "file": "dialog/userpointsreset-dialog.html",
-        "width": 5,
-        "dialog": true,
-        "dialogButtons": [
-          {
-            "name": "confirm",
-            "type": "confirm"
-          },
-          {
-            "name": "cancel",
-            "type": "dismiss"
-          }
-        ]
-      },
-      {
-        "name": "teampointsreset-dialog",
-        "title": "Reset Team Points",
-        "file": "dialog/teampointsreset-dialog.html",
-        "width": 5,
-        "dialog": true,
-        "dialogButtons": [
-          {
-            "name": "confirm",
-            "type": "confirm"
-          },
-          {
-            "name": "cancel",
-            "type": "dismiss"
-          }
-        ]
-      }
-    ],
-    "graphics": [
-      {
-        "file": "index.html",
-        "width": 1280,
-        "height": 720
-      },
-      {
-        "file": "index2.html",
-        "width": 1280,
-        "height": 720
-      }
-    ],
-    "assetCategories": [
-      {
-        "name": "shields",
-        "title": "Shields",
-        "allowedTypes": [
-          "jpg",
-          "jpeg",
-          "gif",
-          "png"
-        ]
-      }
-    ]
-  },
   "repository": "git@github.com/ashcorpdev/asaria.git",
   "license": "Apache-2.0",
   "dependencies": {
-    "@twurple/api": "^5.1.6",
-    "@twurple/auth": "^5.1.6",
-    "@twurple/chat": "^5.1.6",
-    "@twurple/eventsub": "^5.1.6",
-    "@types/express": "^4.17.13",
-    "@types/express-serve-static-core": "^4.17.28",
-    "dotenv": "^16.0.1",
-    "socket.io": "^4.5.1",
-    "socket.io-client": "^2.4.0"
+    "dotenv": "^16.0.1"
   },
   "scripts": {
     "css-build": "node-sass --omit-source-map-url dashboard/sass/mystyles.scss dashboard/css/mystyles.css",
