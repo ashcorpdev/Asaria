@@ -3,30 +3,33 @@ const path = require("path");
 const consola = require('consola');
 const node = require("../../util/nodecgecg").get();
 let status;
-
+let chatClient;
 // TODO: Replace tmi.js with Twurple and re-do Twitch authentication.
 
 import { RefreshingAuthProvider } from '@twurple/auth';
-import { promises as fs } from 'fs';
 import { ChatClient } from '@twurple/chat';
 
-// ----
+async function createClient() {
+  // ----
 
-const chatClientId = process.env.TWITCH_BOT_CLIENT_ID;
-const chatClientSecret = process.env.TWITCH_BOT_CLIENT_SECRET;
+const clientId = process.env.TWITCH_BOT_CLIENT_ID;
+const clientSecret = process.env.TWITCH_BOT_CLIENT_SECRET;
 const tokenData = JSON.parse(await fs.readFile('./tokens.json', 'UTF-8'));
 const authProvider = new RefreshingAuthProvider(
 	{
-		chatClientId,
-		chatClientSecret,
+		clientId,
+		clientSecret,
 		onRefresh: async newTokenData => await fs.writeFile('./tokens.json', JSON.stringify(newTokenData, null, 4), 'UTF-8')
 	},
 	tokenData
 );
-const chatClient = new ChatClient({ authProvider, channels: [process.env.TWITCH_STREAMER_CHANNEL] });
+chatClient = new ChatClient({ authProvider, channels: [process.env.TWITCH_STREAMER_CHANNEL] });
 chatClient.connect();
 
 // ----
+}
+
+createClient()
 
 const connectionStatusRep = node.Replicant("connectionStatus");
 
@@ -179,5 +182,4 @@ chatClient.on("message", (channel, tags, message, self) => {
 module.exports = {
   chatClient,
   status,
-  channel,
 };

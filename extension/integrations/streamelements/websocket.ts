@@ -116,3 +116,5 @@ module.exports = function (nodecg) {
     }
   });
 };
+
+export {}
