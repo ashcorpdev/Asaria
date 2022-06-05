@@ -1,7 +1,6 @@
 const fs = require("fs");
 const path = require("path");
 const consola = require('consola');
-const { debug } = require("../../debug");
 let config = fs.readFileSync(path.resolve(__dirname, "../../config.json"));
 const io = require("socket.io-client");
 const jwt = config["streamelements"].jwt_token;

@@ -1,7 +1,6 @@
 const fs = require("fs");
 const path = require("path");
 const consola = require('consola');
-const { debug } = require("../../debug");
 let config = fs.readFileSync(path.resolve(__dirname, "../../config.json"));
 let opts = JSON.parse(config);
 const username = opts["twitch"].bot_username;

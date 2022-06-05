@@ -3,7 +3,6 @@
 const fs = require("fs");
 const path = require("path");
 const consola = require('consola');
-const { debug } = require("../debug");
 const nodecgApi = require("./util/nodecg");
 
 // TODO: Move away from a file-based data storage system to a proper database.
