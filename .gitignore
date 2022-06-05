@@ -1,14 +1,11 @@
 node_modules
 coverage
 bower_components
-config.json
-teamlist.json
-userlist.json
 teamlist-alliances.json
 userlist-alliances.json
-old_data/
 *.log
 *.old
 *.bak
 .development.env
 .production.env
+tokens.json
