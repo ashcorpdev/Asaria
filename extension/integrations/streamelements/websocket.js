@@ -31,7 +31,7 @@ socket.on("authenticated", onAuthenticated);
 socket.on("unauthorized", console.error);
 
 function onConnect() {
-  consola.success("Successfully connected to the streamelements websocket");
+  consola.success("Successfully connected to the StreamElements websocket");
 
   socket.emit("authenticate", { method: "jwt", token: jwt });
 }
