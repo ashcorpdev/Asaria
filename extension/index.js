@@ -1,11 +1,18 @@
 "use strict";
 
+/**
+ * TODO: Move from a file-based data storage system to a proper database (MongoDB + Mongoose).
+ * TODO: Move points calculation to separate utility module.
+ * TODO: Check team submitted is valid *before* calculation.
+ * TODO: Add support for prime/community/extended subs.
+**/
+
+require('dotenv').config();
 const fs = require("fs");
 const path = require("path");
 const consola = require('consola');
 const nodecgApi = require("./util/nodecg");
 
-// TODO: Move away from a file-based data storage system to a proper database.
 let config = fs.readFileSync(path.resolve(__dirname, "../config.json"));
 let file = fs.readFileSync(
   path.resolve(__dirname, "../userlist-alliances.json")
@@ -22,8 +29,8 @@ let firstsubscription = true;
 
 module.exports = (nodecg) => {
   nodecgApi.set(nodecg);
-  const { client } = require("./integrations/twitch");
-  require("./integrations/streamelements")(nodecg);
+  const { client } = require("./integrations/twitch/chat");
+  require("./integrations/streamelements/websocket")(nodecg);
 
   const latestDonation = nodecg.Replicant("latestDonation", {
     defaultValue: 0,
@@ -54,11 +61,6 @@ module.exports = (nodecg) => {
     shadowgrove: teams.shadowgrove,
   };
 
-  /* --------------------------------------------
-
-  NODECG - REGISTER FUNCTIONS HERE
-
--------------------------------------------- */
   function checkGiftedStatus(newValue) {
     let gifterName = newValue.gifter;
     if (gifterName !== "" && gifterName !== null) {
@@ -94,15 +96,11 @@ module.exports = (nodecg) => {
         break;
     }
     if (gifted) {
-      // do gifted things
-
       if (userlist.hasOwnProperty(newValue.gifter.toLowerCase())) {
-        // Gifter found in file
         initialPoints = userlist[newValue.gifter.toLowerCase()];
         consola.info("Extension - Gifter found in file; adding points.", true);
         updatedPoints = Math.floor(subgifter.value) + initialPoints;
         userlist[newValue.gifter.toLowerCase()] = updatedPoints;
-        // Formats to human-readable when updating the json file.
         data = JSON.stringify(userlist, null, 2);
         fs.writeFileSync(
           path.resolve(__dirname, "../userlist-alliances.json"),
@@ -110,10 +108,8 @@ module.exports = (nodecg) => {
         );
         consola.info("Extension - New gifter points: " + updatedPoints, true);
       } else {
-        // Gifter not found in file
         consola.info("Extension - Gifter not found in file; adding.", true);
         userlist[newValue.gifter.toLowerCase()] = Math.floor(subgifter.value);
-        // Formats to human-readable when updating the json file.
         data = JSON.stringify(userlist, null, 2);
         fs.writeFileSync(
           path.resolve(__dirname, "../userlist-alliances.json"),
@@ -131,7 +127,6 @@ module.exports = (nodecg) => {
         consola.info(initialPoints, false);
         updatedPoints = Math.floor(giftedsub.value) + initialPoints;
         userlist[newValue.name.toLowerCase()] = updatedPoints;
-        // Formats to human-readable when updating the json file.
         data = JSON.stringify(userlist, null, 2);
         fs.writeFileSync(
           path.resolve(__dirname, "../userlist-alliances.json"),
@@ -139,11 +134,9 @@ module.exports = (nodecg) => {
         );
         consola.info(updatedPoints, false);
       } else {
-        // userlist not found in list
         consola.info("Giftee not in file; adding.", true);
         consola.info(newValue.name.toLowerCase(), true);
         userlist[newValue.name.toLowerCase()] = Math.floor(giftedsub.value);
-        // Formats to human-readable when updating the json file.
         data = JSON.stringify(userlist, null, 2);
         fs.writeFileSync(
           path.resolve(__dirname, "../userlist-alliances.json"),
@@ -152,14 +145,11 @@ module.exports = (nodecg) => {
         consola.info(updatedPoints, false);
       }
     } else {
-      // do non-gifted things
-
       if (userlist.hasOwnProperty(newValue.name.toLowerCase())) {
         initialPoints = userlist[newValue.name.toLowerCase()];
         consola.info(initialPoints, false);
         updatedPoints = Math.floor(points) + initialPoints;
         userlist[newValue.name.toLowerCase()] = updatedPoints;
-        // Formats to human-readable when updating the json file.
         data = JSON.stringify(userlist, null, 2);
         fs.writeFileSync(
           path.resolve(__dirname, "../userlist-alliances.json"),
@@ -167,9 +157,7 @@ module.exports = (nodecg) => {
         );
         consola.info(updatedPoints, false);
       } else {
-        // userlist not found in list
         userlist[newValue.name.toLowerCase()] = Math.floor(points);
-        // Formats to human-readable when updating the json file.
         data = JSON.stringify(userlist, null, 2);
         fs.writeFileSync(
           path.resolve(__dirname, "../userlist-alliances.json"),
@@ -181,7 +169,6 @@ module.exports = (nodecg) => {
   }
 
   function updateTeamPoints(teamName, username, channel) {
-    // TODO - Check team submitted is valid *before* calculation!
     let teamlist = fs.readFileSync(
       path.resolve(__dirname, "../teamlist-alliances.json")
     );
@@ -341,7 +328,6 @@ module.exports = (nodecg) => {
     }
   });
 
-  // TODO - Support PRIME Subs
   latestSubscription.on("change", (newValue, oldValue) => {
     file = fs.readFileSync(
       path.resolve(__dirname, "../userlist-alliances.json")
@@ -379,8 +365,6 @@ module.exports = (nodecg) => {
     consola.info(value, false);
     let newTeamPoints = value["updatedPoints"];
     let selectedTeam = value["selected"];
-
-    // TODO - Check team submitted is valid *before* calculation!
     let teamlist = fs.readFileSync(
       path.resolve(__dirname, "../teamlist-alliances.json")
     );
@@ -398,10 +382,6 @@ module.exports = (nodecg) => {
       etherealbloom: teams.etherealbloom,
       shadowgrove: teams.shadowgrove,
     };
-
-    // acknowledgements should always be error-first callbacks.
-    // If you do not wish to send an error, use a falsey value
-    // like "null" instead.
     if (ack && !ack.handled) {
       ack(null, value * 2);
     }

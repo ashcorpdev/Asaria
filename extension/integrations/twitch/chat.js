@@ -1,53 +1,53 @@
 const fs = require("fs");
 const path = require("path");
 const consola = require('consola');
-let config = fs.readFileSync(path.resolve(__dirname, "../../config.json"));
-let opts = JSON.parse(config);
-const username = opts["twitch"].bot_username;
-const clientID = opts["twitch"].bot_client_token;
-const accessToken = opts["twitch"].bot_oauth_token;
-const channel = opts["twitch"].streamer_channel;
-const tmi = require("tmi.js");
-const node = require("../util/nodecg").get();
+const node = require("../../util/nodecgecg").get();
 let status;
 
 // TODO: Replace tmi.js with Twurple and re-do Twitch authentication.
 
-const client = new tmi.Client({
-  options: { debug: false },
-  connection: {
-    reconnect: true,
-    secure: true,
-  },
-  identity: {
-    username: username,
-    password: accessToken,
-  },
-  channels: [channel],
-});
+import { RefreshingAuthProvider } from '@twurple/auth';
+import { promises as fs } from 'fs';
+import { ChatClient } from '@twurple/chat';
 
-client.connect();
+// ----
+
+const chatClientId = process.env.TWITCH_BOT_CLIENT_ID;
+const chatClientSecret = process.env.TWITCH_BOT_CLIENT_SECRET;
+const tokenData = JSON.parse(await fs.readFile('./tokens.json', 'UTF-8'));
+const authProvider = new RefreshingAuthProvider(
+	{
+		chatClientId,
+		chatClientSecret,
+		onRefresh: async newTokenData => await fs.writeFile('./tokens.json', JSON.stringify(newTokenData, null, 4), 'UTF-8')
+	},
+	tokenData
+);
+const chatClient = new ChatClient({ authProvider, channels: [process.env.TWITCH_STREAMER_CHANNEL] });
+chatClient.connect();
+
+// ----
 
 const connectionStatusRep = node.Replicant("connectionStatus");
 
-consola.info(`Twitch client connected to ${channel}.`, true);
+consola.info(`Twitch chatClient connected.`, true);
 
-client.on("connected", (address, port) => {
-  consola.info(`Twitch client connected.`);
+chatClient.on("connected", (address, port) => {
+  consola.info(`Twitch chatClient connected.`);
   status = "Connected";
   connectionStatusRep.value = status;
 });
 
-client.on("disconnected", (reason) => {
-  consola.info(`Twitch client disconnected. Reason: ${reason}`);
+chatClient.on("disconnected", (reason) => {
+  consola.info(`Twitch chatClient disconnected. Reason: ${reason}`);
   status = "Disconnected";
   connectionStatusRep.value = status;
 });
 
-client.on("message", (channel, tags, message, self) => {
+chatClient.on("message", (channel, tags, message, self) => {
   if (self) return;
   if (message.toLowerCase() === "!hello") {
-    client.say(channel, `@${tags.username}, greetings! wispWave`);
+    chatClient.say(channel, `@${tags.username}, greetings! wispWave`);
   }
 
   if (message.toLowerCase() === "!points") {
@@ -60,7 +60,7 @@ client.on("message", (channel, tags, message, self) => {
         `Found ${tags.username.toLowerCase()} in the list, displaying points!`,
         false
       );
-      client.say(
+      chatClient.say(
         channel,
         `@${tags.username}, you have ${userlist[tags.username]} points!`
       );
@@ -69,7 +69,7 @@ client.on("message", (channel, tags, message, self) => {
         `${tags.username.toLowerCase()} not found - no points available`,
         false
       );
-      client.say(channel, `@${tags.username}, you don't have any points!`);
+      chatClient.say(channel, `@${tags.username}, you don't have any points!`);
     }
   }
 
@@ -169,7 +169,7 @@ client.on("message", (channel, tags, message, self) => {
   }
 
   if (message.toLowerCase() === "!teamlist") {
-    client.say(
+    chatClient.say(
       channel,
       `The teams you can spend your points on are: eternalflame, wintersembrace, etherealbloom, shadowgrove. To spend your points, type #<teamname>. (Eg: #eternalflame)`
     );
@@ -177,7 +177,7 @@ client.on("message", (channel, tags, message, self) => {
 });
 
 module.exports = {
-  client,
+  chatClient,
   status,
   channel,
 };

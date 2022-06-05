@@ -1,10 +1,15 @@
+
+/**
+ * TODO: Upgrade to v4.x, if possible.
+ * TODO: Remove code and listeners for Twitch-specific code and only listen to donations. (streamelements.js => twitch/eventsub.js)
+**/
+
 const fs = require("fs");
 const path = require("path");
 const consola = require('consola');
 let config = fs.readFileSync(path.resolve(__dirname, "../../config.json"));
 const io = require("socket.io-client");
 const jwt = config["streamelements"].jwt_token;
-// TODO: Upgrade to v4.x, if possible.
 const socket = io("https://realtime.streamelements.com", {
   transports: ["websocket"],
   pingTimeout: 60000,

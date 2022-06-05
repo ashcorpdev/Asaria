@@ -92,6 +92,10 @@
   "repository": "git@github.com/ashcorpdev/asaria.git",
   "license": "Apache-2.0",
   "dependencies": {
+    "@twurple/api": "^5.1.6",
+    "@twurple/auth": "^5.1.6",
+    "@twurple/chat": "^5.1.6",
+    "@twurple/eventsub": "^5.1.6",
     "consola": "^2.15.3",
     "dotenv": "^16.0.1",
     "node-sass": "^4.13.1",
