@@ -5,7 +5,7 @@
       "target": "es2017",
       "moduleResolution": "node",
       "sourceMap": true,
-      "outDir": "dist",
+      "outDir": "extension",
       "skipLibCheck": true
     },
     "lib": ["es2015"]

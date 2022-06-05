@@ -31,7 +31,7 @@ socket.on("authenticated", onAuthenticated);
 socket.on("unauthorized", console.error);
 
 function onConnect() {
-  node.log.success("Successfully connected to the StreamElements websocket");
+  node.log.info("Successfully connected to the StreamElements websocket");
 
   socket.emit("authenticate", { method: "jwt", token: jwt });
 }
@@ -45,7 +45,7 @@ function onDisconnect(reason) {
 function onAuthenticated(data) {
   const { channelId } = data;
 
-  node.log.success(`Successfully connected to channel ${channelId}`);
+  node.log.info(`Successfully connected to channel ${channelId}`);
 }
 
 socket.on("connect_error", () => {

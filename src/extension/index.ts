@@ -7,7 +7,6 @@
  * TODO: Add support for prime/community/extended subs.
 **/
 
-require('dotenv').config();
 import fs from "fs";
 import path from "path";
 import nodecgApi from "./util/nodecg";
@@ -26,8 +25,10 @@ let firstdonation = true;
 let firstcheer = true;
 let firstsubscription = true;
 
-module.exports = (nodecg: NodeCG) => {
+module.exports = async (nodecg: NodeCG) => {
+  nodecg.log.info('Loading Asaria Bundle...')
   nodecgApi.set(nodecg);
+  const authProvider = await require('./integrations/twitch/auth')
   const { client: chatClient } = require("./integrations/twitch/chat");
   require("./integrations/streamelements/websocket")(nodecg);
 

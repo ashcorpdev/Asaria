@@ -2,14 +2,18 @@ import fs from "fs";
 import path from "path";
 const node = require("../../util/nodecg").get();
 import { ChatClient } from "@twurple/chat";
-import authProvider from './auth';
+import { init } from './auth'
 let status: String;
 let chatClient: ChatClient;
+let authProvider;
 
 async function createClient() {
+  init().then((provider) => {
+    authProvider = provider
+  })
   chatClient = new ChatClient({
     authProvider,
-    channels: [process.env.TWITCH_STREAMER_CHANNEL],
+    channels: [process.env.TWITCH_BOT_STREAMER_CHANNEL],
   });
   chatClient.connect();
 }
