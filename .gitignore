@@ -10,3 +10,4 @@ userlist-alliances.json
 .production.env
 tokens.json
 dist/
+.env

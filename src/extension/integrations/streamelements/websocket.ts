@@ -9,8 +9,8 @@
 
 const fs = require("fs");
 const path = require("path");
-const consola = require('consola');
 const io = require("socket.io-client");
+const node = require("../../util/nodecg").get();
 const jwt = process.env.STREAMELEMENTS_JWT_TOKEN;
 const socket = io("https://realtime.streamelements.com", {
   transports: ["websocket"],
@@ -18,7 +18,7 @@ const socket = io("https://realtime.streamelements.com", {
 });
 
 socket.on("connection", (skt) => {
-  consola.info(skt.id);
+  node.log.info(skt.id);
 });
 socket.on("connect", onConnect);
 
@@ -31,13 +31,13 @@ socket.on("authenticated", onAuthenticated);
 socket.on("unauthorized", console.error);
 
 function onConnect() {
-  consola.success("Successfully connected to the StreamElements websocket");
+  node.log.success("Successfully connected to the StreamElements websocket");
 
   socket.emit("authenticate", { method: "jwt", token: jwt });
 }
 
 function onDisconnect(reason) {
-  consola.warn("Disconnected from websocket");
+  node.log.warn("Disconnected from websocket");
   console.warn(reason);
 
 }
@@ -45,7 +45,7 @@ function onDisconnect(reason) {
 function onAuthenticated(data) {
   const { channelId } = data;
 
-  consola.success(`Successfully connected to channel ${channelId}`);
+  node.log.success(`Successfully connected to channel ${channelId}`);
 }
 
 socket.on("connect_error", () => {
@@ -66,9 +66,9 @@ module.exports = function (nodecg) {
 
   socket.on("event", (eventData) => {
 
-    consola.info(eventData);
+    nodecg.log.info(eventData);
     if (eventData.type === "tip") {
-      consola.info(eventData.data.message, false);
+      nodecg.log.info(eventData.data.message, false);
       if (
         typeof eventData.data.amount === "string" ||
         eventData.data.amount instanceof String
@@ -92,10 +92,10 @@ module.exports = function (nodecg) {
     // ! To be removed.
     switch (eventData.type) {
       case "follower":
-        consola.info(eventData.data.message, false);
+        nodecg.log.info(eventData.data.message, false);
         break;
       case "subscriber":
-        consola.info(eventData.data.message, false);
+        nodecg.log.info(eventData.data.message, false);
         latestSubscription.value = {
           name: eventData.data.username,
           sub_plan: eventData.data.tier,
@@ -104,7 +104,7 @@ module.exports = function (nodecg) {
         };
         break;
       case "cheer":
-        consola.info(eventData.data.message, false);
+        nodecg.log.info(eventData.data.message, false);
         latestCheer.value = {
           name: eventData.data.username,
           amount: eventData.data.amount,
@@ -112,7 +112,7 @@ module.exports = function (nodecg) {
 
         break;
       default:
-        consola.info(eventData.data.message, false);
+        nodecg.log.info(eventData.data.message, false);
     }
   });
 };

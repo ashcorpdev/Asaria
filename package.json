@@ -11,8 +11,8 @@
     "url": "https://ashcorp.dev"
   },
   "files": [
-    "dist/dashboard",
-    "dist/graphics",
+    "dashboard",
+    "graphics",
     "dist/extension.js"
   ],
   "keywords": [
@@ -98,6 +98,7 @@
     "@twurple/chat": "^5.1.6",
     "@twurple/eventsub": "^5.1.6",
     "@types/express": "^4.17.13",
+    "@types/express-serve-static-core": "^4.17.28",
     "consola": "^2.15.3",
     "dotenv": "^16.0.1",
     "node-sass": "^4.13.1",

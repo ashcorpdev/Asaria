@@ -10,7 +10,6 @@
 require('dotenv').config();
 import fs from "fs";
 import path from "path";
-import consola from 'consola';
 import nodecgApi from "./util/nodecg";
 import { NodeCG } from "../../../../types/server";
 
@@ -29,7 +28,7 @@ let firstsubscription = true;
 
 module.exports = (nodecg: NodeCG) => {
   nodecgApi.set(nodecg);
-  const { client } = require("./integrations/twitch/chat");
+  const { client: chatClient } = require("./integrations/twitch/chat");
   require("./integrations/streamelements/websocket")(nodecg);
 
   // TODO: Refactor the replicants to have specific default values.
@@ -63,22 +62,22 @@ module.exports = (nodecg: NodeCG) => {
     shadowgrove: teams.shadowgrove,
   };
 
-  function checkGiftedStatus(newValue) {
-    let gifterName = newValue.gifter;
+  function checkGiftedStatus(eventData: { name?: string; amount?: number; sub_plan?: string; gifter?: any; }) {
+    let gifterName = eventData.gifter;
     if (gifterName !== "" && gifterName !== null) {
-      consola.info("Gifter: " + gifterName, false);
+      nodecg.log.info("Gifter: " + gifterName, false);
       return true;
     } else {
       return false;
     }
   }
 
-  function givePointsToUsers(tier, newValue, gifted) {
+  function givePointsToUsers(tier: string, eventData: { name: any; amount?: number; sub_plan?: string; gifter?: any; }, gifted: boolean) {
     let points = 0;
     let initialPoints = 0;
     let updatedPoints = 0;
     let data = JSON.stringify(userlist, null, 2);
-    let gifterName = newValue.gifter;
+    let gifterName = eventData.gifter;
     file = fs.readFileSync(
       path.resolve(__dirname, "../userlist-alliances.json")
     );
@@ -98,79 +97,79 @@ module.exports = (nodecg: NodeCG) => {
         break;
     }
     if (gifted) {
-      if (userlist.hasOwnProperty(newValue.gifter.toLowerCase())) {
-        initialPoints = userlist[newValue.gifter.toLowerCase()];
-        consola.info("Extension - Gifter found in file; adding points.", true);
+      if (userlist.hasOwnProperty(eventData.gifter.toLowerCase())) {
+        initialPoints = userlist[eventData.gifter.toLowerCase()];
+        nodecg.log.info("Extension - Gifter found in file; adding points.", true);
         updatedPoints = Math.floor(subgifter.value) + initialPoints;
-        userlist[newValue.gifter.toLowerCase()] = updatedPoints;
+        userlist[eventData.gifter.toLowerCase()] = updatedPoints;
         data = JSON.stringify(userlist, null, 2);
         fs.writeFileSync(
           path.resolve(__dirname, "../userlist-alliances.json"),
           data
         );
-        consola.info("Extension - New gifter points: " + updatedPoints, true);
+        nodecg.log.info("Extension - New gifter points: " + updatedPoints, true);
       } else {
-        consola.info("Extension - Gifter not found in file; adding.", true);
-        userlist[newValue.gifter.toLowerCase()] = Math.floor(subgifter.value);
+        nodecg.log.info("Extension - Gifter not found in file; adding.", true);
+        userlist[eventData.gifter.toLowerCase()] = Math.floor(subgifter.value);
         data = JSON.stringify(userlist, null, 2);
         fs.writeFileSync(
           path.resolve(__dirname, "../userlist-alliances.json"),
           data
         );
-        consola.info(
+        nodecg.log.info(
           "Extension - New gifter points: " + Math.floor(subgifter.value),
           true
         );
       }
 
-      if (userlist.hasOwnProperty(newValue.name.toLowerCase())) {
-        consola.info("Giftee found in file; adding points.", true);
-        initialPoints = userlist[newValue.name.toLowerCase()];
-        consola.info(initialPoints, false);
+      if (userlist.hasOwnProperty(eventData.name.toLowerCase())) {
+        nodecg.log.info("Giftee found in file; adding points.", true);
+        initialPoints = userlist[eventData.name.toLowerCase()];
+        nodecg.log.info(initialPoints, false);
         updatedPoints = Math.floor(giftedsub.value) + initialPoints;
-        userlist[newValue.name.toLowerCase()] = updatedPoints;
+        userlist[eventData.name.toLowerCase()] = updatedPoints;
         data = JSON.stringify(userlist, null, 2);
         fs.writeFileSync(
           path.resolve(__dirname, "../userlist-alliances.json"),
           data
         );
-        consola.info(updatedPoints, false);
+        nodecg.log.info(updatedPoints, false);
       } else {
-        consola.info("Giftee not in file; adding.", true);
-        consola.info(newValue.name.toLowerCase(), true);
-        userlist[newValue.name.toLowerCase()] = Math.floor(giftedsub.value);
+        nodecg.log.info("Giftee not in file; adding.", true);
+        nodecg.log.info(eventData.name.toLowerCase(), true);
+        userlist[eventData.name.toLowerCase()] = Math.floor(giftedsub.value);
         data = JSON.stringify(userlist, null, 2);
         fs.writeFileSync(
           path.resolve(__dirname, "../userlist-alliances.json"),
           data
         );
-        consola.info(updatedPoints, false);
+        nodecg.log.info(updatedPoints, false);
       }
     } else {
-      if (userlist.hasOwnProperty(newValue.name.toLowerCase())) {
-        initialPoints = userlist[newValue.name.toLowerCase()];
-        consola.info(initialPoints, false);
+      if (userlist.hasOwnProperty(eventData.name.toLowerCase())) {
+        initialPoints = userlist[eventData.name.toLowerCase()];
+        nodecg.log.info(initialPoints, false);
         updatedPoints = Math.floor(points) + initialPoints;
-        userlist[newValue.name.toLowerCase()] = updatedPoints;
+        userlist[eventData.name.toLowerCase()] = updatedPoints;
         data = JSON.stringify(userlist, null, 2);
         fs.writeFileSync(
           path.resolve(__dirname, "../userlist-alliances.json"),
           data
         );
-        consola.info(updatedPoints, false);
+        nodecg.log.info(updatedPoints, false);
       } else {
-        userlist[newValue.name.toLowerCase()] = Math.floor(points);
+        userlist[eventData.name.toLowerCase()] = Math.floor(points);
         data = JSON.stringify(userlist, null, 2);
         fs.writeFileSync(
           path.resolve(__dirname, "../userlist-alliances.json"),
           data
         );
-        consola.info("Extension - new points: " + points, true);
+        nodecg.log.info("Extension - new points: " + points, true);
       }
     }
   }
 
-  function updateTeamPoints(teamName, username, channel) {
+  function updateTeamPoints(teamName: string | number, username: string, channel: any) {
     let teamlist = fs.readFileSync(
       path.resolve(__dirname, "../teamlist-alliances.json")
     );
@@ -182,19 +181,19 @@ module.exports = (nodecg: NodeCG) => {
     userlist = JSON.parse(JSON.stringify(file));
     if (userlist.hasOwnProperty(username.toLowerCase())) {
       if (userlist[username] <= 0) {
-        client.say(
+        chatClient.say(
           channel,
           `@${username}, you don't have any points to spend!`
         );
       } else {
         let userPoints = userlist[username];
-        consola.info(
+        nodecg.log.info(
           `Found ${username.toLowerCase()} in the list, spending ${userPoints} points!`,
           true
         );
         let oldTeamPoints = teams[teamName];
         let newPoints = oldTeamPoints + userlist[username];
-        consola.info(
+        nodecg.log.info(
           `Old ${teamName} points: ` +
             oldTeamPoints +
             ` New ${teamName} Points: ` +
@@ -220,14 +219,14 @@ module.exports = (nodecg: NodeCG) => {
           etherealbloom: teams.etherealbloom,
           shadowgrove: teams.shadowgrove,
         };
-        client.say(
+        chatClient.say(
           channel,
           `@${username}, you spent ${userPoints} points on team ${teamName}!`
         );
       }
     } else {
-      consola.info(`${username.toLowerCase()} not found, no points available`, false);
-      client.say(channel, `@${username}, you don't have any points to spend!`);
+      nodecg.log.info(`${username.toLowerCase()} not found, no points available`, false);
+      chatClient.say(channel, `@${username}, you don't have any points to spend!`);
     }
   }
 
@@ -238,35 +237,35 @@ module.exports = (nodecg: NodeCG) => {
     let teams = JSON.parse(JSON.stringify(teamlist));
   });
 
-  latestDonation.on("change", (newValue) => {
+  latestDonation.on("change", (eventData) => {
     file = fs.readFileSync(
       path.resolve(__dirname, "../userlist-alliances.json")
     );
     userlist = JSON.parse(JSON.stringify(file));
-    if (userlist.hasOwnProperty(newValue.name.toLowerCase())) {
+    if (userlist.hasOwnProperty(eventData.name.toLowerCase())) {
       if (firstdonation === true) {
         firstdonation = false;
       } else {
-        consola.info(`latestDonation updated!`, true);
-        consola.info("New donation: " + newValue.name, true);
-        const pointsCalc = newValue.amount * tip.value;
-        const initialPoints = userlist[newValue.name.toLowerCase()];
-        consola.info(initialPoints, false);
+        nodecg.log.info(`latestDonation updated!`, true);
+        nodecg.log.info("New donation: " + eventData.name, true);
+        const pointsCalc = eventData.amount * tip.value;
+        const initialPoints = userlist[eventData.name.toLowerCase()];
+        nodecg.log.info(initialPoints, false);
         const updatedPoints = Math.floor(pointsCalc + initialPoints);
-        userlist[newValue.name.toLowerCase()] = updatedPoints;
+        userlist[eventData.name.toLowerCase()] = updatedPoints;
         const data = JSON.stringify(userlist, null, 2);
         fs.writeFileSync(
           path.resolve(__dirname, "../userlist-alliances.json"),
           data
         );
-        consola.info(updatedPoints, false);
+        nodecg.log.info(updatedPoints, false);
       }
     } else {
-      consola.info("User not found!", false);
-      const pointsCalc = newValue.amount * tip.value;
+      nodecg.log.info("User not found!", false);
+      const pointsCalc = eventData.amount * tip.value;
       const actualPoints = Math.floor(pointsCalc);
-      consola.info(actualPoints, false);
-      userlist[newValue.name.toLowerCase()] = actualPoints;
+      nodecg.log.info(actualPoints, false);
+      userlist[eventData.name.toLowerCase()] = actualPoints;
       const data = JSON.stringify(userlist, null, 2);
       fs.writeFileSync(
         path.resolve(__dirname, "../userlist-alliances.json"),
@@ -275,22 +274,22 @@ module.exports = (nodecg: NodeCG) => {
     }
   });
 
-  latestCheer.on("change", (newValue, oldValue) => {
+  latestCheer.on("change", (eventData, oldValue) => {
     file = fs.readFileSync(
       path.resolve(__dirname, "../userlist-alliances.json")
     );
     userlist = JSON.parse(JSON.stringify(file));
-    if (userlist.hasOwnProperty(newValue.name.toLowerCase())) {
+    if (userlist.hasOwnProperty(eventData.name.toLowerCase())) {
       if (firstcheer === true) {
         firstcheer = false;
       } else {
-        consola.info(`latestCheer updated!`, true);
-        consola.info(`${newValue.name} found!`, true);
-        const pointsCalc = (newValue.amount / 100) * cheer.value;
+        nodecg.log.info(`latestCheer updated!`, true);
+        nodecg.log.info(`${eventData.name} found!`, true);
+        const pointsCalc = (eventData.amount / 100) * cheer.value;
         const actualPoints = Math.floor(pointsCalc);
-        const initialPoints = userlist[newValue.name.toLowerCase()];
+        const initialPoints = userlist[eventData.name.toLowerCase()];
         const updatedPoints = actualPoints + initialPoints;
-        userlist[newValue.name.toLowerCase()] = updatedPoints;
+        userlist[eventData.name.toLowerCase()] = updatedPoints;
         const data = JSON.stringify(userlist, null, 2);
         fs.writeFileSync(
           path.resolve(__dirname, "../userlist-alliances.json"),
@@ -298,10 +297,10 @@ module.exports = (nodecg: NodeCG) => {
         );
       }
     } else {
-      consola.info(`${newValue.name} not found!`, false);
-      const pointsCalc = (newValue.amount / 100) * cheer.value;
+      nodecg.log.info(`${eventData.name} not found!`, false);
+      const pointsCalc = (eventData.amount / 100) * cheer.value;
       const actualPoints = Math.floor(pointsCalc);
-      userlist[newValue.name.toLowerCase()] = actualPoints;
+      userlist[eventData.name.toLowerCase()] = actualPoints;
       const data = JSON.stringify(userlist, null, 2);
       fs.writeFileSync(
         path.resolve(__dirname, "../userlist-alliances.json"),
@@ -310,38 +309,38 @@ module.exports = (nodecg: NodeCG) => {
     }
   });
 
-  latestSubscription.on("change", (newValue, oldValue) => {
+  latestSubscription.on("change", (eventData, oldValue) => {
     file = fs.readFileSync(
       path.resolve(__dirname, "../userlist-alliances.json")
     );
     userlist = JSON.parse(JSON.stringify(file));
     if (!firstsubscription) {
-      consola.info(`latestSubscription updated!`, true);
-      consola.info(newValue.name, true);
+      nodecg.log.info(`latestSubscription updated!`, true);
+      nodecg.log.info(eventData.name, true);
 
-      if (checkGiftedStatus(newValue)) {
-        givePointsToUsers(newValue.sub_plan, newValue, true);
+      if (checkGiftedStatus(eventData)) {
+        givePointsToUsers(eventData.sub_plan, eventData, true);
       } else {
-        givePointsToUsers(newValue.sub_plan, newValue, false);
+        givePointsToUsers(eventData.sub_plan, eventData, false);
       }
     } else {
-      consola.info("Extension - First boot; ignoring checks.", true);
+      nodecg.log.info("Extension - First boot; ignoring checks.", true);
       firstsubscription = false;
     }
   });
 
   nodecg.listenFor("enableCounting", (boolean) => {
     if (boolean == true) {
-      client.connect();
-      consola.info("Counting enabled, connecting client.", true);
+      chatClient.connect();
+      nodecg.log.info("Counting enabled, connecting client.", true);
     } else {
-      client.disconnect();
-      consola.info("Counting disabled, disconnecting client.", true);
+      chatClient.disconnect();
+      nodecg.log.info("Counting disabled, disconnecting client.", true);
     }
   });
 
   nodecg.listenFor("updateCount", (value, ack) => {
-    consola.info(value, false);
+    nodecg.log.info(value, false);
     let newTeamPoints = value["updatedPoints"];
     let selectedTeam = value["selected"];
     let teamlist = fs.readFileSync(
@@ -364,44 +363,44 @@ module.exports = (nodecg: NodeCG) => {
   });
 
   nodecg.listenFor("updatePoints", (value, ack) => {
-    consola.info(value, false);
+    nodecg.log.info(value, false);
     let event = value["event"];
     let amount = value["val"];
-    consola.info(`Points update received: ${event} - ${amount}`, true);
+    nodecg.log.info(`Points update received: ${event} - ${amount}`, true);
     switch (event) {
       case "t1":
         t1sub.value = amount;
-        consola.info(t1sub.value, false);
+        nodecg.log.info(t1sub.value, false);
         break;
       case "t2":
         t2sub.value = amount;
-        consola.info(t2sub.value, false);
+        nodecg.log.info(t2sub.value, false);
         break;
       case "t3":
         t3sub.value = amount;
-        consola.info(t3sub.value, false);
+        nodecg.log.info(t3sub.value, false);
         break;
       case "gifted":
         giftedsub.value = amount;
-        consola.info(giftedsub.value, false);
+        nodecg.log.info(giftedsub.value, false);
         break;
       case "gifter":
         subgifter.value = amount;
-        consola.info(subgifter.value, false);
+        nodecg.log.info(subgifter.value, false);
         break;
       case "cheer":
         cheer.value = amount;
-        consola.info(cheer.value, false);
+        nodecg.log.info(cheer.value, false);
         break;
       case "tip":
         tip.value = amount;
-        consola.info(tip.value, false);
+        nodecg.log.info(tip.value, false);
         break;
     }
   });
 
   nodecg.listenFor("updateTeamPoints", (value) => {
-    consola.info(value);
+    nodecg.log.info(value);
     updateTeamPoints(value.team, value.user, value.channel);
   });
 
