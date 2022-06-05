@@ -1,15 +1,17 @@
 
 /**
- * TODO: Upgrade to v4.x, if possible.
- * TODO: Remove code and listeners for Twitch-specific code and only listen to donations. (streamelements.js => twitch/eventsub.js)
+ * TODO: Upgrade to Socket.io v4.x, if possible.
+ * TODO: Remove code/listeners for Twitch-specific API/Events and only listen to donations/tips/merch. (streamelements.js => twitch/eventsub.js)
+ * TODO: Add support for merch purchases.
+ * TODO: Fix debug messages for the streamelements alerts.
+ * TODO: Create dummy data json files for streamelements events.
 **/
 
 const fs = require("fs");
 const path = require("path");
 const consola = require('consola');
-let config = fs.readFileSync(path.resolve(__dirname, "../../config.json"));
 const io = require("socket.io-client");
-const jwt = config["streamelements"].jwt_token;
+const jwt = process.env.STREAMELEMENTS_JWT_TOKEN;
 const socket = io("https://realtime.streamelements.com", {
   transports: ["websocket"],
   pingTimeout: 60000,
@@ -20,21 +22,13 @@ socket.on("connection", (skt) => {
 });
 socket.on("connect", onConnect);
 
-// Socket got disconnected
 socket.on("disconnect", (reason) => {
   onDisconnect(reason);
 });
 
-// Socket is authenticated
-
 socket.on("authenticated", onAuthenticated);
 
 socket.on("unauthorized", console.error);
-/* --------------------------------------------
-
-  STREAMELEMENTS - REGISTER LISTENERS HERE
-
--------------------------------------------- */
 
 function onConnect() {
   consola.success("Successfully connected to the streamelements websocket");
@@ -46,7 +40,6 @@ function onDisconnect(reason) {
   consola.warn("Disconnected from websocket");
   console.warn(reason);
 
-  // Reconnect
 }
 
 function onAuthenticated(data) {
@@ -55,7 +48,6 @@ function onAuthenticated(data) {
   consola.success(`Successfully connected to channel ${channelId}`);
 }
 
-// either by directly modifying the `auth` attribute
 socket.on("connect_error", () => {
   socket.connect();
 });
@@ -66,25 +58,17 @@ socket.on("connect_error", () => {
   }, 1000);
 });
 
-//Perform Action on event
 module.exports = function (nodecg) {
-  // PRIMARY FUNCTIONALITY
 
   const latestDonation = nodecg.Replicant("latestDonation");
   const latestCheer = nodecg.Replicant("latestCheer");
   const latestSubscription = nodecg.Replicant("latestSubscription");
 
   socket.on("event", (eventData) => {
-    ///TODO: Handle sub conversions, multi-month subscriptions, merch?
-    //		 Fix debug messages for the streamelements alerts.
-    //		 Create dummy data json files for streamelements events.
 
     consola.info(eventData);
     if (eventData.type === "tip") {
-      //code to handle donation events
       consola.info(eventData.data.message, false);
-
-      // Reduce characters at end of amount
       if (
         typeof eventData.data.amount === "string" ||
         eventData.data.amount instanceof String
@@ -105,13 +89,12 @@ module.exports = function (nodecg) {
       }
     }
 
+    // ! To be removed.
     switch (eventData.type) {
       case "follower":
-        //code to handle follow events
         consola.info(eventData.data.message, false);
         break;
       case "subscriber":
-        //code to handle subscription events
         consola.info(eventData.data.message, false);
         latestSubscription.value = {
           name: eventData.data.username,
@@ -121,7 +104,6 @@ module.exports = function (nodecg) {
         };
         break;
       case "cheer":
-        //code to handle donation events
         consola.info(eventData.data.message, false);
         latestCheer.value = {
           name: eventData.data.username,
@@ -130,7 +112,6 @@ module.exports = function (nodecg) {
 
         break;
       default:
-        //default case
         consola.info(eventData.data.message, false);
     }
   });

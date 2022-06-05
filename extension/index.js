@@ -3,7 +3,7 @@
 /**
  * TODO: Move from a file-based data storage system to a proper database (MongoDB + Mongoose).
  * TODO: Move points calculation to separate utility module.
- * TODO: Check team submitted is valid *before* calculation.
+ * TODO: Implement tests for team valididation *before* calculation.
  * TODO: Add support for prime/community/extended subs.
 **/
 
@@ -229,11 +229,6 @@ module.exports = (nodecg) => {
     }
   }
 
-  /* --------------------------------------------
-
-  NODECG - REGISTER LISTENERS HERE
-
--------------------------------------------- */
   teamPoints.on("change", (newValue, oldValue) => {
     let teamlist = fs.readFileSync(
       path.resolve(__dirname, "../teamlist-alliances.json")
@@ -246,20 +241,17 @@ module.exports = (nodecg) => {
       path.resolve(__dirname, "../userlist-alliances.json")
     );
     userlist = JSON.parse(file);
-    // Checks if the userlist already exists in the file.
     if (userlist.hasOwnProperty(newValue.name.toLowerCase())) {
       if (firstdonation === true) {
         firstdonation = false;
       } else {
         consola.info(`latestDonation updated!`, true);
         consola.info("New donation: " + newValue.name, true);
-        //consola.info('Not first load, updating file');
         const pointsCalc = newValue.amount * tip.value;
         const initialPoints = userlist[newValue.name.toLowerCase()];
         consola.info(initialPoints, false);
         const updatedPoints = Math.floor(pointsCalc + initialPoints);
         userlist[newValue.name.toLowerCase()] = updatedPoints;
-        // Formats to human-readable when updating the json file.
         const data = JSON.stringify(userlist, null, 2);
         fs.writeFileSync(
           path.resolve(__dirname, "../userlist-alliances.json"),
@@ -269,15 +261,10 @@ module.exports = (nodecg) => {
       }
     } else {
       consola.info("User not found!", false);
-
-      // 5 is equal to number of points per £5 donation.
       const pointsCalc = newValue.amount * tip.value;
-      // Rounds the points down to the nearest integer.
       const actualPoints = Math.floor(pointsCalc);
       consola.info(actualPoints, false);
-      // Adds the new userlist and their point value to the object.
       userlist[newValue.name.toLowerCase()] = actualPoints;
-      // Formats to human-readable when updating the json file.
       const data = JSON.stringify(userlist, null, 2);
       fs.writeFileSync(
         path.resolve(__dirname, "../userlist-alliances.json"),
@@ -291,7 +278,6 @@ module.exports = (nodecg) => {
       path.resolve(__dirname, "../userlist-alliances.json")
     );
     userlist = JSON.parse(file);
-    // Checks if the userlist already exists in the file.
     if (userlist.hasOwnProperty(newValue.name.toLowerCase())) {
       if (firstcheer === true) {
         firstcheer = false;
@@ -299,12 +285,10 @@ module.exports = (nodecg) => {
         consola.info(`latestCheer updated!`, true);
         consola.info(`${newValue.name} found!`, true);
         const pointsCalc = (newValue.amount / 100) * cheer.value;
-        // Rounds the points down to the nearest integer.
         const actualPoints = Math.floor(pointsCalc);
         const initialPoints = userlist[newValue.name.toLowerCase()];
         const updatedPoints = actualPoints + initialPoints;
         userlist[newValue.name.toLowerCase()] = updatedPoints;
-        // Formats to human-readable when updating the json file.
         const data = JSON.stringify(userlist, null, 2);
         fs.writeFileSync(
           path.resolve(__dirname, "../userlist-alliances.json"),
@@ -313,13 +297,9 @@ module.exports = (nodecg) => {
       }
     } else {
       consola.info(`${newValue.name} not found!`, false);
-      // 5 is equal to number of points per £5 donation.
       const pointsCalc = (newValue.amount / 100) * cheer.value;
-      // Rounds the points down to the nearest integer.
       const actualPoints = Math.floor(pointsCalc);
-      // Adds the new userlist and their point value to the object.
       userlist[newValue.name.toLowerCase()] = actualPoints;
-      // Formats to human-readable when updating the json file.
       const data = JSON.stringify(userlist, null, 2);
       fs.writeFileSync(
         path.resolve(__dirname, "../userlist-alliances.json"),
@@ -333,14 +313,11 @@ module.exports = (nodecg) => {
       path.resolve(__dirname, "../userlist-alliances.json")
     );
     userlist = JSON.parse(file);
-
-    // Check if this is the first load of the system. If it is, dismiss the check.
     if (!firstsubscription) {
       consola.info(`latestSubscription updated!`, true);
       consola.info(newValue.name, true);
 
       if (checkGiftedStatus(newValue)) {
-        // Gifted sub!
         givePointsToUsers(newValue.sub_plan, newValue, true);
       } else {
         givePointsToUsers(newValue.sub_plan, newValue, false);
