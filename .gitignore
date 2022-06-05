@@ -10,3 +10,5 @@ old_data/
 *.log
 *.old
 *.bak
+.development.env
+.production.env
