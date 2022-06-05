@@ -1,50 +1,60 @@
-import fs from "fs";
-import path from "path";
 import { ChatClient } from "@twurple/chat";
 import { init } from './auth'
+import consola from 'consola'
 let status: String;
-let chatClient: ChatClient;
+let chatClient
 let authProvider;
 
-export = (io, socket) => {
-  async function createClient() {
-    init().then((provider) => {
-      authProvider = provider
-    })
-    chatClient = new ChatClient({
-      authProvider,
-      channels: [process.env.TWITCH_BOT_STREAMER_CHANNEL],
-    });
-    chatClient.connect();
-  }
   
-  createClient();
-  
-  
+async function createClient() {
+  consola.info('Creating Twitch chat client...')
+  init().then((provider) => {
+    consola.success('Successfully authenticated with Twitch.')
+    authProvider = provider
+  })
+  chatClient = new ChatClient({
+    authProvider,
+    channels: [process.env.TWITCH_BOT_STREAMER_CHANNEL],
+  });
+  return chatClient
+}
+
+async function connectClient() {
+await createClient().then((client) => {
+  chatClient = client;
+  chatClient.connect()
   chatClient.onConnect(() => {
     status = "Connected";
-  });
-  
-  chatClient.onDisconnect((manually, reason) => {
+    consola.success('Twitch chat client successfully connected.')
+   });
+   
+   chatClient.onDisconnect((manually, reason) => {
     if (!manually) {
     } else {
     }
     status = "Disconnected";
-  });
-  
-  chatClient.onMessage((channel, user, message) => {
+   });
+   
+   chatClient.onMessage((channel, user, message) => {
     if (self) return;
-  
+   
     if (message.toLowerCase() === "!points") {
     }
-  
+   
     if (message.toLowerCase() === "!teamlist") {
       chatClient.say(
         channel,
         `The teams you can spend your points on are: eternalflame, wintersembrace, etherealbloom, shadowgrove. To spend your points, type #<teamname>. (Eg: #eternalflame)`
       );
     }
-  });
+   });
+});
+
+}
+
+connectClient()
+
+export = async (io) => {  
 
   io.on("system:enable-counting", (shouldCount: boolean) => {
     if (shouldCount) {

@@ -4,14 +4,16 @@ import consola from "consola";
 import { Server } from "socket.io";
 const io = new Server({});
 
-module.exports = async () => {
+async function init() {
+  consola.info('Asaria Backend starting...')
   const twitchAuthenticationHandler = require("./integrations/twitch/auth");
   const twitchChatClientHandler = require("./integrations/twitch/chat");
   const streamelementsWebsocketHandler = require("./integrations/streamelements/websocket");
   const pointsHandler = require("./util/points");
+  consola.success('Registered handlers successfully!')
 
   io.on("connection", (socket) => {
-    consola.log("New connection established.", socket);
+    consola.info("New connection established.", socket);
     twitchAuthenticationHandler(io, socket);
     twitchChatClientHandler(io, socket);
     streamelementsWebsocketHandler(io, socket);
@@ -19,4 +21,7 @@ module.exports = async () => {
   });
 };
 
-io.listen(3000);
+init()
+
+io.listen(parseInt(process.env.SOCKET_PORT));
+consola.info(`Socket server listening on port ${process.env.SOCKET_PORT}. Awaiting connections...`)

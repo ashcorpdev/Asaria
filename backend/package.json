@@ -23,7 +23,7 @@
         "socket.io-client": "^2.4.0"
     },
     "scripts": {
-        "start": "tsc && node -r dotenv/config src/index.js",
+        "start": "tsc && node -r dotenv/config dist/index.js",
         "test": "jest --watchAll --verbose"
     },
     "devDependencies": {

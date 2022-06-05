@@ -7,6 +7,8 @@
  * TODO: Create dummy data json files for streamelements events.
 **/
 const io = require("socket.io-client");
+import consola from 'consola'
+
 const jwt = process.env.STREAMELEMENTS_JWT_TOKEN;
 const seClient = io("https://realtime.streamelements.com", {
   transports: ["websocket"],
@@ -30,12 +32,13 @@ function onConnect() {
 }
 
 function onDisconnect(reason) {
-  console.warn(reason);
+  consola.warn(reason);
 
 }
 
 function onAuthenticated(data) {
   const { channelId } = data;
+  consola.success('Streamelements client successfully connected and authenticated.')
 }
 
 seClient.on("connect_error", () => {
@@ -48,7 +51,7 @@ seClient.on("connect_error", () => {
   }, 1000);
 });
 
-module.exports = function () {
+export = () => {
 
   seClient.on("event", (eventData) => {
 
