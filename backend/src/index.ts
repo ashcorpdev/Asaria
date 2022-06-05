@@ -9,7 +9,7 @@
 
 import fs from "fs";
 import path from "path";
-import nodecgApi from "./util/nodecg";
+import nodecgApi from "../../asaria/src/backend/extension/util/nodecg";
 import { NodeCG } from "../../../../types/server";
 
 let file = fs.readFileSync(
@@ -28,8 +28,8 @@ let firstsubscription = true;
 module.exports = async (nodecg: NodeCG) => {
   nodecg.log.info('Loading Asaria Bundle...')
   nodecgApi.set(nodecg);
-  const authProvider = await require('./integrations/twitch/auth')
-  const { client: chatClient } = require("./integrations/twitch/chat");
+  await require('./integrations/twitch/auth')
+  const { getChatClient } = require("./integrations/twitch/chat");
   require("./integrations/streamelements/websocket")(nodecg);
 
   // TODO: Refactor the replicants to have specific default values.
@@ -182,7 +182,7 @@ module.exports = async (nodecg: NodeCG) => {
     userlist = JSON.parse(JSON.stringify(file));
     if (userlist.hasOwnProperty(username.toLowerCase())) {
       if (userlist[username] <= 0) {
-        chatClient.say(
+        getChatClient().say(
           channel,
           `@${username}, you don't have any points to spend!`
         );
@@ -220,14 +220,14 @@ module.exports = async (nodecg: NodeCG) => {
           etherealbloom: teams.etherealbloom,
           shadowgrove: teams.shadowgrove,
         };
-        chatClient.say(
+        getChatClient().say(
           channel,
           `@${username}, you spent ${userPoints} points on team ${teamName}!`
         );
       }
     } else {
       nodecg.log.info(`${username.toLowerCase()} not found, no points available`, false);
-      chatClient.say(channel, `@${username}, you don't have any points to spend!`);
+      getChatClient().say(channel, `@${username}, you don't have any points to spend!`);
     }
   }
 
@@ -332,11 +332,11 @@ module.exports = async (nodecg: NodeCG) => {
 
   nodecg.listenFor("enableCounting", (boolean) => {
     if (boolean == true) {
-      chatClient.connect();
-      nodecg.log.info("Counting enabled, connecting client.", true);
+      getChatClient().connect();
+      nodecg.log.info("Counting enabled, connecting client.");
     } else {
-      chatClient.disconnect();
-      nodecg.log.info("Counting disabled, disconnecting client.", true);
+      getChatClient().quit();
+      nodecg.log.info("Counting disabled, disconnecting client.");
     }
   });
 

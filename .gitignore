@@ -11,3 +11,5 @@ userlist-alliances.json
 tokens.json
 extension/*
 .env
+backend/dist/
+frontend/dist/

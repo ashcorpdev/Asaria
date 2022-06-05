@@ -167,7 +167,10 @@ chatClient.onMessage((channel, user, message) => {
   }
 });
 
-module.exports = {
-  chatClient,
-  status,
-};
+function getChatClient() {
+  return chatClient;
+}
+
+export = {
+  getChatClient
+}

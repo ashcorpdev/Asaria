@@ -4,9 +4,9 @@
       "esModuleInterop": true,
       "target": "es2017",
       "moduleResolution": "node",
-      "sourceMap": true,
-      "outDir": "extension",
+      "outDir": "./dist",
       "skipLibCheck": true
     },
-    "lib": ["es2015"]
+    "lib": ["es2015"],
+    "include": ["./src/**/*"]
 }
