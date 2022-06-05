@@ -61,8 +61,8 @@ disableButton.disabled = false;
 
 -------------------------------------------- */
 teamPoints.on("change", (newValue, oldValue) => {
-  console.log(`teamPoints changed from ${oldValue} to ${newValue}`, true);
-  console.log(JSON.stringify(newValue), true);
+  consola.info(`teamPoints changed from ${oldValue} to ${newValue}`, true);
+  consola.info(JSON.stringify(newValue), true);
   var eternalflame = document.getElementById("eternalflame");
   var wintersembrace = document.getElementById("wintersembrace");
   var etherealbloom = document.getElementById("etherealbloom");
@@ -86,76 +86,76 @@ teamPoints.on("change", (newValue, oldValue) => {
 });
 
 repT1Sub.on("change", (newValue, oldValue) => {
-  console.log(`T1 point value changed.`, false);
-  console.log(newValue, false);
+  consola.info(`T1 point value changed.`, false);
+  consola.info(newValue, false);
   t1Sub.value = newValue;
 });
 
 repT2Sub.on("change", (newValue, oldValue) => {
-  console.log(`T2 point value changed.`, false);
-  console.log(newValue, false);
+  consola.info(`T2 point value changed.`, false);
+  consola.info(newValue, false);
   t2Sub.value = newValue;
 });
 
 repT3Sub.on("change", (newValue, oldValue) => {
-  console.log(`T3 point value changed.`, false);
-  console.log(newValue, false);
+  consola.info(`T3 point value changed.`, false);
+  consola.info(newValue, false);
   t3Sub.value = newValue;
 });
 
 repGiftedSub.on("change", (newValue, oldValue) => {
-  console.log(`Gifted point value changed.`, false);
-  console.log(newValue, false);
+  consola.info(`Gifted point value changed.`, false);
+  consola.info(newValue, false);
   giftedSub.value = newValue;
 });
 
 repSubGifter.on("change", (newValue, oldValue) => {
-  console.log(`Gifted point value changed.`, false);
-  console.log(newValue, false);
+  consola.info(`Gifted point value changed.`, false);
+  consola.info(newValue, false);
   subGifter.value = newValue;
 });
 
 repCheer.on("change", (newValue, oldValue) => {
-  console.log(`Cheer point value changed.`, false);
-  console.log(newValue, false);
+  consola.info(`Cheer point value changed.`, false);
+  consola.info(newValue, false);
   cheer.value = newValue;
 });
 
 repTip.on("change", (newValue, oldValue) => {
-  console.log(`Tip point value changed.`, false);
-  console.log(newValue, false);
+  consola.info(`Tip point value changed.`, false);
+  consola.info(newValue, false);
   tip.value = newValue;
 });
 
 latestDonation.on("change", (newValue, oldValue) => {
-  console.log(`latestDonation changed from ${oldValue} to ${newValue}`, false);
-  console.log(JSON.stringify(newValue), false);
+  consola.info(`latestDonation changed from ${oldValue} to ${newValue}`, false);
+  consola.info(JSON.stringify(newValue), false);
   var donationText = document.getElementById("latestDonation");
   donationText.innerHTML = newValue.name + " donated £" + newValue.amount + ".";
 });
 
 latestCheer.on("change", (newValue, oldValue) => {
-  console.log(`latestCheer changed from ${oldValue} to ${newValue}`, false);
-  console.log(JSON.stringify(newValue), false);
+  consola.info(`latestCheer changed from ${oldValue} to ${newValue}`, false);
+  consola.info(JSON.stringify(newValue), false);
   var cheerText = document.getElementById("latestCheer");
   cheerText.innerHTML =
     newValue.name + " cheered " + newValue.amount + " bits.";
 });
 
 latestSubscription.on("change", (newValue, oldValue) => {
-  console.log(
+  consola.info(
     `latestSubscription changed from ${oldValue} to ${newValue}`,
     false
   );
-  console.log(JSON.stringify(newValue), false);
+  consola.info(JSON.stringify(newValue), false);
   var subscriptionText = document.getElementById("latestSubscription");
   subscriptionText.innerHTML =
     newValue.name + " subscribed for " + newValue.months + " months.";
 });
 
 connectionStatus.on("change", (newValue, oldValue) => {
-  console.log(`Twitch connection status changed!`, false);
-  console.log(newValue);
+  consola.info(`Twitch connection status changed!`, false);
+  consola.info(newValue);
   if (newValue === "Connected") {
     statusText.innerHTML =
       "<i class='fas fa-heartbeat' style='color: green'></i> <strong>" +
@@ -232,8 +232,8 @@ function updatePointsValue(event) {
   let val = 0;
   switch (event) {
     case "t1":
-      console.log("T1 Sub Set button clicked!", false);
-      console.log(setT1SubText.value, false);
+      consola.info("T1 Sub Set button clicked!", false);
+      consola.info(setT1SubText.value, false);
       val = setT1SubText.value;
       break;
     case "t2":
@@ -259,7 +259,7 @@ function updatePointsValue(event) {
   nodecg
     .sendMessage("updatePoints", { event, val })
     .then((result) => {
-      console.log("Points updated!", false);
+      consola.info("Points updated!", false);
     })
     .catch((error) => {
       console.error(error);
@@ -272,19 +272,19 @@ function enableCounting(boolean) {
 
 function updateTeams(option, amount) {
   if (teamSelection.value == "choose") {
-    console.log("Choose a team!", false);
+    consola.info("Choose a team!", false);
   } else {
     let selected = teamSelection.value;
     if (option == "add") {
       let currentPoints = Number(document.getElementById(selected).innerText);
       let newPoints =
         parseInt(currentPoints, 10) + parseInt(valueInput.value, 10);
-      console.log(parseInt(newPoints, 10), false);
+      consola.info(parseInt(newPoints, 10), false);
       let updatedPoints = parseInt(newPoints, 10);
       nodecg
         .sendMessage("updateCount", { updatedPoints, selected })
         .then((result) => {
-          console.log("Values updated!", false);
+          consola.info("Values updated!", false);
         })
         .catch((error) => {
           console.error(error);
@@ -293,7 +293,7 @@ function updateTeams(option, amount) {
       let currentPoints = Number(document.getElementById(selected).innerText);
       let newPoints =
         parseInt(currentPoints, 10) - parseInt(valueInput.value, 10);
-      console.log(parseInt(newPoints, 10), false);
+      consola.info(parseInt(newPoints, 10), false);
       let updatedPoints = parseInt(newPoints, 10);
       if (updatedPoints <= 0) {
         updatedPoints = 0;
@@ -301,7 +301,7 @@ function updateTeams(option, amount) {
       nodecg
         .sendMessage("updateCount", { updatedPoints, selected })
         .then((result) => {
-          console.log("Values updated!", false);
+          consola.info("Values updated!", false);
         })
         .catch((error) => {
           console.error(error);

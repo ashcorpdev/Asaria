@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+const consola = require('consola');
 const { debug } = require("../../debug");
 let config = fs.readFileSync(path.resolve(__dirname, "../../config.json"));
 let opts = JSON.parse(config);
@@ -30,16 +31,16 @@ client.connect();
 
 const connectionStatusRep = node.Replicant("connectionStatus");
 
-debug(`Twitch client connected to ${channel}.`, true);
+consola.info(`Twitch client connected to ${channel}.`, true);
 
 client.on("connected", (address, port) => {
-  console.log(`Twitch client connected.`);
+  consola.info(`Twitch client connected.`);
   status = "Connected";
   connectionStatusRep.value = status;
 });
 
 client.on("disconnected", (reason) => {
-  console.log(`Twitch client disconnected. Reason: ${reason}`);
+  consola.info(`Twitch client disconnected. Reason: ${reason}`);
   status = "Disconnected";
   connectionStatusRep.value = status;
 });
@@ -56,7 +57,7 @@ client.on("message", (channel, tags, message, self) => {
     );
     userlist = JSON.parse(file);
     if (userlist.hasOwnProperty(tags.username.toLowerCase())) {
-      debug(
+      consola.info(
         `Found ${tags.username.toLowerCase()} in the list, displaying points!`,
         false
       );
@@ -65,7 +66,7 @@ client.on("message", (channel, tags, message, self) => {
         `@${tags.username}, you have ${userlist[tags.username]} points!`
       );
     } else {
-      debug(
+      consola.info(
         `${tags.username.toLowerCase()} not found - no points available`,
         false
       );

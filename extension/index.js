@@ -2,6 +2,7 @@
 
 const fs = require("fs");
 const path = require("path");
+const consola = require('consola');
 const { debug } = require("../debug");
 const nodecgApi = require("./util/nodecg");
 
@@ -62,7 +63,7 @@ module.exports = (nodecg) => {
   function checkGiftedStatus(newValue) {
     let gifterName = newValue.gifter;
     if (gifterName !== "" && gifterName !== null) {
-      debug("Gifter: " + gifterName, false);
+      consola.info("Gifter: " + gifterName, false);
       return true;
     } else {
       return false;
@@ -99,7 +100,7 @@ module.exports = (nodecg) => {
       if (userlist.hasOwnProperty(newValue.gifter.toLowerCase())) {
         // Gifter found in file
         initialPoints = userlist[newValue.gifter.toLowerCase()];
-        debug("Extension - Gifter found in file; adding points.", true);
+        consola.info("Extension - Gifter found in file; adding points.", true);
         updatedPoints = Math.floor(subgifter.value) + initialPoints;
         userlist[newValue.gifter.toLowerCase()] = updatedPoints;
         // Formats to human-readable when updating the json file.
@@ -108,10 +109,10 @@ module.exports = (nodecg) => {
           path.resolve(__dirname, "../userlist-alliances.json"),
           data
         );
-        debug("Extension - New gifter points: " + updatedPoints, true);
+        consola.info("Extension - New gifter points: " + updatedPoints, true);
       } else {
         // Gifter not found in file
-        debug("Extension - Gifter not found in file; adding.", true);
+        consola.info("Extension - Gifter not found in file; adding.", true);
         userlist[newValue.gifter.toLowerCase()] = Math.floor(subgifter.value);
         // Formats to human-readable when updating the json file.
         data = JSON.stringify(userlist, null, 2);
@@ -119,16 +120,16 @@ module.exports = (nodecg) => {
           path.resolve(__dirname, "../userlist-alliances.json"),
           data
         );
-        debug(
+        consola.info(
           "Extension - New gifter points: " + Math.floor(subgifter.value),
           true
         );
       }
 
       if (userlist.hasOwnProperty(newValue.name.toLowerCase())) {
-        debug("Giftee found in file; adding points.", true);
+        consola.info("Giftee found in file; adding points.", true);
         initialPoints = userlist[newValue.name.toLowerCase()];
-        debug(initialPoints, false);
+        consola.info(initialPoints, false);
         updatedPoints = Math.floor(giftedsub.value) + initialPoints;
         userlist[newValue.name.toLowerCase()] = updatedPoints;
         // Formats to human-readable when updating the json file.
@@ -137,11 +138,11 @@ module.exports = (nodecg) => {
           path.resolve(__dirname, "../userlist-alliances.json"),
           data
         );
-        debug(updatedPoints, false);
+        consola.info(updatedPoints, false);
       } else {
         // userlist not found in list
-        debug("Giftee not in file; adding.", true);
-        debug(newValue.name.toLowerCase(), true);
+        consola.info("Giftee not in file; adding.", true);
+        consola.info(newValue.name.toLowerCase(), true);
         userlist[newValue.name.toLowerCase()] = Math.floor(giftedsub.value);
         // Formats to human-readable when updating the json file.
         data = JSON.stringify(userlist, null, 2);
@@ -149,14 +150,14 @@ module.exports = (nodecg) => {
           path.resolve(__dirname, "../userlist-alliances.json"),
           data
         );
-        debug(updatedPoints, false);
+        consola.info(updatedPoints, false);
       }
     } else {
       // do non-gifted things
 
       if (userlist.hasOwnProperty(newValue.name.toLowerCase())) {
         initialPoints = userlist[newValue.name.toLowerCase()];
-        debug(initialPoints, false);
+        consola.info(initialPoints, false);
         updatedPoints = Math.floor(points) + initialPoints;
         userlist[newValue.name.toLowerCase()] = updatedPoints;
         // Formats to human-readable when updating the json file.
@@ -165,7 +166,7 @@ module.exports = (nodecg) => {
           path.resolve(__dirname, "../userlist-alliances.json"),
           data
         );
-        debug(updatedPoints, false);
+        consola.info(updatedPoints, false);
       } else {
         // userlist not found in list
         userlist[newValue.name.toLowerCase()] = Math.floor(points);
@@ -175,7 +176,7 @@ module.exports = (nodecg) => {
           path.resolve(__dirname, "../userlist-alliances.json"),
           data
         );
-        debug("Extension - new points: " + points, true);
+        consola.info("Extension - new points: " + points, true);
       }
     }
   }
@@ -199,13 +200,13 @@ module.exports = (nodecg) => {
         );
       } else {
         let userPoints = userlist[username];
-        debug(
+        consola.info(
           `Found ${username.toLowerCase()} in the list, spending ${userPoints} points!`,
           true
         );
         let oldTeamPoints = teams[teamName];
         let newPoints = oldTeamPoints + userlist[username];
-        debug(
+        consola.info(
           `Old ${teamName} points: ` +
             oldTeamPoints +
             ` New ${teamName} Points: ` +
@@ -237,7 +238,7 @@ module.exports = (nodecg) => {
         );
       }
     } else {
-      debug(`${username.toLowerCase()} not found, no points available`, false);
+      consola.info(`${username.toLowerCase()} not found, no points available`, false);
       client.say(channel, `@${username}, you don't have any points to spend!`);
     }
   }
@@ -264,12 +265,12 @@ module.exports = (nodecg) => {
       if (firstdonation === true) {
         firstdonation = false;
       } else {
-        debug(`latestDonation updated!`, true);
-        debug("New donation: " + newValue.name, true);
-        //debug('Not first load, updating file');
+        consola.info(`latestDonation updated!`, true);
+        consola.info("New donation: " + newValue.name, true);
+        //consola.info('Not first load, updating file');
         const pointsCalc = newValue.amount * tip.value;
         const initialPoints = userlist[newValue.name.toLowerCase()];
-        debug(initialPoints, false);
+        consola.info(initialPoints, false);
         const updatedPoints = Math.floor(pointsCalc + initialPoints);
         userlist[newValue.name.toLowerCase()] = updatedPoints;
         // Formats to human-readable when updating the json file.
@@ -278,16 +279,16 @@ module.exports = (nodecg) => {
           path.resolve(__dirname, "../userlist-alliances.json"),
           data
         );
-        debug(updatedPoints, false);
+        consola.info(updatedPoints, false);
       }
     } else {
-      debug("User not found!", false);
+      consola.info("User not found!", false);
 
       // 5 is equal to number of points per £5 donation.
       const pointsCalc = newValue.amount * tip.value;
       // Rounds the points down to the nearest integer.
       const actualPoints = Math.floor(pointsCalc);
-      debug(actualPoints, false);
+      consola.info(actualPoints, false);
       // Adds the new userlist and their point value to the object.
       userlist[newValue.name.toLowerCase()] = actualPoints;
       // Formats to human-readable when updating the json file.
@@ -309,8 +310,8 @@ module.exports = (nodecg) => {
       if (firstcheer === true) {
         firstcheer = false;
       } else {
-        debug(`latestCheer updated!`, true);
-        debug(`${newValue.name} found!`, true);
+        consola.info(`latestCheer updated!`, true);
+        consola.info(`${newValue.name} found!`, true);
         const pointsCalc = (newValue.amount / 100) * cheer.value;
         // Rounds the points down to the nearest integer.
         const actualPoints = Math.floor(pointsCalc);
@@ -325,7 +326,7 @@ module.exports = (nodecg) => {
         );
       }
     } else {
-      debug(`${newValue.name} not found!`, false);
+      consola.info(`${newValue.name} not found!`, false);
       // 5 is equal to number of points per £5 donation.
       const pointsCalc = (newValue.amount / 100) * cheer.value;
       // Rounds the points down to the nearest integer.
@@ -350,8 +351,8 @@ module.exports = (nodecg) => {
 
     // Check if this is the first load of the system. If it is, dismiss the check.
     if (!firstsubscription) {
-      debug(`latestSubscription updated!`, true);
-      debug(newValue.name, true);
+      consola.info(`latestSubscription updated!`, true);
+      consola.info(newValue.name, true);
 
       if (checkGiftedStatus(newValue)) {
         // Gifted sub!
@@ -360,7 +361,7 @@ module.exports = (nodecg) => {
         givePointsToUsers(newValue.sub_plan, newValue, false);
       }
     } else {
-      debug("Extension - First boot; ignoring checks.", true);
+      consola.info("Extension - First boot; ignoring checks.", true);
       firstsubscription = false;
     }
   });
@@ -368,15 +369,15 @@ module.exports = (nodecg) => {
   nodecg.listenFor("enableCounting", (boolean) => {
     if (boolean == true) {
       client.connect();
-      debug("Counting enabled, connecting client.", true);
+      consola.info("Counting enabled, connecting client.", true);
     } else {
       client.disconnect();
-      debug("Counting disabled, disconnecting client.", true);
+      consola.info("Counting disabled, disconnecting client.", true);
     }
   });
 
   nodecg.listenFor("updateCount", (value, ack) => {
-    debug(value, false);
+    consola.info(value, false);
     let newTeamPoints = value["updatedPoints"];
     let selectedTeam = value["selected"];
 
@@ -408,38 +409,38 @@ module.exports = (nodecg) => {
   });
 
   nodecg.listenFor("updatePoints", (value, ack) => {
-    debug(value, false);
+    consola.info(value, false);
     let event = value["event"];
     let amount = value["val"];
-    debug(`Points update received: ${event} - ${amount}`, true);
+    consola.info(`Points update received: ${event} - ${amount}`, true);
     switch (event) {
       case "t1":
         t1sub.value = amount;
-        debug(t1sub.value, false);
+        consola.info(t1sub.value, false);
         break;
       case "t2":
         t2sub.value = amount;
-        debug(t2sub.value, false);
+        consola.info(t2sub.value, false);
         break;
       case "t3":
         t3sub.value = amount;
-        debug(t3sub.value, false);
+        consola.info(t3sub.value, false);
         break;
       case "gifted":
         giftedsub.value = amount;
-        debug(giftedsub.value, false);
+        consola.info(giftedsub.value, false);
         break;
       case "gifter":
         subgifter.value = amount;
-        debug(subgifter.value, false);
+        consola.info(subgifter.value, false);
         break;
       case "cheer":
         cheer.value = amount;
-        debug(cheer.value, false);
+        consola.info(cheer.value, false);
         break;
       case "tip":
         tip.value = amount;
-        debug(tip.value, false);
+        consola.info(tip.value, false);
         break;
     }
 
@@ -449,7 +450,7 @@ module.exports = (nodecg) => {
   });
 
   nodecg.listenFor("updateTeamPoints", (value) => {
-    console.log(value);
+    consola.info(value);
     updateTeamPoints(value.team, value.user, value.channel);
   });
 

@@ -1,16 +1,18 @@
 const fs = require("fs");
 const path = require("path");
+const consola = require('consola');
 const { debug } = require("../../debug");
 let config = fs.readFileSync(path.resolve(__dirname, "../../config.json"));
 const io = require("socket.io-client");
 const jwt = config["streamelements"].jwt_token;
+// TODO: Upgrade to v4.x, if possible.
 const socket = io("https://realtime.streamelements.com", {
   transports: ["websocket"],
   pingTimeout: 60000,
 });
 
 socket.on("connection", (skt) => {
-  console.log(skt.id);
+  consola.info(skt.id);
 });
 socket.on("connect", onConnect);
 
@@ -31,14 +33,14 @@ socket.on("unauthorized", console.error);
 -------------------------------------------- */
 
 function onConnect() {
-  console.log("Successfully connected to the streamelements websocket");
+  consola.success("Successfully connected to the streamelements websocket");
 
   socket.emit("authenticate", { method: "jwt", token: jwt });
 }
 
 function onDisconnect(reason) {
-  console.log("Disconnected from websocket");
-  console.log(reason);
+  consola.warn("Disconnected from websocket");
+  console.warn(reason);
 
   // Reconnect
 }
@@ -46,7 +48,7 @@ function onDisconnect(reason) {
 function onAuthenticated(data) {
   const { channelId } = data;
 
-  console.log(`Successfully connected to channel ${channelId}`);
+  consola.success(`Successfully connected to channel ${channelId}`);
 }
 
 // either by directly modifying the `auth` attribute
@@ -73,10 +75,10 @@ module.exports = function (nodecg) {
     //		 Fix debug messages for the streamelements alerts.
     //		 Create dummy data json files for streamelements events.
 
-    console.log(eventData);
+    consola.info(eventData);
     if (eventData.type === "tip") {
       //code to handle donation events
-      debug(eventData.data.message, false);
+      consola.info(eventData.data.message, false);
 
       // Reduce characters at end of amount
       if (
@@ -102,11 +104,11 @@ module.exports = function (nodecg) {
     switch (eventData.type) {
       case "follower":
         //code to handle follow events
-        debug(eventData.data.message, false);
+        consola.info(eventData.data.message, false);
         break;
       case "subscriber":
         //code to handle subscription events
-        debug(eventData.data.message, false);
+        consola.info(eventData.data.message, false);
         latestSubscription.value = {
           name: eventData.data.username,
           sub_plan: eventData.data.tier,
@@ -116,7 +118,7 @@ module.exports = function (nodecg) {
         break;
       case "cheer":
         //code to handle donation events
-        debug(eventData.data.message, false);
+        consola.info(eventData.data.message, false);
         latestCheer.value = {
           name: eventData.data.username,
           amount: eventData.data.amount,
@@ -125,7 +127,7 @@ module.exports = function (nodecg) {
         break;
       default:
         //default case
-        debug(eventData.data.message, false);
+        consola.info(eventData.data.message, false);
     }
   });
 };

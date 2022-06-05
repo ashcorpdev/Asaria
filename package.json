@@ -92,6 +92,7 @@
   "repository": "git@github.com/ashcorpdev/asaria.git",
   "license": "Apache-2.0",
   "dependencies": {
+    "consola": "^2.15.3",
     "dotenv": "^16.0.1",
     "node-sass": "^4.13.1",
     "socket.io-client": "^2.4.0",
