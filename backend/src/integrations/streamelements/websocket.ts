@@ -6,115 +6,62 @@
  * TODO: Fix debug messages for the streamelements alerts.
  * TODO: Create dummy data json files for streamelements events.
 **/
-
-const fs = require("fs");
-const path = require("path");
 const io = require("socket.io-client");
-const node = require("../../util/nodecg").get();
 const jwt = process.env.STREAMELEMENTS_JWT_TOKEN;
-const socket = io("https://realtime.streamelements.com", {
+const seClient = io("https://realtime.streamelements.com", {
   transports: ["websocket"],
   pingTimeout: 60000,
 });
 
-socket.on("connection", (skt) => {
-  node.log.info(skt.id);
+seClient.on("connection", (socket) => {
 });
-socket.on("connect", onConnect);
+seClient.on("connect", onConnect);
 
-socket.on("disconnect", (reason) => {
+seClient.on("disconnect", (reason) => {
   onDisconnect(reason);
 });
 
-socket.on("authenticated", onAuthenticated);
+seClient.on("authenticated", onAuthenticated);
 
-socket.on("unauthorized", console.error);
+seClient.on("unauthorized", console.error);
 
 function onConnect() {
-  node.log.info("Successfully connected to the StreamElements websocket");
-
-  socket.emit("authenticate", { method: "jwt", token: jwt });
+  seClient.emit("authenticate", { method: "jwt", token: jwt });
 }
 
 function onDisconnect(reason) {
-  node.log.warn("Disconnected from websocket");
   console.warn(reason);
 
 }
 
 function onAuthenticated(data) {
   const { channelId } = data;
-
-  node.log.info(`Successfully connected to channel ${channelId}`);
 }
 
-socket.on("connect_error", () => {
-  socket.connect();
+seClient.on("connect_error", () => {
+  seClient.connect();
 });
 
-socket.on("connect_error", () => {
+seClient.on("connect_error", () => {
   setTimeout(() => {
-    socket.connect();
+    seClient.connect();
   }, 1000);
 });
 
-module.exports = function (nodecg) {
+module.exports = function () {
 
-  const latestDonation = nodecg.Replicant("latestDonation");
-  const latestCheer = nodecg.Replicant("latestCheer");
-  const latestSubscription = nodecg.Replicant("latestSubscription");
+  seClient.on("event", (eventData) => {
 
-  socket.on("event", (eventData) => {
-
-    nodecg.log.info(eventData);
     if (eventData.type === "tip") {
-      nodecg.log.info(eventData.data.message, false);
       if (
         typeof eventData.data.amount === "string" ||
         eventData.data.amount instanceof String
       ) {
         let amounts = eventData.data.amount;
         let newamount = parseInt(amounts.substring(0, amounts.length - 8));
-        latestDonation.value = {
-          name: eventData.data.username,
-          amount: newamount,
-          currency: eventData.data.userCurrency,
-        };
-      } else {
-        latestDonation.value = {
-          name: eventData.data.username,
-          amount: eventData.data.amount,
-          currency: eventData.data.userCurrency,
-        };
       }
     }
-
-    // ! To be removed.
-    switch (eventData.type) {
-      case "follower":
-        nodecg.log.info(eventData.data.message, false);
-        break;
-      case "subscriber":
-        nodecg.log.info(eventData.data.message, false);
-        latestSubscription.value = {
-          name: eventData.data.username,
-          sub_plan: eventData.data.tier,
-          months: eventData.data.amount,
-          gifter: eventData.data.sender || "",
-        };
-        break;
-      case "cheer":
-        nodecg.log.info(eventData.data.message, false);
-        latestCheer.value = {
-          name: eventData.data.username,
-          amount: eventData.data.amount,
-        };
-
-        break;
-      default:
-        nodecg.log.info(eventData.data.message, false);
-    }
-  });
+  })
 };
 
 export {}
