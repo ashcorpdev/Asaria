@@ -8,38 +8,39 @@
 **/
 
 require('dotenv').config();
-const fs = require("fs");
-const path = require("path");
-const consola = require('consola');
-const nodecgApi = require("./util/nodecg");
+import fs from "fs";
+import path from "path";
+import consola from 'consola';
+import nodecgApi from "./util/nodecg";
+import { NodeCG } from "../../../../types/server";
 
-let config = fs.readFileSync(path.resolve(__dirname, "../config.json"));
 let file = fs.readFileSync(
   path.resolve(__dirname, "../userlist-alliances.json")
 );
-let userlist = JSON.parse(file);
+let userlist = JSON.parse(JSON.stringify(file));
 let teamlist = fs.readFileSync(
   path.resolve(__dirname, "../teamlist-alliances.json")
 );
-let teams = JSON.parse(teamlist);
+let teams = JSON.parse(JSON.stringify(teamlist));
 
 let firstdonation = true;
 let firstcheer = true;
 let firstsubscription = true;
 
-module.exports = (nodecg) => {
+module.exports = (nodecg: NodeCG) => {
   nodecgApi.set(nodecg);
   const { client } = require("./integrations/twitch/chat");
   require("./integrations/streamelements/websocket")(nodecg);
 
+  // TODO: Refactor the replicants to have specific default values.
   const latestDonation = nodecg.Replicant("latestDonation", {
-    defaultValue: 0,
+    defaultValue: { name: "", amount: 0},
   });
   const latestSubscription = nodecg.Replicant("latestSubscription", {
-    defaultValue: 0,
+    defaultValue: { name: "", amount: 0, sub_plan: ""},
   });
-  const latestCheer = nodecg.Replicant("latestCheer", { defaultValue: 0 });
-  const teamPoints = nodecg.Replicant("teamPoints", { defaultValue: 0 });
+  const latestCheer = nodecg.Replicant("latestCheer", { defaultValue: { name: "", amount: 0} });
+  const teamPoints = nodecg.Replicant("teamPoints", { defaultValue: { "eternalflame": 0, "wintersembrace": 0, "etherealbloom": 0, "shadowgrove": 0} });
   const t1sub = nodecg.Replicant("t1sub", { defaultValue: 5 });
   const t2sub = nodecg.Replicant("t2sub", { defaultValue: 10 });
   const t3sub = nodecg.Replicant("t3sub", { defaultValue: 15 });
@@ -47,6 +48,7 @@ module.exports = (nodecg) => {
   const subgifter = nodecg.Replicant("subgifter", { defaultValue: 1 });
   const tip = nodecg.Replicant("tip", { defaultValue: 1 });
   const cheer = nodecg.Replicant("cheer", { defaultValue: 1 });
+
   const enableCounting = nodecg.Replicant("enableCounting", {
     defaultValue: true,
   });
@@ -80,7 +82,7 @@ module.exports = (nodecg) => {
     file = fs.readFileSync(
       path.resolve(__dirname, "../userlist-alliances.json")
     );
-    userlist = JSON.parse(file);
+    userlist = JSON.parse(JSON.stringify(file));
     switch (tier) {
       case "1000":
         points = t1sub.value;
@@ -172,12 +174,12 @@ module.exports = (nodecg) => {
     let teamlist = fs.readFileSync(
       path.resolve(__dirname, "../teamlist-alliances.json")
     );
-    let teams = JSON.parse(teamlist);
+    let teams = JSON.parse(JSON.stringify(teamlist));
 
     file = fs.readFileSync(
       path.resolve(__dirname, "../userlist-alliances.json")
     );
-    userlist = JSON.parse(file);
+    userlist = JSON.parse(JSON.stringify(file));
     if (userlist.hasOwnProperty(username.toLowerCase())) {
       if (userlist[username] <= 0) {
         client.say(
@@ -229,18 +231,18 @@ module.exports = (nodecg) => {
     }
   }
 
-  teamPoints.on("change", (newValue, oldValue) => {
+  teamPoints.on("change", () => {
     let teamlist = fs.readFileSync(
       path.resolve(__dirname, "../teamlist-alliances.json")
     );
-    let teams = JSON.parse(teamlist);
+    let teams = JSON.parse(JSON.stringify(teamlist));
   });
 
-  latestDonation.on("change", (newValue, oldValue) => {
+  latestDonation.on("change", (newValue) => {
     file = fs.readFileSync(
       path.resolve(__dirname, "../userlist-alliances.json")
     );
-    userlist = JSON.parse(file);
+    userlist = JSON.parse(JSON.stringify(file));
     if (userlist.hasOwnProperty(newValue.name.toLowerCase())) {
       if (firstdonation === true) {
         firstdonation = false;
@@ -277,7 +279,7 @@ module.exports = (nodecg) => {
     file = fs.readFileSync(
       path.resolve(__dirname, "../userlist-alliances.json")
     );
-    userlist = JSON.parse(file);
+    userlist = JSON.parse(JSON.stringify(file));
     if (userlist.hasOwnProperty(newValue.name.toLowerCase())) {
       if (firstcheer === true) {
         firstcheer = false;
@@ -312,7 +314,7 @@ module.exports = (nodecg) => {
     file = fs.readFileSync(
       path.resolve(__dirname, "../userlist-alliances.json")
     );
-    userlist = JSON.parse(file);
+    userlist = JSON.parse(JSON.stringify(file));
     if (!firstsubscription) {
       consola.info(`latestSubscription updated!`, true);
       consola.info(newValue.name, true);
@@ -345,7 +347,7 @@ module.exports = (nodecg) => {
     let teamlist = fs.readFileSync(
       path.resolve(__dirname, "../teamlist-alliances.json")
     );
-    let teams = JSON.parse(teamlist);
+    let teams = JSON.parse(JSON.stringify(teamlist));
     teams[selectedTeam] = newTeamPoints;
 
     const data2 = JSON.stringify(teams, null, 2);
@@ -359,9 +361,6 @@ module.exports = (nodecg) => {
       etherealbloom: teams.etherealbloom,
       shadowgrove: teams.shadowgrove,
     };
-    if (ack && !ack.handled) {
-      ack(null, value * 2);
-    }
   });
 
   nodecg.listenFor("updatePoints", (value, ack) => {
@@ -399,10 +398,6 @@ module.exports = (nodecg) => {
         consola.info(tip.value, false);
         break;
     }
-
-    if (ack && !ack.handled) {
-      ack(null, value * 2);
-    }
   });
 
   nodecg.listenFor("updateTeamPoints", (value) => {
@@ -414,7 +409,7 @@ module.exports = (nodecg) => {
     file = fs.readFileSync(
       path.resolve(__dirname, "../userlist-alliances.json")
     );
-    userlist = JSON.parse(file);
+    userlist = JSON.parse(JSON.stringify(file));
     Object.keys(userlist).forEach((v) => (userlist[v] = 0));
     const data = JSON.stringify(userlist, null, 2);
     fs.writeFileSync(
@@ -427,7 +422,7 @@ module.exports = (nodecg) => {
     file = fs.readFileSync(
       path.resolve(__dirname, "../teamlist-alliances.json")
     );
-    teamlist = JSON.parse(file);
+    teamlist = JSON.parse(JSON.stringify(file));
     Object.keys(teamlist).forEach((v) => (teamlist[v] = 0));
     const data = JSON.stringify(teamlist, null, 2);
     fs.writeFileSync(

@@ -1,11 +1,12 @@
 "use strict";
+import { NodeCG } from '../../../../../types/server'
+let context: NodeCG;
 
-let context;
-module.exports = {
+export = {
   get() {
     return context;
   },
-  set(ctx) {
+  set(ctx: NodeCG) {
     context = ctx;
   },
 };
