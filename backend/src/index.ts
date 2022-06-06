@@ -2,6 +2,7 @@
 
 import consola from "consola";
 import { Server } from "socket.io";
+import listenForEvents from "./util/points";
 const io = new Server({});
 
 async function init() {
@@ -14,12 +15,13 @@ async function init() {
   consola.success('Registered handlers successfully!')
 
   io.on("connection", (socket) => {
-    consola.info("New connection established.", socket);
+    consola.info("New connection established.");
     twitchAuthenticationHandler(io, socket);
     twitchChatClientHandler(io, socket);
     streamelementsWebsocketHandler(io, socket);
     databaseHandler(io, socket);
     pointsHandler(io, socket);
+    listenForEvents(io, socket);
 
   });
 };
