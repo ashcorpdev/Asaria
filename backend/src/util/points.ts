@@ -1,6 +1,6 @@
+import consolaGlobalInstance from "consola";
 export = (io, socket) => {
-
-// TODO: Add Database functionality here.
+  consolaGlobalInstance.log('Points module loaded.')
   function givePointsToUsers(eventData: { username: string, points: Number}) {
     
     /** 
