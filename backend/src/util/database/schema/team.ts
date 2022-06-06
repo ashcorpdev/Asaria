@@ -8,3 +8,9 @@ export const teamSchema = new Schema({
     },
     points: Number
 })
+
+teamSchema.static('findOneOrCreate', async function findOneOrCreate(condition, doc) {
+    const one = await this.findOne(condition);
+  
+    return one || this.create(doc);
+  });

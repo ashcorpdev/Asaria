@@ -36,7 +36,7 @@ await createClient().then((client) => {
    });
    
    chatClient.onMessage((channel, user, message) => {
-    if (self) return;
+    if (user == chatClient.currentNick) return;
    
     if (message.toLowerCase() === "!points") {
     }

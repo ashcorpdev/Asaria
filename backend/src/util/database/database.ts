@@ -28,8 +28,8 @@ main().then(() => {
 });
 
 async function verifyTeamsExist() {
-    let teams = ['wintersembrace', 'eternalflame', 'etherealbloom', 'shadowgrove']
-    teams.forEach(async (team, index) => {
+    let teams = ["Winter's Embrace", 'Eternal Flame', 'Ethereal Bloom', 'Shadow Grove']
+    teams.forEach(async (_team, index) => {
         if(await teamModel.exists({ allianceName: teams[index] }) == null) {
             teamModel.create({ allianceName: teams[index], points: 0 })
         }
