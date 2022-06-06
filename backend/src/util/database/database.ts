@@ -23,6 +23,17 @@ async function main() {
   })
 }
 
-main();
+main().then(() => {
+    verifyTeamsExist()
+});
+
+async function verifyTeamsExist() {
+    let teams = ['wintersembrace', 'eternalflame', 'etherealbloom', 'shadowgrove']
+    teams.forEach(async (team, index) => {
+        if(await teamModel.exists({ allianceName: teams[index] }) == null) {
+            teamModel.create({ allianceName: teams[index], points: 0 })
+        }
+    });
+}
 
 export = {};
