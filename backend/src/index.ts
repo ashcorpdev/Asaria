@@ -1,32 +1,46 @@
-"use strict";
+/*
 
-import consola from "consola";
-import { Server } from "socket.io";
-import listenForEvents from "./util/points";
-const io = new Server({});
+Application Entrypoint
 
-async function init() {
-  consola.info('Asaria Backend starting...')
-  const twitchAuthenticationHandler = require("./integrations/twitch/auth");
-  const twitchChatClientHandler = require("./integrations/twitch/chat");
-  const streamelementsWebsocketHandler = require("./integrations/streamelements/websocket");
-  const pointsHandler = require("./util/points");
-  const databaseHandler = require('./util/database/database')
-  consola.success('Registered handlers successfully!')
+*/
+import { readdirSync, lstatSync } from 'fs'
+import { join } from 'path'
+import dotenv = require('dotenv')
 
-  io.on("connection", (socket) => {
-    consola.info("New connection established.");
-    twitchAuthenticationHandler(io, socket);
-    twitchChatClientHandler(io, socket);
-    streamelementsWebsocketHandler(io, socket);
-    databaseHandler(io, socket);
-    pointsHandler(io, socket);
-    listenForEvents(io, socket);
+dotenv.config()
 
-  });
-};
+async function inititaliseAsaria(): Promise<void> {
+  console.log('Initialising War of the Wisps Application.')
+  await connectToDatabase()
+  await loadIntegrationModules()
+}
 
-init()
+async function connectToDatabase(): Promise<void> {
+  // Identify whether database exists or create it if it doesn't.
+  await import(join(__dirname, '/db/db'))
+}
 
-io.listen(parseInt(process.env.SOCKET_PORT));
-consola.success(`Socket server listening on port ${process.env.SOCKET_PORT}. Awaiting connections...`)
+async function loadIntegrationModules(): Promise<void> {
+  console.log('Loading integration modules.')
+  // Filter through all the directories within integrations and find the module files to import.
+  const baseDir = join(__dirname, '/integrations')
+  const files = readdirSync(baseDir)
+  for (let i = 0; i < files.length; i++) {
+    console.log('Looking for integrations...')
+    const filename: string = join(baseDir, files[i])
+    console.log('Identified: ', filename)
+    const stat = lstatSync(filename)
+    if (stat.isDirectory()) {
+      console.log('Loading module file...')
+      // Locates the module file (should have the same name as the directory) and imports it dynamically.
+      const integration = (await import(`${filename}\\${files[i]}`)) as {
+        init: () => any
+      }
+      await integration.init()
+    }
+  }
+}
+
+inititaliseAsaria().catch((reason) => {
+  console.log(reason)
+})
