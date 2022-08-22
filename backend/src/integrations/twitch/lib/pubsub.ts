@@ -1,10 +1,11 @@
 import { AuthProvider } from '@twurple/auth'
 import { PubSubClient, PubSubSubscriptionMessage } from '@twurple/pubsub'
+import { logger } from '../../../utils/Logger'
 
 export async function createPubSubClient(
   authProvider: AuthProvider
 ): Promise<PubSubClient> {
-  console.log('Creating pubsub client instance...')
+  logger.info('Creating pubsub client instance...')
 
   const pubsubClient = new PubSubClient()
   const userId = await pubsubClient.registerUserListener(authProvider).then()
@@ -13,11 +14,11 @@ export async function createPubSubClient(
   const listener = await pubsubClient.onSubscription(
     userId,
     (message: PubSubSubscriptionMessage) => {
-      console.log(`${message.userDisplayName} just subscribed!`)
+      logger.info(`${message.userDisplayName} just subscribed!`)
     }
   )
 
-  console.log('Pubsub Client listening')
+  logger.info('Pubsub Client listening')
 
   return pubsubClient
 }

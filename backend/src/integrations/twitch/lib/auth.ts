@@ -13,7 +13,7 @@ export function createAuthProvider(): RefreshingAuthProvider | null {
   if (process.env.CLIENT_ID === undefined) return null
   if (process.env.CLIENT_SECRET === undefined) return null
   const tokenData = JSON.parse(
-    readFileSync(join(__dirname, '../lib/tokens.json'), 'utf-8')
+    readFileSync(join(process.cwd(), 'tokens.json'), 'utf-8')
   )
   const authProvider = new RefreshingAuthProvider(
     {
@@ -21,7 +21,7 @@ export function createAuthProvider(): RefreshingAuthProvider | null {
       clientSecret: process.env.CLIENT_SECRET,
       onRefresh: (newTokenData) =>
         writeFileSync(
-          join(__dirname, '../lib/tokens.json'),
+          join(process.cwd(), 'tokens.json'),
           JSON.stringify(newTokenData, null, 4),
           'utf-8'
         )

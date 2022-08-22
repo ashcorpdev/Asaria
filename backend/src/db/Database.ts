@@ -1,16 +1,18 @@
-import { join, resolve } from 'path'
+import { join } from 'path'
 import sqlite3 = require('sqlite3')
 import { sys } from 'typescript'
-console.log('Database directory: ', __dirname)
-const db = new sqlite3.Database(
-  join(__dirname, '../db/asaria.sqlite'),
-  (err: Error | null) => onConnectedToDB(err)
+import { logger } from '../utils/Logger'
+logger.info('Database directory: ', __dirname)
+
+const dbPath = join(process.cwd(), 'asaria.sqlite')
+const db = new sqlite3.Database(dbPath, (err: Error | null) =>
+  onConnectedToDB(err)
 ) // Automatically opens the DB.
 
 function onConnectedToDB(err: Error | null): void {
-  console.log('Loading database at ', resolve(__dirname, '../db/asaria.sqlite'))
+  logger.info(`Loading database at ${dbPath})`)
   if (err instanceof Error) {
-    console.log('Failed to open database! Err: \n', err)
+    logger.info('Failed to open database! Err: \n', err)
     sys.exit()
   } else {
     validateTableData()
@@ -18,7 +20,7 @@ function onConnectedToDB(err: Error | null): void {
 }
 
 function validateTableData(): void {
-  console.log('Validating table data in database...')
+  logger.info('Validating table data in database...')
   db.serialize(() => {
     const allianceQuery =
       'CREATE TABLE if NOT EXISTS alliances(alliance_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, display_name CHAR(25) NOT NULL UNIQUE, points INTEGER(6));'
@@ -37,10 +39,10 @@ function validateTableData(): void {
 function createDatabaseTable(query: string): void {
   db.run(query, (res: sqlite3.RunResult, err: Error | null) => {
     if (err instanceof Error) {
-      console.log('Failed to create table!')
+      logger.info('Failed to create table!')
       sys.exit()
     } else {
-      console.log('Validated table data!')
+      logger.info('Validated table data!')
     }
   })
 }
@@ -53,13 +55,13 @@ function createAlliancesData(): void {
     "INSERT INTO alliances (display_name, points) VALUES ('Shadow Grove', 0);"
   ]
   queries.forEach((query) => {
-    console.log('Running query: ', query)
+    logger.info(`Running query...`)
     db.run(query, (res: sqlite3.RunResult, err: Error | null) => {
       if (err instanceof Error) {
-        console.log('Failed to insert data for alliance!')
+        logger.info('Failed to insert data for alliance!')
         sys.exit()
       } else {
-        console.log('Validated alliance data!')
+        logger.info('Validated alliance data!')
       }
     })
   })
@@ -73,10 +75,10 @@ function getAllianceIdByDisplayName(allianceName: string): number | null {
       `SELECT alliance_id FROM alliances WHERE display_name = "${allianceName}"`,
       (err: Error | null, res: any) => {
         if (err instanceof Error) {
-          console.log('Failed to create table!')
+          logger.info('Failed to create table!')
           return
         }
-        console.log(res.alliance_id)
+        logger.info(res.alliance_id)
         allianceId = res.alliance_id
         return allianceId
       }
