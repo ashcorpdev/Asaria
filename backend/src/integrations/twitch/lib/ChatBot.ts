@@ -1,6 +1,7 @@
 import { AuthProvider } from '@twurple/auth'
 import { ChatClient } from '@twurple/chat'
 import { TwitchPrivateMessage } from '@twurple/chat/lib/commands/TwitchPrivateMessage'
+import { sys } from 'typescript'
 import { logger } from '../../../utils/Logger'
 
 export async function createChatClient(
@@ -15,12 +16,13 @@ export async function createChatClient(
   await chatClient.connect().then(async () => {
     logger.info('Connected to chat')
   })
-  createEventListeners(chatClient)
+  await createEventListeners(chatClient)
   return chatClient
 }
 
-function createEventListeners(chatClient: ChatClient): void {
+async function createEventListeners(chatClient: ChatClient): Promise<void> {
   logger.info('Starting event listeners for Twitch chat.')
+
   chatClient.onMessage(
     (
       channel: string,
@@ -32,13 +34,30 @@ function createEventListeners(chatClient: ChatClient): void {
         case '!teams':
           sendTeamsList(chatClient, channel, user)
           break
-
+        case '!teamlist':
+          sendTeamsList(chatClient, channel, user)
+          break
         default:
           break
       }
     }
   )
-  logger.info('Event listener created.')
+
+  chatClient.onDisconnect((manually: boolean, reason?: Error | undefined) => {
+    if (!manually) {
+      logger.warn('Twitch chat client has disconnected.')
+      logger.warn(reason)
+      logger.warn('Attempting to reconnect to Twitch chat...')
+      chatClient.connect().catch((reason) => {
+        logger.error(
+          'Failed to connect back to Twitch chat! Restart required...'
+        )
+        sys.exit()
+      })
+    }
+  })
+
+  logger.info('Event listeners created.')
 }
 
 function sendTeamsList(
