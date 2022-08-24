@@ -60,12 +60,13 @@ function createAlliancesData(): void {
     db.run(query, (res: sqlite3.RunResult, err: Error | null) => {
       if (err instanceof Error) {
         logger.error('Failed to insert data for alliance!')
+        logger.error(err)
         sys.exit()
-      } else {
-        logger.info('Query successful.')
       }
     })
   })
+
+  logger.info('Alliance data creation queries successful.')
 }
 
 function getAllianceIdByName(allianceName: string): number | null {
