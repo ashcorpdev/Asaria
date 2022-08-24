@@ -30,7 +30,7 @@ async function loadIntegrationModules(): Promise<void> {
     logger.info(`Identified: ${filename}`)
     const stat = lstatSync(filename)
     if (stat.isDirectory()) {
-      logger.info('Loading module file...')
+      logger.debug('Loading module file...')
       // Locates the module file (should have the same name as the directory) and imports it dynamically.
       const integration = (await import(`${filename}\\${files[i]}`)) as {
         init: () => any
@@ -38,6 +38,7 @@ async function loadIntegrationModules(): Promise<void> {
       await integration.init()
     }
   }
+  logger.info('Integrations loaded.')
 }
 
 initialiseSystem().catch((reason) => {
