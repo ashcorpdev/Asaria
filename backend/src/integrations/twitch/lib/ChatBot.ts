@@ -41,7 +41,9 @@ async function createEventListeners(chatClient: ChatClient): Promise<void> {
           sendTeamsList(chatClient, channel, user)
           break
         case '!join':
-          addUserToTeam(chatClient, channel, user, fullCommandString)
+          addUserToTeam(chatClient, channel, user, fullCommandString).catch(
+            (error) => logger.error(error)
+          )
           break
         default:
           break
