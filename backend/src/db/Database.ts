@@ -1,107 +1,139 @@
 import { join } from 'path'
 import sqlite3 = require('sqlite3')
+import { getTwitchId } from '../integrations/twitch/lib/Api'
 import { sys } from 'typescript'
 import { logger } from '../utils/Logger'
+import { Database, open } from 'sqlite'
 logger.info('Database directory: ', __dirname)
 
 const dbPath = join(process.cwd(), 'asaria.sqlite')
-const db = new sqlite3.Database(dbPath, (err: Error | null) =>
-  onConnectedToDB(err)
-) // Automatically opens the DB.
-
-function onConnectedToDB(err: Error | null): void {
-  logger.info(`Loading database at ${dbPath})`)
-  if (err instanceof Error) {
-    logger.error('Failed to open database! Err: \n', err)
+let db: Database<sqlite3.Database, sqlite3.Statement>
+open({
+  filename: dbPath,
+  driver: sqlite3.Database
+})
+  .then(async (database) => {
+    db = database
+    await validateTableData()
+  })
+  .catch((reason) => {
+    logger.error('Failed to open Database!')
     sys.exit()
-  } else {
-    validateTableData()
-  }
-}
+  })
 
-function validateTableData(): void {
+async function validateTableData(): Promise<void> {
   logger.info('Validating table data...')
-  db.serialize(() => {
-    const allianceQuery =
-      'CREATE TABLE if NOT EXISTS alliances(alliance_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, display_name CHAR(25) NOT NULL UNIQUE, points INTEGER(6));'
-    const userQuery =
-      'CREATE TABLE if NOT EXISTS users(user_id CHAR(15) NOT NULL PRIMARY KEY UNIQUE, alliance_id INTEGER, points INTEGER(5), FOREIGN KEY (alliance_id) REFERENCES alliances (alliance_id));'
-    const eventQuery =
-      'CREATE TABLE if NOT EXISTS events(event_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, start_date DATE, end_date DATE, display_name CHAR(50))'
+  const allianceQuery =
+    'CREATE TABLE if NOT EXISTS alliances(alliance_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, display_name CHAR(25) NOT NULL UNIQUE, points INTEGER(6));'
+  const userQuery =
+    'CREATE TABLE if NOT EXISTS users(user_id CHAR(15) NOT NULL PRIMARY KEY UNIQUE, alliance_id INTEGER, points INTEGER(5), FOREIGN KEY (alliance_id) REFERENCES alliances (alliance_id));'
+  const eventQuery =
+    'CREATE TABLE if NOT EXISTS events(event_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, start_date DATE, end_date DATE, display_name CHAR(50))'
 
-    createDatabaseTable('alliances', allianceQuery)
-    createDatabaseTable('users', userQuery)
-    createDatabaseTable('events', eventQuery)
-    createAlliancesData()
-  })
+  await createDatabaseTable('alliances', allianceQuery)
+  await createDatabaseTable('users', userQuery)
+  await createDatabaseTable('events', eventQuery)
+  await createAlliancesData()
 }
 
-function createDatabaseTable(tableName: string, query: string): void {
-  db.run(query, (res: sqlite3.RunResult, err: Error | null) => {
-    if (err instanceof Error) {
+async function createDatabaseTable(
+  tableName: string,
+  query: string
+): Promise<void> {
+  await db
+    .exec(query)
+    .then((res) => logger.info(`Validated ${tableName} data!`))
+    .catch((error) => {
       logger.error(`Failed to create ${tableName} table!`)
+      logger.error(error)
       sys.exit()
-    } else {
-      logger.info(`Validated ${tableName} data!`)
-    }
-  })
+    })
 }
 
 function createAlliancesData(): void {
   const queries = [
-    "INSERT INTO alliances (display_name, points) VALUES ('Winter''s Embrace', 0);",
-    "INSERT INTO alliances (display_name, points) VALUES ('Eternal Flame', 0);",
-    "INSERT INTO alliances (display_name, points) VALUES ('Ethereal Bloom', 0);",
-    "INSERT INTO alliances (display_name, points) VALUES ('Shadow Grove', 0);"
+    "INSERT OR IGNORE INTO alliances (display_name, points) VALUES ('Winter''s Embrace', 0);",
+    "INSERT OR IGNORE INTO alliances (display_name, points) VALUES ('Eternal Flame', 0);",
+    "INSERT OR IGNORE INTO alliances (display_name, points) VALUES ('Ethereal Bloom', 0);",
+    "INSERT OR IGNORE INTO alliances (display_name, points) VALUES ('Shadow Grove', 0);"
   ]
   queries.forEach((query) => {
     logger.info(`Running alliance data creation query...`)
-    db.run(query, (res: sqlite3.RunResult, err: Error | null) => {
-      if (err instanceof Error) {
-        logger.error('Failed to insert data for alliance!')
-        logger.error(err)
+    db.exec(query)
+      .then((res) => {})
+      .catch((error) => {
+        logger.error('Failed to insert data for alliance')
+        logger.error(error)
         sys.exit()
-      }
-    })
+      })
   })
 
   logger.info('Alliance data creation queries successful.')
 }
 
-function getAllianceIdByName(allianceName: string): number | null {
-  let allianceId: number
-  db.serialize(() => {
-    db.get(
-      `SELECT alliance_id FROM alliances WHERE display_name = "${allianceName}"`,
-      (err: Error | null, res: any) => {
-        if (err instanceof Error) {
-          logger.info('Failed to create table!')
-          return
-        }
-        logger.info(res.alliance_id)
-        allianceId = res.alliance_id
-        return allianceId
-      }
-    )
-  })
-  return null
+export async function createUserInDatabase(
+  user: string,
+  allianceName: string
+): Promise<boolean> {
+  const alliance = await getAllianceIdByName(allianceName)
+
+  if (alliance !== null) {
+    // GET TWITCH USER ID, ADD USER TO DATABASE
+    logger.debug(`Alliance confirmed - retrieving Twitch user ID for ${user}`)
+    const twitchId = await getTwitchId(user)
+    if (twitchId !== null) {
+      await db
+        .exec(
+          `INSERT INTO users (user_id, alliance_id) VALUES (${twitchId}, ${alliance})`
+        )
+        .then((res) => logger.info(`Added ${user} to database!`))
+        .catch((error) => {
+          logger.warn(`Failed to add user ${user} to the database.`)
+          logger.warn(error)
+          return false
+        })
+    }
+    return true
+  }
+  return false
 }
 
-function getAllianceNameById(allianceId: number): string | null {
-  let allianceName: string
-  db.serialize(() => {
-    db.get(
-      `SELECT display_name FROM alliances WHERE alliance_id = "${allianceId}"`,
-      (err: Error | null, res: any) => {
-        if (err instanceof Error) {
-          logger.info('Failed to create table!')
-          return
-        }
-        logger.info(res.alliance_id)
-        allianceId = res.alliance_id
-        return allianceName
-      }
+async function getAllianceIdByName(
+  allianceName: string
+): Promise<number | null> {
+  logger.debug(`Attempting to retrieve alliance ID for ${allianceName}`)
+  const result = await db
+    .get(
+      `SELECT alliance_id FROM alliances WHERE display_name = "${allianceName}"`
     )
-  })
+    .then((res: { alliance_id: number }) => {
+      if (res.alliance_id == null) {
+        return null
+      }
+      return res.alliance_id
+    })
+    .catch((error) => {
+      logger.error('Failed to create table!')
+      logger.error(error)
+      return null
+    })
+  return result
+}
+
+async function getAllianceNameById(allianceId: number): Promise<string | null> {
+  let allianceName: string
+  await db
+    .get(
+      `SELECT display_name FROM alliances WHERE alliance_id = "${allianceId}"`
+    )
+    .then((res) => {
+      logger.info(res.alliance_id)
+      allianceId = res.alliance_id
+      return allianceName
+    })
+    .catch((error) => {
+      logger.error('Failed to create table!')
+      logger.error(error)
+    })
   return null
 }

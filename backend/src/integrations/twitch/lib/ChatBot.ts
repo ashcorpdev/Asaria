@@ -1,6 +1,7 @@
 import { AuthProvider } from '@twurple/auth'
 import { ChatClient } from '@twurple/chat'
 import { TwitchPrivateMessage } from '@twurple/chat/lib/commands/TwitchPrivateMessage'
+import { createUserInDatabase } from '../../../db/Database'
 import { sys } from 'typescript'
 import { logger } from '../../../utils/Logger'
 
@@ -30,12 +31,17 @@ async function createEventListeners(chatClient: ChatClient): Promise<void> {
       message: string,
       msg: TwitchPrivateMessage
     ) => {
-      switch (message) {
+      const fullCommandString: string[] = message.split(' ')
+      const primaryCommand: string = fullCommandString[0]
+      switch (primaryCommand) {
         case '!teams':
           sendTeamsList(chatClient, channel, user)
           break
         case '!teamlist':
           sendTeamsList(chatClient, channel, user)
+          break
+        case '!join':
+          addUserToTeam(chatClient, channel, user, fullCommandString)
           break
         default:
           break
@@ -48,12 +54,15 @@ async function createEventListeners(chatClient: ChatClient): Promise<void> {
       logger.warn('Twitch chat client has disconnected.')
       logger.warn(reason)
       logger.warn('Attempting to reconnect to Twitch chat...')
-      chatClient.connect().catch((reason) => {
-        logger.error(
-          'Failed to connect back to Twitch chat! Restart required...'
-        )
-        sys.exit()
-      })
+      if (process.env.TWITCH_STREAMER_CHANNEL !== undefined) {
+        chatClient.join(process.env.TWITCH_STREAMER_CHANNEL).catch((reason) => {
+          logger.error(
+            'Failed to connect back to Twitch chat! Restart required...'
+          )
+          logger.error(reason)
+          sys.exit()
+        })
+      }
     }
   })
 
@@ -66,9 +75,32 @@ function sendTeamsList(
   user: string
 ): void {
   chatClient
-    .say(channel, `@${user}, The available teams are: `)
+    .say(
+      channel,
+      `@${user}, The available teams are: Eternal Flame (eternalflame), Winter's Embrace (wintersembrace), Ethereal Bloom (etherealbloom) and Shadow Grove (shadowgrove)! To join a team, type !join <team_name> - eg. !join eternalflame`
+    )
     .catch((reason) => {
       logger.error('Failed to send chat message.')
       logger.error(reason)
     })
+}
+
+async function addUserToTeam(
+  chatClient: ChatClient,
+  channel: string,
+  user: string,
+  args: string[]
+): Promise<boolean> {
+  switch (args[1]) {
+    case 'eternalflame':
+      return await createUserInDatabase(user, 'Eternal Flame')
+    case 'wintersembrace':
+      return await createUserInDatabase(user, "Winter's Embrace")
+    case 'etherealbloom':
+      return await createUserInDatabase(user, 'Ethereal Bloom')
+    case 'shadowgrove':
+      return await createUserInDatabase(user, 'Shadow Grove')
+    default:
+      return false
+  }
 }

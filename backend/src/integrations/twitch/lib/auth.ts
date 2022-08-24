@@ -5,11 +5,14 @@ All authentication with Twitch is passed through this module. It can then be acc
 
 */
 
-import { RefreshingAuthProvider } from '@twurple/auth'
+import {
+  ClientCredentialsAuthProvider,
+  RefreshingAuthProvider
+} from '@twurple/auth'
 import { readFileSync, writeFileSync } from 'fs'
 import { join } from 'path'
 
-export function createAuthProvider(): RefreshingAuthProvider | null {
+export async function createRefreshingAuthProvider(): Promise<RefreshingAuthProvider | null> {
   if (process.env.CLIENT_ID === undefined) return null
   if (process.env.CLIENT_SECRET === undefined) return null
   const tokenData = JSON.parse(
@@ -27,6 +30,16 @@ export function createAuthProvider(): RefreshingAuthProvider | null {
         )
     },
     tokenData
+  )
+  return authProvider
+}
+
+export async function createClientCredentialsAuthProvider(): Promise<ClientCredentialsAuthProvider | null> {
+  if (process.env.CLIENT_ID === undefined) return null
+  if (process.env.CLIENT_SECRET === undefined) return null
+  const authProvider = new ClientCredentialsAuthProvider(
+    process.env.CLIENT_ID,
+    process.env.CLIENT_SECRET
   )
   return authProvider
 }
