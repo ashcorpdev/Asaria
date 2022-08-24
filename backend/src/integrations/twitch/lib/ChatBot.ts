@@ -20,6 +20,7 @@ export async function createChatClient(
 }
 
 function createEventListeners(chatClient: ChatClient): void {
+  logger.info('Starting event listeners for Twitch chat.')
   chatClient.onMessage(
     (
       channel: string,
@@ -28,4 +29,5 @@ function createEventListeners(chatClient: ChatClient): void {
       msg: TwitchPrivateMessage
     ) => {}
   )
+  logger.info('Event listener created.')
 }
