@@ -1,5 +1,4 @@
 import { join } from 'path'
-import { P } from 'pino'
 import sqlite3 = require('sqlite3')
 import { sys } from 'typescript'
 import { logger } from '../utils/Logger'
