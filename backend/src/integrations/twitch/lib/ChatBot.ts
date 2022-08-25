@@ -6,7 +6,9 @@ import {
   isUserInDatabase,
   getUserPoints,
   addPointsToUser,
-  spendPointsOnAlliance
+  spendPointsOnAlliance,
+  resetAllUserPoints,
+  resetAllAlliancePoints
 } from '../../../db/Database'
 import { logger } from '../../../utils/Logger'
 import { systemReady } from '../../../index'
@@ -93,8 +95,34 @@ async function createChatEventListeners(chatClient: ChatClient): Promise<void> {
               process.env.NODE_ENV === 'development'
             ) {
               spendPointsOnAlliance(user).catch((error) => logger.error(error))
+              chatClient
+                .say(channel, `[DEBUG] @${user}, spent user points.`)
+                .catch((error) => logger.error(error))
             }
-
+            break
+          case '!resetuserpoints':
+            if (
+              user === 'ashen' &&
+              process.env.NODE_ENV !== undefined &&
+              process.env.NODE_ENV === 'development'
+            ) {
+              resetAllUserPoints().catch((error) => logger.error(error))
+              chatClient
+                .say(channel, `[DEBUG] @${user}, reset all user points.`)
+                .catch((error) => logger.error(error))
+            }
+            break
+          case '!resetalliancepoints':
+            if (
+              user === 'ashen' &&
+              process.env.NODE_ENV !== undefined &&
+              process.env.NODE_ENV === 'development'
+            ) {
+              resetAllAlliancePoints().catch((error) => logger.error(error))
+              chatClient
+                .say(channel, `[DEBUG] @${user}, reset all alliance points.`)
+                .catch((error) => logger.error(error))
+            }
             break
           default:
             if (

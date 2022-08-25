@@ -293,6 +293,36 @@ export async function spendPointsOnAlliance(user: string): Promise<boolean> {
   return success
 }
 
+export async function resetAllUserPoints(): Promise<boolean> {
+  let success = false
+  await db
+    .exec(`UPDATE users SET points = 0`)
+    .then((res) => {
+      logger.debug(`Reset all user points back to 0`)
+      success = true
+    })
+    .catch((error) => {
+      logger.error(`Failed to reset all user points!`)
+      logger.error(error)
+    })
+  return success
+}
+
+export async function resetAllAlliancePoints(): Promise<boolean> {
+  let success = false
+  await db
+    .exec(`UPDATE alliances SET points = 0`)
+    .then((res) => {
+      logger.debug(`Reset all alliance points back to 0`)
+      success = true
+    })
+    .catch((error) => {
+      logger.error(`Failed to reset all alliance points!`)
+      logger.error(error)
+    })
+  return success
+}
+
 async function getAllianceIdByName(
   allianceName: string | undefined
 ): Promise<number | undefined> {

@@ -36,7 +36,7 @@ function createWebsocketListeners(socket: any): void {
     logger.debug(socketInstance)
   })
   socket.on('connect', () => {
-    logger.info('Connected to Streamelements.')
+    logger.info('Established a connection to Streamelements.')
     if (process.env.SE_JWT_TOKEN !== undefined) {
       logger.debug('Sending authentication request to Streamelements server...')
       socket.emit('authenticate', {

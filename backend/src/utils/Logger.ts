@@ -1,7 +1,7 @@
 import pino from 'pino'
 
 const appName =
-  process.env.APP_NAME === undefined ? 'Asaria' : process.env.LOG_LEVEL
+  process.env.APP_NAME === undefined ? 'Asaria' : process.env.APP_NAME
 
 const logLevel =
   process.env.LOG_LEVEL === undefined ? 'debug' : process.env.LOG_LEVEL
