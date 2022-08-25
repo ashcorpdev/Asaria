@@ -1,7 +1,11 @@
 import { AuthProvider } from '@twurple/auth'
 import { ChatClient } from '@twurple/chat'
 import { TwitchPrivateMessage } from '@twurple/chat/lib/commands/TwitchPrivateMessage'
-import { createUserInDatabase } from '../../../db/Database'
+import {
+  createUserInDatabase,
+  isUserInDatabase,
+  getUserPoints
+} from '../../../db/Database'
 import { sys } from 'typescript'
 import { logger } from '../../../utils/Logger'
 import { systemReady } from '../../../index'
@@ -43,8 +47,16 @@ async function createEventListeners(chatClient: ChatClient): Promise<void> {
             sendTeamsList(chatClient, channel, user)
             break
           case '!join':
-            addUserToTeam(chatClient, channel, user, fullCommandString).catch(
-              (error) => logger.error(error)
+            addUserToAlliance(
+              chatClient,
+              channel,
+              user,
+              fullCommandString
+            ).catch((error) => logger.error(error))
+            break
+          case '!points':
+            getPointsFromDB(chatClient, channel, user).catch((error) =>
+              logger.error(error)
             )
             break
           default:
@@ -91,7 +103,27 @@ function sendTeamsList(
     })
 }
 
-async function addUserToTeam(
+async function getPointsFromDB(
+  chatClient: ChatClient,
+  channel: string,
+  user: string
+): Promise<void> {
+  let points: number = 0
+  const userInDB = await isUserInDatabase(user)
+  if (userInDB) {
+    // Get the users' points
+    const result = await getUserPoints(user)
+    if (result == null) points = 0
+  } else {
+    // Create the user in the database and return 0 points.
+    await createUserInDatabase(user, undefined)
+    points = 0
+  }
+
+  await chatClient.say(channel, `@${user} - you have ${points} points!`)
+}
+
+async function addUserToAlliance(
   chatClient: ChatClient,
   channel: string,
   user: string,
