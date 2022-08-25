@@ -9,6 +9,8 @@ import { join } from 'path'
 import { logger } from './utils/Logger'
 dotenv.config()
 
+export let systemReady = false
+
 async function initialiseSystem(): Promise<void> {
   logger.info('Initialising War of the Wisps Application.')
   await connectToDatabase()
@@ -41,6 +43,11 @@ async function loadIntegrationModules(): Promise<void> {
   logger.info('Integrations loaded.')
 }
 
-initialiseSystem().catch((reason) => {
-  logger.info(reason)
-})
+initialiseSystem()
+  .then(() => {
+    systemReady = true
+    logger.info('System is prepared and ready for operation.')
+  })
+  .catch((reason) => {
+    logger.info(reason)
+  })
