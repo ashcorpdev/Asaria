@@ -4,6 +4,7 @@ import { getTwitchId } from '../integrations/twitch/lib/Api'
 import { sys } from 'typescript'
 import { logger } from '../utils/Logger'
 import { Database, open } from 'sqlite'
+import { systemReady } from '../index'
 logger.info('Database directory: ', __dirname)
 
 const dbPath = join(process.cwd(), 'asaria.sqlite')
@@ -75,56 +76,58 @@ export async function createUserInDatabase(
   user: string,
   allianceName: string
 ): Promise<boolean> {
-  const alliance = await getAllianceIdByName(allianceName)
   let success = false
+  if (systemReady) {
+    const alliance = await getAllianceIdByName(allianceName)
 
-  if (alliance !== null) {
-    logger.debug(`Alliance confirmed - retrieving Twitch user ID for ${user}`)
-    const twitchId = await getTwitchId(user)
-    if (twitchId !== null) {
-      // Does the user already exist in the DB? Do they have an alliance assigned to them?
-      await db
-        .get(
-          `SELECT user_id, alliance_id FROM users WHERE user_id = ${twitchId}`
-        )
-        .then(async (res) => {
-          if (res.user_id == null) {
-            // User doesn't exist in the DB.
-            await db
-              .exec(
-                `INSERT INTO users (user_id, alliance_id) VALUES (${twitchId}, ${alliance})`
-              )
-              .then((res) => logger.info(`Added ${user} to database!`))
-              .catch((error) => {
-                logger.warn(`Failed to add user ${user} to the database.`)
-                logger.warn(error)
-                success = false
-              })
-          } else {
-            if (res.alliance_id == null) {
-              // User exists, but has no alliance set.
+    if (alliance !== null) {
+      logger.debug(`Alliance confirmed - retrieving Twitch user ID for ${user}`)
+      const twitchId = await getTwitchId(user)
+      if (twitchId !== null) {
+        // Does the user already exist in the DB? Do they have an alliance assigned to them?
+        await db
+          .get(
+            `SELECT user_id, alliance_id FROM users WHERE user_id = ${twitchId}`
+          )
+          .then(async (res) => {
+            if (res.user_id == null) {
+              // User doesn't exist in the DB.
               await db
                 .exec(
-                  `UPDATE users SET alliance_id = ${alliance} WHERE user_id = ${twitchId}`
+                  `INSERT INTO users (user_id, alliance_id) VALUES (${twitchId}, ${alliance})`
                 )
-                .then((res) => {
-                  logger.info(`Added ${user} to alliance successfully!`)
-                  success = true
-                })
+                .then((res) => logger.info(`Added ${user} to database!`))
                 .catch((error) => {
-                  logger.warn(`Failed to add ${user} to alliance!`)
+                  logger.warn(`Failed to add user ${user} to the database.`)
                   logger.warn(error)
-
                   success = false
                 })
             } else {
-              logger.warn(
-                `${user} is already a part of an alliance - cannot join another one!`
-              )
-              success = false
+              if (res.alliance_id == null) {
+                // User exists, but has no alliance set.
+                await db
+                  .exec(
+                    `UPDATE users SET alliance_id = ${alliance} WHERE user_id = ${twitchId}`
+                  )
+                  .then((res) => {
+                    logger.info(`Added ${user} to alliance successfully!`)
+                    success = true
+                  })
+                  .catch((error) => {
+                    logger.warn(`Failed to add ${user} to alliance!`)
+                    logger.warn(error)
+
+                    success = false
+                  })
+              } else {
+                logger.warn(
+                  `${user} is already a part of an alliance - cannot join another one!`
+                )
+                success = false
+              }
             }
-          }
-        })
+          })
+      }
     }
   }
   return success
@@ -133,40 +136,46 @@ export async function createUserInDatabase(
 async function getAllianceIdByName(
   allianceName: string
 ): Promise<number | null> {
-  logger.debug(`Attempting to retrieve alliance ID for ${allianceName}`)
-  const result = await db
-    .get(
-      `SELECT alliance_id FROM alliances WHERE display_name = "${allianceName}"`
-    )
-    .then((res: { alliance_id: number }) => {
-      if (res.alliance_id == null) {
+  if (systemReady) {
+    logger.debug(`Attempting to retrieve alliance ID for ${allianceName}`)
+    const result = await db
+      .get(
+        `SELECT alliance_id FROM alliances WHERE display_name = "${allianceName}"`
+      )
+      .then((res: { alliance_id: number }) => {
+        if (res.alliance_id == null) {
+          return null
+        }
+        return res.alliance_id
+      })
+      .catch((error) => {
+        logger.error('Failed to create table!')
+        logger.error(error)
         return null
-      }
-      return res.alliance_id
-    })
-    .catch((error) => {
-      logger.error('Failed to create table!')
-      logger.error(error)
-      return null
-    })
-  return result
+      })
+    return result
+  }
+  return null
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function getAllianceNameById(allianceId: number): Promise<string | null> {
   let allianceName: string
-  await db
-    .get(
-      `SELECT display_name FROM alliances WHERE alliance_id = "${allianceId}"`
-    )
-    .then((res) => {
-      logger.info(res.alliance_id)
-      allianceId = res.alliance_id
-      return allianceName
-    })
-    .catch((error) => {
-      logger.error('Failed to create table!')
-      logger.error(error)
-    })
+  if (systemReady) {
+    await db
+      .get(
+        `SELECT display_name FROM alliances WHERE alliance_id = "${allianceId}"`
+      )
+      .then((res) => {
+        logger.info(res.alliance_id)
+        allianceId = res.alliance_id
+        return allianceName
+      })
+      .catch((error) => {
+        logger.error('Failed to create table!')
+        logger.error(error)
+        return null
+      })
+  }
   return null
 }
