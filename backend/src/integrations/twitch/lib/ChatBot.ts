@@ -5,7 +5,8 @@ import {
   createUserInDatabase,
   isUserInDatabase,
   getUserPoints,
-  addPointsToUser
+  addPointsToUser,
+  spendPointsOnAlliance
 } from '../../../db/Database'
 import { logger } from '../../../utils/Logger'
 import { systemReady } from '../../../index'
@@ -87,6 +88,16 @@ async function createChatEventListeners(chatClient: ChatClient): Promise<void> {
                   .catch((error) => logger.error(error))
               }
             }
+            break
+          case '!spendpoints':
+            if (
+              user === 'ashen' &&
+              process.env.NODE_ENV !== undefined &&
+              process.env.NODE_ENV === 'development'
+            ) {
+              spendPointsOnAlliance(user).catch((error) => logger.error(error))
+            }
+
             break
           default:
             if (
