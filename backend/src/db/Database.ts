@@ -76,26 +76,60 @@ export async function createUserInDatabase(
   allianceName: string
 ): Promise<boolean> {
   const alliance = await getAllianceIdByName(allianceName)
+  let success = false
 
   if (alliance !== null) {
     // GET TWITCH USER ID, ADD USER TO DATABASE
     logger.debug(`Alliance confirmed - retrieving Twitch user ID for ${user}`)
     const twitchId = await getTwitchId(user)
     if (twitchId !== null) {
+      // Does the user already exist in the DB? Do they have an alliance assigned to them?
+
       await db
-        .exec(
-          `INSERT INTO users (user_id, alliance_id) VALUES (${twitchId}, ${alliance})`
+        .get(
+          `SELECT user_id, alliance_id FROM users WHERE user_id = ${twitchId}`
         )
-        .then((res) => logger.info(`Added ${user} to database!`))
-        .catch((error) => {
-          logger.warn(`Failed to add user ${user} to the database.`)
-          logger.warn(error)
-          return false
+        .then(async (res) => {
+          if (res.user_id == null) {
+            // User doesn't exist in the DB.
+            await db
+              .exec(
+                `INSERT INTO users (user_id, alliance_id) VALUES (${twitchId}, ${alliance})`
+              )
+              .then((res) => logger.info(`Added ${user} to database!`))
+              .catch((error) => {
+                logger.warn(`Failed to add user ${user} to the database.`)
+                logger.warn(error)
+                success = false
+              })
+          } else {
+            if (res.alliance_id == null) {
+              // User exists, but has no alliance set.
+              await db
+                .exec(
+                  `UPDATE users SET alliance_id = ${alliance} WHERE user_id = ${twitchId}`
+                )
+                .then((res) => {
+                  logger.info(`Added ${user} to alliance successfully!`)
+                  success = true
+                })
+                .catch((error) => {
+                  logger.warn(`Failed to add ${user} to alliance!`)
+                  logger.warn(error)
+
+                  success = false
+                })
+            } else {
+              logger.warn(
+                `${user} is already a part of an alliance - cannot join another one!`
+              )
+              success = false
+            }
+          }
         })
     }
-    return true
   }
-  return false
+  return success
 }
 
 async function getAllianceIdByName(

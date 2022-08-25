@@ -95,14 +95,56 @@ async function addUserToTeam(
 ): Promise<boolean> {
   switch (args[1]) {
     case 'eternalflame':
-      return await createUserInDatabase(user, 'Eternal Flame')
+      return await processAddUserCommand(
+        chatClient,
+        channel,
+        user,
+        'Eternal Flame'
+      )
     case 'wintersembrace':
-      return await createUserInDatabase(user, "Winter's Embrace")
+      return await processAddUserCommand(
+        chatClient,
+        channel,
+        user,
+        "Winter's Embrace"
+      )
     case 'etherealbloom':
-      return await createUserInDatabase(user, 'Ethereal Bloom')
+      return await processAddUserCommand(
+        chatClient,
+        channel,
+        user,
+        'Ethereal Bloom'
+      )
     case 'shadowgrove':
-      return await createUserInDatabase(user, 'Shadow Grove')
+      return await processAddUserCommand(
+        chatClient,
+        channel,
+        user,
+        'Shadow Grove'
+      )
     default:
       return false
   }
+}
+
+async function processAddUserCommand(
+  chatClient: ChatClient,
+  channel: string,
+  user: string,
+  allianceName: string
+): Promise<boolean> {
+  const result = await createUserInDatabase(user, allianceName)
+  if (result) {
+    chatClient
+      .say(channel, `@${user}, you joined ${allianceName}!`)
+      .catch((error) => logger.error(error))
+    return true
+  }
+  chatClient
+    .say(
+      channel,
+      `Sorry, I wasn't able to add you to ${allianceName}, @${user}!`
+    )
+    .catch((error) => logger.error(error))
+  return false
 }
