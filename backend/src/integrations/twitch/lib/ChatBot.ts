@@ -6,7 +6,6 @@ import {
   isUserInDatabase,
   getUserPoints
 } from '../../../db/Database'
-import { sys } from 'typescript'
 import { logger } from '../../../utils/Logger'
 import { systemReady } from '../../../index'
 
@@ -14,20 +13,20 @@ export async function createChatClient(
   authProvider: AuthProvider
 ): Promise<ChatClient | null> {
   if (process.env.TWITCH_STREAMER_CHANNEL === undefined) return null
-  logger.info('Creating chat bot instance...')
+  logger.debug('Creating new chat bot instance...')
   const chatClient = new ChatClient({
     authProvider,
     channels: [process.env.TWITCH_STREAMER_CHANNEL]
   })
   await chatClient.connect().then(async () => {
-    logger.info('Connected to chat')
+    logger.info('Succesfully connected to Twitch chat.')
   })
   await createEventListeners(chatClient)
   return chatClient
 }
 
 async function createEventListeners(chatClient: ChatClient): Promise<void> {
-  logger.info('Starting event listeners for Twitch chat.')
+  logger.debug('Starting event listeners for Twitch chat.')
 
   chatClient.onMessage(
     (
@@ -69,22 +68,24 @@ async function createEventListeners(chatClient: ChatClient): Promise<void> {
   chatClient.onDisconnect((manually: boolean, reason?: Error | undefined) => {
     if (!manually) {
       logger.warn('Twitch chat client has disconnected.')
-      logger.warn(reason)
-      logger.warn('Attempting to reconnect to Twitch chat...')
+      logger.debug(reason)
+      logger.warn(
+        'Attempting to reconnect to Twitch chat. If this fails, you should restart.'
+      )
       if (process.env.TWITCH_STREAMER_CHANNEL !== undefined) {
-        // Chat client has disconnected - restart the process from fresh to ensure a stable connection, otherwise crash.
+        // Chat client has disconnected - try and reconnect to ensure a stable connection, otherwise crash.
         chatClient.reconnect().catch((reason) => {
           logger.error(
             'Failed to connect back to Twitch chat! Restart required...'
           )
-          logger.error(reason)
-          sys.exit()
+          logger.debug(reason)
+          process.exit()
         })
       }
     }
   })
 
-  logger.info('Event listeners created.')
+  logger.debug('Event listeners created.')
 }
 
 function sendTeamsList(

@@ -22,14 +22,14 @@ async function connectToDatabase(): Promise<void> {
 }
 
 async function loadIntegrationModules(): Promise<void> {
-  logger.info('Loading integration modules.')
+  logger.info('Loading integration modules...')
   // Filter through all the directories within integrations and find the module files to import.
   const baseDir = join(__dirname, '/integrations')
   const files = readdirSync(baseDir)
   for (let i = 0; i < files.length; i++) {
-    logger.info('Looking for integrations...')
+    logger.debug('Looking for integrations to load.')
     const filename: string = join(baseDir, files[i])
-    logger.info(`Identified: ${filename}`)
+    logger.debug(`Identified a new integration: ${filename}`)
     const stat = lstatSync(filename)
     if (stat.isDirectory()) {
       logger.debug('Loading module file...')
@@ -40,7 +40,7 @@ async function loadIntegrationModules(): Promise<void> {
       await integration.init()
     }
   }
-  logger.info('Integrations loaded.')
+  logger.debug('Integrations modules have finished loading.')
 }
 
 initialiseSystem()

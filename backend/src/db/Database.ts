@@ -1,14 +1,14 @@
 import { join } from 'path'
 import sqlite3 = require('sqlite3')
 import { getTwitchId } from '../integrations/twitch/lib/Api'
-import { sys } from 'typescript'
 import { logger } from '../utils/Logger'
 import { Database, open } from 'sqlite'
 import { systemReady } from '../index'
-logger.info('Database directory: ', __dirname)
 
 const dbPath = join(process.cwd(), 'asaria.sqlite')
 let db: Database<sqlite3.Database, sqlite3.Statement>
+
+logger.debug('Attempting to load database at path: ', __dirname)
 open({
   filename: dbPath,
   driver: sqlite3.Database
@@ -19,11 +19,11 @@ open({
   })
   .catch((reason) => {
     logger.error('Failed to open Database!')
-    sys.exit()
+    process.exit()
   })
 
 async function validateTableData(): Promise<void> {
-  logger.info('Validating table data...')
+  logger.debug('Validating table data...')
   const allianceQuery =
     'CREATE TABLE if NOT EXISTS alliances(alliance_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, display_name CHAR(25) NOT NULL UNIQUE, points INTEGER(6));'
   const userQuery =
@@ -43,11 +43,11 @@ async function createDatabaseTable(
 ): Promise<void> {
   await db
     .exec(query)
-    .then((res) => logger.info(`Validated ${tableName} data!`))
+    .then((res) => logger.debug(`Validated ${tableName} data!`))
     .catch((error) => {
       logger.error(`Failed to create ${tableName} table!`)
       logger.error(error)
-      sys.exit()
+      process.exit()
     })
 }
 
@@ -59,17 +59,17 @@ function createAlliancesData(): void {
     "INSERT OR IGNORE INTO alliances (display_name, points) VALUES ('Shadow Grove', 0);"
   ]
   queries.forEach((query) => {
-    logger.info(`Running alliance data creation query...`)
+    logger.debug(`Running alliance data creation query...`)
     db.exec(query)
       .then((res) => {})
       .catch((error) => {
         logger.error('Failed to insert data for alliance')
         logger.error(error)
-        sys.exit()
+        process.exit()
       })
   })
 
-  logger.info('Alliance data creation queries successful.')
+  logger.debug('Alliance data creation queries successful.')
 }
 
 export async function createUserInDatabase(
@@ -103,7 +103,7 @@ export async function createUserInDatabase(
             updateUserQuery = `UPDATE users SET alliance_id = ${allianceId} WHERE user_id = ${twitchId}`
           }
 
-          if (res.user_id == null) {
+          if (res === undefined || res.user_id == null) {
             // User doesn't exist in the DB.
             await db
               .exec(insertUserQuery)
@@ -147,7 +147,7 @@ export async function isUserInDatabase(user: string): Promise<boolean> {
     const result = await db
       .get(`SELECT user_id FROM users WHERE user_id = "${userId}"`)
       .then((res: { user_id: number }) => {
-        if (res.user_id == null) {
+        if (res === undefined || res.user_id == null) {
           return false
         }
         return true

@@ -7,7 +7,7 @@ let apiClient: ApiClient
 export async function createApiClient(
   authProvider: RefreshingAuthProvider
 ): Promise<ApiClient> {
-  logger.info('Creating api client instance...')
+  logger.debug('Creating api client instance...')
 
   if (
     process.env.CLIENT_ID !== undefined &&
@@ -20,7 +20,7 @@ export async function createApiClient(
 
   apiClient = new ApiClient({ authProvider })
 
-  logger.info('Api Client registered.')
+  logger.debug('Api Client registered.')
 
   return apiClient
 }

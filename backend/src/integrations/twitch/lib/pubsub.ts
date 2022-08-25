@@ -5,7 +5,7 @@ import { logger } from '../../../utils/Logger'
 export async function createPubSubClient(
   authProvider: AuthProvider
 ): Promise<PubSubClient> {
-  logger.info('Creating pubsub client instance...')
+  logger.debug('Creating pubsub client instance...')
 
   const pubsubClient = new PubSubClient()
   const userId = await pubsubClient.registerUserListener(authProvider).then()
@@ -18,7 +18,7 @@ export async function createPubSubClient(
     }
   )
 
-  logger.info('Pubsub Client listening')
+  logger.debug('Pubsub Client listening')
 
   return pubsubClient
 }
