@@ -41,11 +41,8 @@ async function createChatEventListeners(chatClient: ChatClient): Promise<void> {
         const fullCommandString: string[] = message.split(' ')
         const primaryCommand: string = fullCommandString[0]
         switch (primaryCommand) {
-          case '!teams':
-            sendTeamsListToChat(chatClient, channel, user)
-            break
-          case '!teamlist':
-            sendTeamsListToChat(chatClient, channel, user)
+          case '!alliances':
+            sendAllianceListToChat(chatClient, channel, user)
             break
           case '!join':
             addUserToAlliance(
@@ -136,7 +133,7 @@ async function createChatEventListeners(chatClient: ChatClient): Promise<void> {
   logger.debug('Event listeners created.')
 }
 
-function sendTeamsListToChat(
+function sendAllianceListToChat(
   chatClient: ChatClient,
   channel: string,
   user: string
@@ -144,7 +141,7 @@ function sendTeamsListToChat(
   chatClient
     .say(
       channel,
-      `@${user}, The available teams are: Eternal Flame (eternalflame), Winter's Embrace (wintersembrace), Ethereal Bloom (etherealbloom) and Shadow Grove (shadowgrove)! To join a team, type !join <team_name> - eg. !join eternalflame`
+      `@${user}, The available alliances are: Eternal Flame (eternalflame), Winter's Embrace (wintersembrace), Ethereal Bloom (etherealbloom) and Shadow Grove (shadowgrove)! To join an alliance, type !join <alliance> - eg. !join eternalflame`
     )
     .catch((reason) => {
       logger.error('Failed to send chat message.')
