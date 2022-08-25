@@ -1,13 +1,14 @@
+/* eslint-disable import/first */ // Required so that dotenv loads first.
 /*
 
 Application Entrypoint
 
 */
 import dotenv = require('dotenv')
+dotenv.config()
 import { readdirSync, lstatSync } from 'fs'
 import { join } from 'path'
 import { logger } from './utils/Logger'
-dotenv.config()
 
 export let systemReady = false
 
