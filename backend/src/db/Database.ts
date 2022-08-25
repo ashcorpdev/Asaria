@@ -214,6 +214,7 @@ export async function addPointsToUser(
         success = false
       })
   } else {
+    // ? Probably more efficient to do this as one query using points = points + {pointsToAdd}?
     const newPoints = oldPoints + points
     await db
       .exec(
@@ -233,12 +234,12 @@ export async function addPointsToUser(
   return success
 }
 
-async function spendPointsOnAlliance(user: string): Promise<boolean> {
+export async function spendPointsOnAlliance(user: string): Promise<boolean> {
   let success = false
   const userId = await getTwitchId(user)
   if (userId !== null) {
     const results = await db
-      .get(`SELECT points, alliance_id FROM users WHERE user_id = "${userId}`)
+      .get(`SELECT points, alliance_id FROM users WHERE user_id = "${userId}"`)
       .then((res: { points: number; alliance_id: number }) => {
         if (res !== undefined) {
           if (res.alliance_id !== null && res.alliance_id !== undefined) {
@@ -269,11 +270,21 @@ async function spendPointsOnAlliance(user: string): Promise<boolean> {
           return null
         })
       if (allianceExistingPoints !== null) {
-        db.exec(`UPDATE alliances SET points = points +${results.points}`)
+        db.exec(
+          `UPDATE alliances SET points = points +${results.points} WHERE alliance_id = ${results.alliance_id}`
+        )
           .then((res) => {
             logger.debug(`Alliance with ID ${results.alliance_id} updated.`)
             logger.debug(res)
             success = true
+            db.exec(`UPDATE users SET points = 0 WHERE user_id = ${userId}`)
+              .then((res) => {
+                logger.debug(`Points updated for ${user}.`)
+              })
+              .catch((error) => {
+                logger.error(`Failed to reset user points for ${user}.`)
+                logger.error(error)
+              })
           })
           .catch((error) => logger.error(error))
       }
