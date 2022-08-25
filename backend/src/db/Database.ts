@@ -80,7 +80,7 @@ export async function createUserInDatabase(
   if (systemReady) {
     const alliance: number | undefined = await getAllianceIdByName(allianceName)
     const allianceId = alliance?.toString()
-    if (alliance !== null) {
+    if (alliance === undefined) {
       logger.warn(`${user} will not have an alliance assigned to them!`)
     } else {
       logger.debug(`Alliance valid - retrieving Twitch user ID for ${user}`)
@@ -107,7 +107,10 @@ export async function createUserInDatabase(
             // User doesn't exist in the DB.
             await db
               .exec(insertUserQuery)
-              .then((res) => logger.info(`Added ${user} to database!`))
+              .then((res) => {
+                logger.info(`Added ${user} to database!`)
+                success = true
+              })
               .catch((error) => {
                 logger.warn(`Failed to add user ${user} to the database.`)
                 logger.warn(error)
@@ -241,8 +244,12 @@ async function getAllianceIdByName(
         )
         .then((res: { alliance_id: number }) => {
           if (res.alliance_id == null) {
+            logger.warn(
+              `System was unable to identify alliance matching the name ${allianceName}.`
+            )
             return undefined
           }
+          logger.debug(`Alliance ID for ${allianceName}: ${res.alliance_id}`)
           return res.alliance_id
         })
         .catch((error) => {

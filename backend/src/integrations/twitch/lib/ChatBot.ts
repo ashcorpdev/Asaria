@@ -22,11 +22,11 @@ export async function createChatClient(
   await chatClient.connect().then(async () => {
     logger.info('Succesfully connected to Twitch chat.')
   })
-  await createEventListeners(chatClient)
+  await createChatEventListeners(chatClient)
   return chatClient
 }
 
-async function createEventListeners(chatClient: ChatClient): Promise<void> {
+async function createChatEventListeners(chatClient: ChatClient): Promise<void> {
   logger.debug('Starting event listeners for Twitch chat.')
 
   chatClient.onMessage(
@@ -41,10 +41,10 @@ async function createEventListeners(chatClient: ChatClient): Promise<void> {
         const primaryCommand: string = fullCommandString[0]
         switch (primaryCommand) {
           case '!teams':
-            sendTeamsList(chatClient, channel, user)
+            sendTeamsListToChat(chatClient, channel, user)
             break
           case '!teamlist':
-            sendTeamsList(chatClient, channel, user)
+            sendTeamsListToChat(chatClient, channel, user)
             break
           case '!join':
             addUserToAlliance(
@@ -55,7 +55,7 @@ async function createEventListeners(chatClient: ChatClient): Promise<void> {
             ).catch((error) => logger.error(error))
             break
           case '!points':
-            getPointsFromDB(chatClient, channel, user).catch((error) =>
+            getPointsFromDatabase(chatClient, channel, user).catch((error) =>
               logger.error(error)
             )
             break
@@ -89,6 +89,13 @@ async function createEventListeners(chatClient: ChatClient): Promise<void> {
             }
             break
           default:
+            if (
+              user === 'ashen' &&
+              process.env.NODE_ENV !== undefined &&
+              process.env.NODE_ENV === 'development'
+            ) {
+              logger.debug(`Chat Message from ashen: ${message}`)
+            }
             break
         }
       }
@@ -104,11 +111,11 @@ async function createEventListeners(chatClient: ChatClient): Promise<void> {
       )
       if (process.env.TWITCH_STREAMER_CHANNEL !== undefined) {
         // Chat client has disconnected - try and reconnect to ensure a stable connection, otherwise crash.
-        chatClient.reconnect().catch((reason) => {
+        chatClient.reconnect().catch((error) => {
           logger.error(
             'Failed to connect back to Twitch chat! Restart required...'
           )
-          logger.debug(reason)
+          logger.debug(error)
           process.exit()
         })
       }
@@ -118,7 +125,7 @@ async function createEventListeners(chatClient: ChatClient): Promise<void> {
   logger.debug('Event listeners created.')
 }
 
-function sendTeamsList(
+function sendTeamsListToChat(
   chatClient: ChatClient,
   channel: string,
   user: string
@@ -134,7 +141,7 @@ function sendTeamsList(
     })
 }
 
-async function getPointsFromDB(
+async function getPointsFromDatabase(
   chatClient: ChatClient,
   channel: string,
   user: string
@@ -168,28 +175,32 @@ async function addUserToAlliance(
         chatClient,
         channel,
         user,
-        'Eternal Flame'
+        'Eternal Flame',
+        'wispEF'
       )
     case 'wintersembrace':
       return await processAddUserCommand(
         chatClient,
         channel,
         user,
-        "Winter's Embrace"
+        "Winter's Embrace",
+        'wispWE'
       )
     case 'etherealbloom':
       return await processAddUserCommand(
         chatClient,
         channel,
         user,
-        'Ethereal Bloom'
+        'Ethereal Bloom',
+        'wispEB'
       )
     case 'shadowgrove':
       return await processAddUserCommand(
         chatClient,
         channel,
         user,
-        'Shadow Grove'
+        'Shadow Grove',
+        'wispSG'
       )
     default:
       return false
@@ -200,12 +211,14 @@ async function processAddUserCommand(
   chatClient: ChatClient,
   channel: string,
   user: string,
-  allianceName: string
+  allianceName: string,
+  emote: string | undefined
 ): Promise<boolean> {
   const result = await createUserInDatabase(user, allianceName)
   if (result) {
+    if (emote === undefined) emote = ''
     chatClient
-      .say(channel, `@${user}, you joined ${allianceName}!`)
+      .say(channel, `@${user}, you joined ${allianceName}! ${emote}`)
       .catch((error) => logger.error(error))
     return true
   }
