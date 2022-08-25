@@ -195,6 +195,7 @@ export async function addPointsToUser(
   user: string,
   points: number
 ): Promise<boolean> {
+  // TODO: Add check to ensure points isn't negative here (aka, adding -points to get below 0).
   const userId = await getTwitchId(user)
   let success = false
   if (userId == null) return false
@@ -228,6 +229,55 @@ export async function addPointsToUser(
         logger.error(error)
         success = false
       })
+  }
+  return success
+}
+
+async function spendPointsOnAlliance(user: string): Promise<boolean> {
+  let success = false
+  const userId = await getTwitchId(user)
+  if (userId !== null) {
+    const results = await db
+      .get(`SELECT points, alliance_id FROM users WHERE user_id = "${userId}`)
+      .then((res: { points: number; alliance_id: number }) => {
+        if (res !== undefined) {
+          if (res.alliance_id !== null && res.alliance_id !== undefined) {
+            logger.debug(
+              `Got the current points for user ${user}: ${res.points}`
+            )
+            logger.debug(`User is assigned to alliance ${res.alliance_id}`)
+          }
+          return res
+        } else {
+          logger.error(`${user} does not appear to be in the database.`)
+          return null
+        }
+      })
+    if (results !== null) {
+      const allianceExistingPoints: number | null = await db
+        .get(
+          `SELECT points FROM alliances WHERE alliance_id = ${results.alliance_id}`
+        )
+        .then((res: { points: number }) => {
+          logger.debug(
+            `Alliance with id ${results.alliance_id} currently has ${res.points} points.`
+          )
+          return res.points
+        })
+        .catch((error) => {
+          logger.error(error)
+          return null
+        })
+      if (allianceExistingPoints !== null) {
+        db.exec(`UPDATE alliances SET points = points +${results.points}`)
+          .then((res) => {
+            logger.debug(`Alliance with ID ${results.alliance_id} updated.`)
+            logger.debug(res)
+            success = true
+          })
+          .catch((error) => logger.error(error))
+      }
+    }
   }
   return success
 }
