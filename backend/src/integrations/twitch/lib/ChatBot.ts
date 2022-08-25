@@ -4,6 +4,7 @@ import { TwitchPrivateMessage } from '@twurple/chat/lib/commands/TwitchPrivateMe
 import { createUserInDatabase } from '../../../db/Database'
 import { sys } from 'typescript'
 import { logger } from '../../../utils/Logger'
+import { systemReady } from '../../../index'
 
 export async function createChatClient(
   authProvider: AuthProvider
@@ -31,22 +32,24 @@ async function createEventListeners(chatClient: ChatClient): Promise<void> {
       message: string,
       msg: TwitchPrivateMessage
     ) => {
-      const fullCommandString: string[] = message.split(' ')
-      const primaryCommand: string = fullCommandString[0]
-      switch (primaryCommand) {
-        case '!teams':
-          sendTeamsList(chatClient, channel, user)
-          break
-        case '!teamlist':
-          sendTeamsList(chatClient, channel, user)
-          break
-        case '!join':
-          addUserToTeam(chatClient, channel, user, fullCommandString).catch(
-            (error) => logger.error(error)
-          )
-          break
-        default:
-          break
+      if (systemReady) {
+        const fullCommandString: string[] = message.split(' ')
+        const primaryCommand: string = fullCommandString[0]
+        switch (primaryCommand) {
+          case '!teams':
+            sendTeamsList(chatClient, channel, user)
+            break
+          case '!teamlist':
+            sendTeamsList(chatClient, channel, user)
+            break
+          case '!join':
+            addUserToTeam(chatClient, channel, user, fullCommandString).catch(
+              (error) => logger.error(error)
+            )
+            break
+          default:
+            break
+        }
       }
     }
   )
