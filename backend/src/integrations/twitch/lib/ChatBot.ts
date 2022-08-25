@@ -4,7 +4,8 @@ import { TwitchPrivateMessage } from '@twurple/chat/lib/commands/TwitchPrivateMe
 import {
   createUserInDatabase,
   isUserInDatabase,
-  getUserPoints
+  getUserPoints,
+  addPointsToUser
 } from '../../../db/Database'
 import { logger } from '../../../utils/Logger'
 import { systemReady } from '../../../index'
@@ -57,6 +58,35 @@ async function createEventListeners(chatClient: ChatClient): Promise<void> {
             getPointsFromDB(chatClient, channel, user).catch((error) =>
               logger.error(error)
             )
+            break
+          case '!addpoints':
+            if (
+              user === 'ashen' &&
+              process.env.NODE_ENV !== undefined &&
+              process.env.NODE_ENV === 'development'
+            ) {
+              const userToAddPointsTo = fullCommandString[1]
+              const pointsToAdd = parseInt(fullCommandString[2])
+              if (
+                userToAddPointsTo === undefined ||
+                pointsToAdd === undefined
+              ) {
+                chatClient
+                  .say(channel, `[DEBUG] @${user}, failed to add user points!`)
+                  .catch((error) => logger.error(error))
+              } else {
+                addPointsToUser(userToAddPointsTo, pointsToAdd)
+                  .then(() => {
+                    chatClient
+                      .say(
+                        channel,
+                        `[DEBUG] @${user}, added ${pointsToAdd} points to ${userToAddPointsTo}'s points total.`
+                      )
+                      .catch((error) => logger.error(error))
+                  })
+                  .catch((error) => logger.error(error))
+              }
+            }
             break
           default:
             break
@@ -114,7 +144,9 @@ async function getPointsFromDB(
   if (userInDB) {
     // Get the users' points
     const result = await getUserPoints(user)
-    if (result == null) points = 0
+    if (result !== null) {
+      points = result
+    }
   } else {
     // Create the user in the database and return 0 points.
     await createUserInDatabase(user, undefined)

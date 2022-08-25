@@ -164,8 +164,9 @@ export async function isUserInDatabase(user: string): Promise<boolean> {
 
 export async function getUserPoints(user: string): Promise<0 | number | null> {
   const userId = await getTwitchId(user)
+  let points: number | null = 0
   if (userId !== null) {
-    const result = await db
+    await db
       .get(`SELECT points FROM users WHERE user_id = "${userId}"`)
       .then(async (res: { points: number }) => {
         logger.debug(`Retrieved points for ${user}: ${res.points} points`)
@@ -174,19 +175,58 @@ export async function getUserPoints(user: string): Promise<0 | number | null> {
           await db.exec(
             `UPDATE users SET points = 0 WHERE user_id = "${userId}"`
           )
-          return 0
         } else {
-          return res.points
+          points = res.points
         }
       })
       .catch((error) => {
         logger.error(`Failed to get points for ${user}`)
         logger.error(error)
-        return null
+        points = null
       })
-    return result
   }
-  return null
+  return points
+}
+
+export async function addPointsToUser(
+  user: string,
+  points: number
+): Promise<boolean> {
+  const userId = await getTwitchId(user)
+  let success = false
+  if (userId == null) return false
+  const oldPoints = await getUserPoints(user)
+  if (oldPoints == null) {
+    await db
+      .exec(`UPDATE users SET points = ${points} WHERE user_id = "${userId}"`)
+      .then((res) => {
+        logger.debug(`Updated points for ${user}. Current points: ${points}`)
+        logger.debug(res)
+        success = true
+      })
+      .catch((error) => {
+        logger.error(`Failed to update points for ${user}.`)
+        logger.error(error)
+        success = false
+      })
+  } else {
+    const newPoints = oldPoints + points
+    await db
+      .exec(
+        `UPDATE users SET points = ${newPoints} WHERE user_id = "${userId}"`
+      )
+      .then((res) => {
+        logger.debug(`Updated points for ${user}. Current points: ${newPoints}`)
+        logger.debug(res)
+        success = true
+      })
+      .catch((error) => {
+        logger.error(`Failed to update points for ${user}.`)
+        logger.error(error)
+        success = false
+      })
+  }
+  return success
 }
 
 async function getAllianceIdByName(
