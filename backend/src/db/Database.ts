@@ -79,12 +79,10 @@ export async function createUserInDatabase(
   let success = false
 
   if (alliance !== null) {
-    // GET TWITCH USER ID, ADD USER TO DATABASE
     logger.debug(`Alliance confirmed - retrieving Twitch user ID for ${user}`)
     const twitchId = await getTwitchId(user)
     if (twitchId !== null) {
       // Does the user already exist in the DB? Do they have an alliance assigned to them?
-
       await db
         .get(
           `SELECT user_id, alliance_id FROM users WHERE user_id = ${twitchId}`
@@ -154,6 +152,7 @@ async function getAllianceIdByName(
   return result
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function getAllianceNameById(allianceId: number): Promise<string | null> {
   let allianceName: string
   await db

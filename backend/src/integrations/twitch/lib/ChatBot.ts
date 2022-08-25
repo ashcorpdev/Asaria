@@ -57,7 +57,8 @@ async function createEventListeners(chatClient: ChatClient): Promise<void> {
       logger.warn(reason)
       logger.warn('Attempting to reconnect to Twitch chat...')
       if (process.env.TWITCH_STREAMER_CHANNEL !== undefined) {
-        chatClient.join(process.env.TWITCH_STREAMER_CHANNEL).catch((reason) => {
+        // Chat client has disconnected - restart the process from fresh to ensure a stable connection, otherwise crash.
+        chatClient.reconnect().catch((reason) => {
           logger.error(
             'Failed to connect back to Twitch chat! Restart required...'
           )
